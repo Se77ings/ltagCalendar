@@ -1,39 +1,45 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Button, TouchableOpacity, Modal, Pressable } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import NovoAgendamento from "./view/NovoAgendamento";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import Home from "./view/Home/Home";
+
 
 export default function App() {
-  const [visible, setVisible] = useState(false);
-
+  const Tab = createBottomTabNavigator();
   return (
-    <>
-      <View style={styles.container}>
-        <Button
-          title="Novo Agendamento"
-          onPress={() => {
-            setVisible(true);
+    <NavigationContainer>
+      <Tab.Navigator initialRouteName="Home" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d" } }}>
+        <Tab.Screen
+          name="Home"
+          component={Home}
+          options={{
+            headerShown: false,
+            tabBarLabel: "Início",
+            tabBarLabelStyle: { fontSize: 12, color: "white" },
+            tabBarIcon: () => (
+              <View style={styles.iconDiv}>
+                <Ionicons name="home-outline" color={"white"} size={22} />
+              </View>
+            ),
           }}
         />
-      </View>
-      <Modal visible={visible} transparent={true}>
-        <Pressable
-          onPress={() => {
-            setVisible(false);
-          }}
-          style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent:"center"}}>
-          <NovoAgendamento />
-        </Pressable>
-      </Modal>
-    </>
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+
+  iconDiv: {
+    borderWidth: 1.5,
+    borderColor: "white",
+    borderRadius: 50,
+    padding: 5,
+    height: 36,
+    marginTop: 5,
+    alignSelf: "center",
   },
 });
