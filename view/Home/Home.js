@@ -16,8 +16,8 @@ export default function Home() {
         <Button
           title="Novo Agendamento"
           onPress={() => {
-            // setVisible(true);
-              navigation.navigate("NovoAgendamento");
+            setVisible(true);
+              // navigation.navigate("NovoAgendamento");
           }}
         />
         <Modal visible={visible} transparent={true}>

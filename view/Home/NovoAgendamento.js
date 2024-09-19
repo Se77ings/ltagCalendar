@@ -1,27 +1,120 @@
 import React, { useState } from "react";
 import { StyleSheet, Text, View, Button, TouchableOpacity, Modal, Pressable, TextInput } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import * as Yup from 'yup';
+import { Formik, useFormik } from 'formik' ; 
+
+const SignupSchema = Yup.object().shape({
+  Nome: Yup.string()
+    .min(3, 'Minimo de 3 caracteres!')
+    .max(50, 'Máximo de 50 caracteres!')
+    .required('Obrigatorio'),
+  Telefone: Yup.number('Apenas numeros').integer()
+    .required('Required'),
+  Prestador: Yup.string()
+    .min(3, 'Minimo de 3 caracteres!')
+    .max(50, 'Máximo de 50 caracteres!')
+    .required('Obrigatorio'),
+  
+
+
+
+  Servico: Yup.string()
+    .min(3, 'Minimo de 3 caracteres!')
+    .max(50, 'Máximo de 50 caracteres!')
+    .required('Obrigatorio'),
+});
 
 export default function NovoAgendamento() {
-  // Dados obrigatórios: nome do cliente, telefone, data e horário, serviço a ser realizado;
+  // Dados obrigatórios: Nome do cliente, Telefone, data e horário, serviço a ser realizado;
   // sugestão: https://formik.org/docs/guides/react-native
-  return (
 
-    <View style={{ backgroundColor: "white", alignSelf: "center", width: "90%", padding: 30, borderRadius: 20 }}>
-      <Text>Nome do Cliente:</Text>
-      <TextInput style={{ borderWidth: 1, borderColor: "black", borderRadius: 5, padding: 5 }} />
-      <Text>Telefone:</Text>
-      <TextInput style={{ borderWidth: 1, borderColor: "black", borderRadius: 5, padding: 5 }} />
-      <Text>Data:</Text>
-      <TextInput style={{ borderWidth: 1, borderColor: "black", borderRadius: 5, padding: 5 }} />
-      <Text>Hora:</Text>
-      <TextInput style={{ borderWidth: 1, borderColor: "black", borderRadius: 5, padding: 5 }} />
-      <Text>Serviço:</Text>
-      <TextInput style={{ borderWidth: 1, borderColor: "black", borderRadius: 5, padding: 5 }} />
-      <View style={{ marginTop: 10, flexDirection:"row", justifyContent:"space-between" }}>
-        <Button title="Limpar Campos"></Button>
-        <Button title="Cadastrar Serviço" />
+  //https://npmjs.com/package/yup
+  //https://www.npmjs.com/package/react-native-floating-label-input?activeTab=readme
+  //https://www.npmjs.com/package/react-native-date-picker
+  return (
+    <Formik 
+      initialValues={{
+        Nome: '',
+        Telefone: '',
+        Data:'',
+        Hora:'',
+        Prestador:'',
+        Servico:''}}
+      onSubmit={values => console.log(values)}
+    >
+
+    {({ handleChange, handleBlur, handleSubmit, values })=> 
+      (
+        <View style={styles.container}>
+        <TextInput
+          style={styles.input}
+          onChangeText={handleChange('Nome')}
+          onBlur={handleBlur('Nome')}
+          value={values.Nome}
+          placeholder="Nome"
+        />
+        {/* {touched.nome && errors.nome && <Text style={styles.error}>{errors.nome}</Text>} */} 
+        <TextInput
+          style={styles.input}
+          onChangeText={handleChange('Telefone')}
+          onBlur={handleBlur('Telefone')}
+          value={values.Telefone}
+          placeholder="Telefone"
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={handleChange('Data')}
+          onBlur={handleBlur('Data')}
+          value={values.Data}
+          placeholder="Data"
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={handleChange('Hora')}
+          onBlur={handleBlur('Hora')}
+          value={values.Hora}
+          placeholder="Hora"
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={handleChange('Prestador')}
+          onBlur={handleBlur('Prestador')}
+          value={values.Prestador}
+          placeholder="Prestador"
+        />
+        <TextInput
+          style={styles.input}
+          onChangeText={handleChange('Servico')}
+          onBlur={handleBlur('Servico')}
+          value={values.Servico}
+          placeholder="Serviço"
+        />
+        <View style={{ marginTop: 10, flexDirection:"row", justifyContent:"space-between" }}>
+          <Button onPress={handleSubmit} title="Enviar dados" />
+          <Button title="Cadastrar Serviço" />
+        </View>
+        
       </View>
-    </View>
+
+      )}
+
+      
+    
+    </Formik>
+    
   );
+
 }
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: "white", alignSelf: "center", width: "90%", padding: 30, borderRadius: 20
+  },
+  input: {
+    height: 40,
+    borderColor: 'black',
+    borderWidth: 1,
+    marginBottom: 10,
+    paddingHorizontal: 10,
+  },
+})
