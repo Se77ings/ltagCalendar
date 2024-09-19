@@ -47,13 +47,8 @@ async function criarAgendamento(fecharModal) {
 }
 
 
-export default function NovoAgendamento() {
-  // Dados obrigatórios: Nome do cliente, Telefone, data e horário, serviço a ser realizado;
-  // sugestão: https://formik.org/docs/guides/react-native
-
-  //https://npmjs.com/package/yup
-  //https://www.npmjs.com/package/react-native-floating-label-input?activeTab=readme
-  //https://www.npmjs.com/package/react-native-date-picker
+export default function NovoAgendamento({ fecharModal }) {
+  // Aqui você pode usar a prop fecharModal, por exemplo, no botão "Cadastrar (mockado)"
   return (
     <Formik 
       initialValues={{
@@ -62,77 +57,67 @@ export default function NovoAgendamento() {
         Data:'',
         Hora:'',
         Prestador:'',
-        Servico:''}}
+        Servico:''
+      }}
       onSubmit={values => console.log(values)}
     >
-
-    {({ handleChange, handleBlur, handleSubmit, values })=> 
-      (
+      {({ handleChange, handleBlur, handleSubmit, values })=> (
         <View style={styles.container}>
-        <TextInput
-          style={styles.input}
-          onChangeText={handleChange('Nome')}
-          onBlur={handleBlur('Nome')}
-          value={values.Nome}
-          placeholder="Nome"
-        />
-        {/* {touched.nome && errors.nome && <Text style={styles.error}>{errors.nome}</Text>} */} 
-        <TextInput
-          style={styles.input}
-          onChangeText={handleChange('Telefone')}
-          onBlur={handleBlur('Telefone')}
-          value={values.Telefone}
-          placeholder="Telefone"
-        />
-        <TextInput
-          style={styles.input}
-          onChangeText={handleChange('Data')}
-          onBlur={handleBlur('Data')}
-          value={values.Data}
-          placeholder="Data"
-        />
-        <TextInput
-          style={styles.input}
-          onChangeText={handleChange('Hora')}
-          onBlur={handleBlur('Hora')}
-          value={values.Hora}
-          placeholder="Hora"
-        />
-        <TextInput
-          style={styles.input}
-          onChangeText={handleChange('Prestador')}
-          onBlur={handleBlur('Prestador')}
-          value={values.Prestador}
-          placeholder="Prestador"
-        />
-        <TextInput
-          style={styles.input}
-          onChangeText={handleChange('Servico')}
-          onBlur={handleBlur('Servico')}
-          value={values.Servico}
-          placeholder="Serviço"
-        />
-        <View style={{ marginTop: 10, flexDirection:"row", justifyContent:"space-between" }}>
-          <Button onPress={handleSubmit} title="Enviar dados" />
-          <Button
-            title="Cadastrar (mockado)"
-            onPress={() => {
-              criarAgendamento(fecharModal); 
-          }}
-        />
+          <TextInput
+            style={styles.input}
+            onChangeText={handleChange('Nome')}
+            onBlur={handleBlur('Nome')}
+            value={values.Nome}
+            placeholder="Nome"
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={handleChange('Telefone')}
+            onBlur={handleBlur('Telefone')}
+            value={values.Telefone}
+            placeholder="Telefone"
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={handleChange('Data')}
+            onBlur={handleBlur('Data')}
+            value={values.Data}
+            placeholder="Data"
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={handleChange('Hora')}
+            onBlur={handleBlur('Hora')}
+            value={values.Hora}
+            placeholder="Hora"
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={handleChange('Prestador')}
+            onBlur={handleBlur('Prestador')}
+            value={values.Prestador}
+            placeholder="Prestador"
+          />
+          <TextInput
+            style={styles.input}
+            onChangeText={handleChange('Servico')}
+            onBlur={handleBlur('Servico')}
+            value={values.Servico}
+            placeholder="Serviço"
+          />
+          <View style={{ marginTop: 10, flexDirection:"row", justifyContent:"space-between" }}>
+            <Button onPress={handleSubmit} title="Enviar dados" />
+            <Button
+              title="Cadastrar (mockado)"
+              onPress={() => criarAgendamento(fecharModal)}
+            />
+          </View>
         </View>
-        
-      </View>
-
       )}
-
-      
-    
     </Formik>
-    
   );
-
 }
+
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "white", alignSelf: "center", width: "90%", padding: 30, borderRadius: 20
