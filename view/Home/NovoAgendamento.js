@@ -1,68 +1,70 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Button, TouchableOpacity, Modal, Pressable, TextInput } from "react-native";
-import { StatusBar } from "expo-status-bar";
+import React, { useState } from 'react';
+import { StyleSheet, Text, View, Button, TextInput } from "react-native";
 import * as Yup from 'yup';
-import { Formik, useFormik } from 'formik' ; 
+import { Formik } from 'formik'; 
 import adicionarAgendamento from "../../services/agendamentoService";
 
-const SignupSchema = Yup.object().shape({
+const Validation = Yup.object().shape({
   Nome: Yup.string()
     .min(3, 'Minimo de 3 caracteres!')
     .max(50, 'Máximo de 50 caracteres!')
     .required('Obrigatorio'),
-  Telefone: Yup.number('Apenas numeros').integer()
-    .required('Required'),
+    
+  Telefone: Yup.number()
+    .typeError('Apenas números inteiros')
+    .positive('O numero tem que ser positivo')
+    .min(10000000000, 'Minimo de 11 caracteres!')
+    .max(999999999999, 'Máximo de 11 caracteres!')
+    .required('Obrigatorio'),
+    
   Prestador: Yup.string()
     .min(3, 'Minimo de 3 caracteres!')
     .max(50, 'Máximo de 50 caracteres!')
     .required('Obrigatorio'),
- 
+
+  DataHora: Yup.date().required('Obrigatorio'),
+  
   Servico: Yup.string()
     .min(3, 'Minimo de 3 caracteres!')
     .max(50, 'Máximo de 50 caracteres!')
     .required('Obrigatorio'),
 });
 
-//Para teste em console.Log, remover após implementar o front
-function agendamentoMock() {
-  return {
-    nome: "Teste Silva",
-    telefone: "11987654321",
-    dataHora: "2024-09-30 14:00",
-    servico: "Corte de Cabelo",
-    prestador: "Carlos",
-  };
-}
-
 async function criarAgendamento(fecharModal) {
   try {
-    const agendamento = agendamentoMock(); //usar o formulário para pegar os dados após implementar
+    const agendamento = {
+      nome: "Te",
+      telefone: "11987654321",
+      DataHora: new Date(), // Ajuste conforme necessário
+      servico: "Corte de Cabelo",
+      prestador: "Carlos",
+    };
     await adicionarAgendamento(agendamento);
     console.log("Sucesso", "Agendamento cadastrado com sucesso!");
-
     fecharModal();
   } catch (error) {
     console.error("Erro ao inserir o agendamento mockado:", error);
   }
 }
 
-
 export default function NovoAgendamento({ fecharModal }) {
-  // Aqui você pode usar a prop fecharModal, por exemplo, no botão "Cadastrar (mockado)"
+  const [date, setDate] = useState(new Date());
+
   return (
     <Formik 
       initialValues={{
         Nome: '',
         Telefone: '',
-        Data:'',
-        Hora:'',
-        Prestador:'',
-        Servico:''
+        DataHora: '',
+        Prestador: '',
+        Servico: ''
       }}
+      validationSchema={Validation}
       onSubmit={values => console.log(values)}
     >
-      {({ handleChange, handleBlur, handleSubmit, values })=> (
+      {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
         <View style={styles.container}>
+
           <TextInput
             style={styles.input}
             onChangeText={handleChange('Nome')}
@@ -70,27 +72,33 @@ export default function NovoAgendamento({ fecharModal }) {
             value={values.Nome}
             placeholder="Nome"
           />
+          {errors.Nome && touched.Nome ? (
+             <Text style={styles.error}>{errors.Nome}</Text>
+           ) : null}
+
           <TextInput
             style={styles.input}
             onChangeText={handleChange('Telefone')}
             onBlur={handleBlur('Telefone')}
             value={values.Telefone}
-            placeholder="Telefone"
+            placeholder="exemplo: 17997556141"
+            keyboardType="numeric" // Adiciona a entrada numérica
           />
+          {errors.Telefone && touched.Telefone ? (
+             <Text style={styles.error}>{errors.Telefone}</Text>
+           ) : null}
+
           <TextInput
             style={styles.input}
-            onChangeText={handleChange('Data')}
-            onBlur={handleBlur('Data')}
-            value={values.Data}
-            placeholder="Data"
+            onChangeText={handleChange('DataHora')}
+            onBlur={handleBlur('DataHora')}
+            value={values.DataHora}
+            placeholder="DataHora"
           />
-          <TextInput
-            style={styles.input}
-            onChangeText={handleChange('Hora')}
-            onBlur={handleBlur('Hora')}
-            value={values.Hora}
-            placeholder="Hora"
-          />
+          {errors.DataHora && touched.DataHora ? (
+             <Text style={styles.error}>{errors.DataHora}</Text>
+           ) : null}
+
           <TextInput
             style={styles.input}
             onChangeText={handleChange('Prestador')}
@@ -98,6 +106,10 @@ export default function NovoAgendamento({ fecharModal }) {
             value={values.Prestador}
             placeholder="Prestador"
           />
+          {errors.Prestador && touched.Prestador ? (
+             <Text style={styles.error}>{errors.Prestador}</Text>
+           ) : null}
+
           <TextInput
             style={styles.input}
             onChangeText={handleChange('Servico')}
@@ -105,7 +117,11 @@ export default function NovoAgendamento({ fecharModal }) {
             value={values.Servico}
             placeholder="Serviço"
           />
-          <View style={{ marginTop: 10, flexDirection:"row", justifyContent:"space-between" }}>
+          {errors.Servico && touched.Servico ? (
+             <Text style={styles.error}>{errors.Servico}</Text>
+           ) : null}
+
+          <View style={{ marginTop: 10, flexDirection: "row", justifyContent: "space-between" }}>
             <Button onPress={handleSubmit} title="Enviar dados" />
             <Button
               title="Cadastrar (mockado)"
@@ -129,4 +145,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 10,
   },
-})
+  error: {
+    color: "red",
+    padding: 0,
+    marginTop: -9,
+    marginBottom: 10,
+  },
+});
