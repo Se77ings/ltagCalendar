@@ -9,7 +9,8 @@ export default async function initializaDatabase() {
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           Nome TEXT NOT NULL,
           Telefone TEXT NOT NULL,
-          DataHora TEXT NOT NULL, 
+          Data TEXT NOT NULL, 
+          Hora TEXT NOT NULL,
           Servico TEXT NOT NULL,
           Prestador TEXT NULL
         );

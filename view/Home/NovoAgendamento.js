@@ -35,7 +35,8 @@ async function criarAgendamento(fecharModal) {
     const agendamento = {
       nome: "Te",
       telefone: "11987654321",
-      DataHora: new Date(), // Ajuste conforme necessário
+      data: "2024-09-30",
+      hora: "14:00",
       servico: "Corte de Cabelo",
       prestador: "Carlos",
     };

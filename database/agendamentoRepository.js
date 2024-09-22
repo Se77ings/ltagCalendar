@@ -3,14 +3,14 @@ import * as SQLite from 'expo-sqlite';
 export default async function CriarAgendamento(agendamento) {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );
          
-    await db.runAsync('INSERT INTO agendamento (Nome, Telefone, DataHora, Servico, Prestador) VALUES (?, ?, ?, ?, ?);',
-        agendamento.nome, agendamento.telefone, agendamento.dataHora, agendamento.servico, agendamento.prestador);
+    await db.runAsync('INSERT INTO agendamento (Nome, Telefone, Data, Hora, Servico, Prestador) VALUES (?, ?, ?, ?, ?, ?);',
+        agendamento.nome, agendamento.telefone, agendamento.data, agendamento.hora, agendamento.servico, agendamento.prestador);
   }
 
 
   export async function ObterAgendamentos() {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
-    const allRows = await db.getAllAsync('SELECT * FROM agendamento order by DataHora desc;');
+    const allRows = await db.getAllAsync('SELECT * FROM agendamento order by Data desc;');
 
     return allRows;
 }
@@ -22,8 +22,8 @@ export async function RemoverAgendamento(id) {
 
 export async function AtualizarAgendamento(agendamento) {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
-    await db.runAsync('UPDATE agendamento SET Nome = ?, Telefone = ?, DataHora = ?, Servico = ?, Prestador = ? WHERE id = ?;',
-        agendamento.nome, agendamento.telefone, agendamento.dataHora, agendamento.servico, agendamento.prestador, agendamento.id);
+    await db.runAsync('UPDATE agendamento SET Nome = ?, Telefone = ?, data = ?, hora = ?, Servico = ?, Prestador = ? WHERE id = ?;',
+        agendamento.nome, agendamento.telefone, agendamento.data, agendamento.hora, agendamento.servico, agendamento.prestador, agendamento.id);
 }
 
 export async function ObterAgendamentosPaginado(pagina = 1, limite = 2) {
@@ -32,7 +32,7 @@ export async function ObterAgendamentosPaginado(pagina = 1, limite = 2) {
     const offset = (pagina - 1) * limite;
   
     const result = await db.getAllAsync(
-      `SELECT * FROM agendamento ORDER BY DataHora DESC LIMIT ? OFFSET ?`, 
+      `SELECT * FROM agendamento ORDER BY Data DESC LIMIT ? OFFSET ?`, 
       [limite, offset]
     );
   
