@@ -23,15 +23,20 @@ export default async function adicionarAgendamento(agendamento) {
 }
 
 function validarAgendamento(agendamento) {
-  const { nome, telefone, dataHora, servico } = agendamento;
+  const { nome, telefone, data, hora, servico } = agendamento;
 
-  if (!nome || !telefone || !dataHora || !servico) {
+  if (!nome || !telefone || !data || !hora || !servico) {
     throw new Error('Todos os campos obrigatórios devem ser preenchidos.');
   }
 
-  const dataHoraRegex = /^\d{4}-\d{2}-\d{2} ([0-1][0-9]|2[0-3]):[0-5][0-9]$/;
-  if (!dataHoraRegex.test(dataHora)) {
-    throw new Error('A data e hora devem estar no formato YYYY-MM-DD HH:MM.');
+  const dataRegex = /^\d{4}-\d{2}-\d{2}$/;
+  if (!dataRegex.test(data)) {
+    throw new Error('A data deve estar no formato YYYY-MM-DD.');
+  }
+
+  const horaRegex = /^([0-1][0-9]|2[0-3]):[0-5][0-9]$/;
+  if (!horaRegex.test(hora)) {
+    throw new Error('A hora deve estar no formato HH:MM.');
   }
 
   const telefoneRegex = /^\d{10,11}$/;

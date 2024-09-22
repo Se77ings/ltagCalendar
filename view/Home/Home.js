@@ -28,10 +28,10 @@ export default function Home() {
 
   
   async function obterTodos() {
-      const resut = await ObterAgendamentosPaginadoAsync(1, 5); //primeiro parâmetro página e segundo quantidade por página
+      const resut = await ObterAgendamentosPaginadoAsync(1, 20); //primeiro parâmetro página e segundo quantidade por página
 
       for (const row of resut.data) { //exibir em tela apos implementar, por enquanto só log para teste
-        console.log(row.id, row.Nome, row.DataHora);
+        console.log(row.id, row.Nome, row.Data, row.Hora);
       }    
     }
 
@@ -42,7 +42,8 @@ function agendamentoMock() {
     id: 2,
     nome: "Teste Alteracao2",
     telefone: "11987654999",
-    dataHora: "2024-09-30 14:00",
+    data: "2024-09-30",
+    hora: "14:00",
     servico: "Corte de Barba"    
   };
 }
