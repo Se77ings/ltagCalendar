@@ -28,7 +28,7 @@ export default function Home() {
 
   
   async function obterTodos() {
-      const resut = await ObterAgendamentosPaginadoAsync(1, 2); //primeiro parâmetro página e segundo quantidade por página
+      const resut = await ObterAgendamentosPaginadoAsync(1, 5); //primeiro parâmetro página e segundo quantidade por página
 
       for (const row of resut.data) { //exibir em tela apos implementar, por enquanto só log para teste
         console.log(row.id, row.Nome, row.DataHora);
