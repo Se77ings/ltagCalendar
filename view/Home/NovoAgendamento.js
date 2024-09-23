@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import { StyleSheet, Text, View, Button, TextInput, Pressable} from "react-native";
 import * as Yup from 'yup';
 import { Formik } from 'formik'; 
 import adicionarAgendamento from "../../services/agendamentoService";
@@ -12,20 +12,25 @@ const Validation = Yup.object().shape({
     .max(50, 'Máximo de 50 caracteres!')
     .required('Obrigatorio'),
     
-  Telefone: Yup.number()
-    .typeError('Apenas números inteiros')
-    .positive('O numero tem que ser positivo')
-    .min(10000000000, 'Minimo de 11 caracteres!')
-    .max(999999999999, 'Máximo de 11 caracteres!')
-    .required('Obrigatorio'),
+  // Telefone: Yup.number()
+  //   .typeError('Apenas números inteiros')
+  //   .positive('O numero tem que ser positivo')
+  //   .min(10000000000, 'Minimo de 11 caracteres!')
+  //   .max(999999999999, 'Máximo de 11 caracteres!')
+  //   .required('Obrigatorio'),
+
+  //   Data: Yup.string()
+  //   .matches(/^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])\/\d{4}$/, 'A data deve estar no formato DD/MM/YYYY.')
+  //   .required('Campo obrigatório.'),
+  
+  // Hora: Yup.string()
+  //   .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'A hora deve estar no formato HH:mm.')
+  //   .required('Campo obrigatório.'),
     
   Prestador: Yup.string()
     .min(3, 'Minimo de 3 caracteres!')
-    .max(50, 'Máximo de 50 caracteres!')
-    .required('Obrigatorio'),
-
-  DataHora: Yup.date().required('Obrigatorio'),
-  
+    .max(50, 'Máximo de 50 caracteres!'),
+      
   Servico: Yup.string()
     .min(3, 'Minimo de 3 caracteres!')
     .max(50, 'Máximo de 50 caracteres!')
@@ -54,6 +59,12 @@ async function criarAgendamento(fecharModal, nome, telefone, data, hora, prestad
 
 
 export default function NovoAgendamento({ fecharModal }) {
+  const inputRefs = useRef({});
+
+  const focusInput = (field) => {
+    inputRefs.current[field]?.focus();
+  };
+
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [DateString, setDateString] = useState('');
@@ -92,11 +103,16 @@ export default function NovoAgendamento({ fecharModal }) {
         Servico: ''
       }}
       validationSchema={Validation}
-      onSubmit={values => console.log(values)}
+      onSubmit={(values) => criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico)}
+
     >
       {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
-        <View style={styles.container}>          
+        <View style={styles.container}>  
+          <Pressable onPress={() => focusInput('Nome')}>
+            <Text style={styles.label}>Nome</Text>
+          </Pressable>        
           <TextInput
+            ref={(ref) => (inputRefs.current.Nome = ref)}
             style={styles.input}
             onChangeText={handleChange('Nome')}
             onBlur={handleBlur('Nome')}
@@ -106,14 +122,18 @@ export default function NovoAgendamento({ fecharModal }) {
           {errors.Nome && touched.Nome ? (
              <Text style={styles.error}>{errors.Nome}</Text>
            ) : null}
-
+          
+          <Pressable onPress={() => focusInput('Telefone')}>
+            <Text style={styles.label}>Telefone</Text>
+          </Pressable>        
           <TextInput
+            ref={(ref) => (inputRefs.current.Telefone = ref)}
             style={styles.input}
             onChangeText={handleChange('Telefone')}
             onBlur={handleBlur('Telefone')}
             value={values.Telefone}
             placeholder="exemplo: 17997556141"
-            keyboardType="numeric" // Adiciona a entrada numérica
+            keyboardType="numeric"
           />
           {errors.Telefone && touched.Telefone ? (
              <Text style={styles.error}>{errors.Telefone}</Text>
@@ -136,7 +156,7 @@ export default function NovoAgendamento({ fecharModal }) {
             onChangeText={handleChange('date')}
             onBlur={handleBlur('date')}
             value={date.toLocaleDateString()}
-            editable={true} // Impedir edição manual
+            editable={false} // Impedir edição manual
           />
 
           <Button title="Hora" onPress={() => setShowtime(true)} />
@@ -155,8 +175,15 @@ export default function NovoAgendamento({ fecharModal }) {
             onBlur={handleBlur('Hora')}
             value={time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
             placeholder="Hora"
+            editable={false}
           />
+
+
+          <Pressable onPress={() => focusInput('Prestador')}>
+            <Text style={styles.label}>Prestador</Text>
+          </Pressable>        
           <TextInput
+            ref={(ref) => (inputRefs.current.Prestador = ref)}
             style={styles.input}
             onChangeText={handleChange('Prestador')}
             onBlur={handleBlur('Prestador')}
@@ -167,7 +194,11 @@ export default function NovoAgendamento({ fecharModal }) {
              <Text style={styles.error}>{errors.Prestador}</Text>
            ) : null}
 
+          <Pressable onPress={() => focusInput('Servico')}>
+            <Text style={styles.label}>Servico</Text>
+          </Pressable>        
           <TextInput
+            ref={(ref) => (inputRefs.current.Servico = ref)}
             style={styles.input}
             onChangeText={handleChange('Servico')}
             onBlur={handleBlur('Servico')}
@@ -179,12 +210,10 @@ export default function NovoAgendamento({ fecharModal }) {
            ) : null}
 
           <View style={{ marginTop: 10, flexDirection: "row", justifyContent: "space-between" }}>
-          <Button
-            title="Cadastrar (mockado)"
-            onPress={() => criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico)}
-          />
-
-
+              <Button
+              title="Cadastrar validação"
+              onPress={handleSubmit} // Chama o handleSubmit para validar o formulário
+            />
           </View>
         </View>
       )}
@@ -208,5 +237,9 @@ const styles = StyleSheet.create({
     padding: 0,
     marginTop: -9,
     marginBottom: 10,
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 5,
   },
 });
