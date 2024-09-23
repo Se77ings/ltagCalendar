@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { StyleSheet, Text, View, Button, TextInput } from "react-native";
 import * as Yup from 'yup';
 import { Formik } from 'formik'; 
 import adicionarAgendamento from "../../services/agendamentoService";
+import CriarAgendamento from '../../database/agendamentoRepository';
 
 const Validation = Yup.object().shape({
   Nome: Yup.string()
@@ -30,16 +32,17 @@ const Validation = Yup.object().shape({
     .required('Obrigatorio'),
 });
 
-async function criarAgendamento(fecharModal) {
+async function criarAgendamento(fecharModal, nome, telefone, data, hora, prestador, servico) {
   try {
     const agendamento = {
-      nome: "Te",
-      telefone: "11987654321",
-      data: "2024-09-30",
-      hora: "14:00",
-      servico: "Corte de Cabelo",
-      prestador: "Carlos",
+      nome,
+      telefone,
+      data,
+      hora,
+      prestador,
+      servico,
     };
+    console.log("Agendamento mockado:", agendamento);
     await adicionarAgendamento(agendamento);
     console.log("Sucesso", "Agendamento cadastrado com sucesso!");
     fecharModal();
@@ -48,15 +51,43 @@ async function criarAgendamento(fecharModal) {
   }
 }
 
+
+
 export default function NovoAgendamento({ fecharModal }) {
   const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+  const [DateString, setDateString] = useState('');
+
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(false);
+    setDate(currentDate);
+    setDateString(currentDate.toLocaleDateString('pt-BR'));
+  };
+
+  //time
+  const [time, setTime] = useState(new Date());  
+  const [showtime, setShowtime] = useState(false);
+  const [timeString, setTimeString] = useState('');
+
+  const onChangeTime = (event, selectedTime) => {
+    const currentTime = selectedTime || time;
+    setShowtime(false);
+    setTime(currentTime);
+    setTimeString(currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  };
+
+
+  //fim time
 
   return (
     <Formik 
       initialValues={{
         Nome: '',
         Telefone: '',
-        DataHora: '',
+        Data: '',
+        Hora: '',
         Prestador: '',
         Servico: ''
       }}
@@ -64,8 +95,7 @@ export default function NovoAgendamento({ fecharModal }) {
       onSubmit={values => console.log(values)}
     >
       {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
-        <View style={styles.container}>
-
+        <View style={styles.container}>          
           <TextInput
             style={styles.input}
             onChangeText={handleChange('Nome')}
@@ -89,17 +119,43 @@ export default function NovoAgendamento({ fecharModal }) {
              <Text style={styles.error}>{errors.Telefone}</Text>
            ) : null}
 
+
+          <Button title="Data" onPress={() => setShow(true)} />
+          {show && (
+            <DateTimePicker
+              testID="dateTimePicker"
+              value={date}
+              mode="date" // Modo de data
+              is24Hour={true}
+              display="spinner"
+              onChange={onChange}
+            />
+          )}
+            <TextInput
+            style={styles.input}
+            onChangeText={handleChange('date')}
+            onBlur={handleBlur('date')}
+            value={date.toLocaleDateString()}
+            editable={true} // Impedir edição manual
+          />
+
+          <Button title="Hora" onPress={() => setShowtime(true)} />
+          {showtime && (
+            <DateTimePicker
+              value={time}
+              mode="time"
+              is24Hour={true}
+              display="spinner"
+              onChange={onChangeTime}
+            />
+          )}
           <TextInput
             style={styles.input}
-            onChangeText={handleChange('DataHora')}
-            onBlur={handleBlur('DataHora')}
-            value={values.DataHora}
-            placeholder="DataHora"
+            onChangeText={handleChange('Hora')}
+            onBlur={handleBlur('Hora')}
+            value={time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+            placeholder="Hora"
           />
-          {errors.DataHora && touched.DataHora ? (
-             <Text style={styles.error}>{errors.DataHora}</Text>
-           ) : null}
-
           <TextInput
             style={styles.input}
             onChangeText={handleChange('Prestador')}
@@ -123,11 +179,12 @@ export default function NovoAgendamento({ fecharModal }) {
            ) : null}
 
           <View style={{ marginTop: 10, flexDirection: "row", justifyContent: "space-between" }}>
-            <Button onPress={handleSubmit} title="Enviar dados" />
-            <Button
-              title="Cadastrar (mockado)"
-              onPress={() => criarAgendamento(fecharModal)}
-            />
+          <Button
+            title="Cadastrar (mockado)"
+            onPress={() => criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico)}
+          />
+
+
           </View>
         </View>
       )}
