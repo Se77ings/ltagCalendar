@@ -147,7 +147,7 @@ export default function NovoAgendamento({ fecharModal }) {
               value={date}
               mode="date" // Modo de data
               is24Hour={true}
-              display="spinner"
+              display="calendar"
               onChange={onChange}
             />
           )}
