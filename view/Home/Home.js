@@ -89,6 +89,17 @@ const AppointmentSlider = () => {
     </TouchableOpacity>
   );
 
+const fecharModal = () => {
+  setModalVisible(false);
+  obter();
+}
+
+const abrirModal = () => {
+  setAgendamentoSelecionado(null);
+  setModalVisible(true);
+};
+
+
   const excluirAgendamento = (id) => {
     Alert.alert(
       "Confirmar Exclusão",
@@ -175,7 +186,7 @@ const AppointmentSlider = () => {
             {/* <Button title="ssadasda" onPress={()=>{criarAgendamento()}}></Button > */}
             <TouchableOpacity
               style={styles.newAppointmentButton}
-              onPress={() => setModalVisible(true)} // Navega para a página NovoAgendamento
+              onPress={() => abrirModal()} // Navega para a página NovoAgendamento
             >
               <Text style={styles.newAppointmentText}>NOVO AGENDAMENTO</Text>
             </TouchableOpacity>
@@ -222,7 +233,7 @@ const AppointmentSlider = () => {
             style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
               <Pressable>
 
-            <NovoAgendamento fecharModal={() => setModalVisible(false)}  EditAgendamento={agendamentoSelecionado} />
+            <NovoAgendamento fecharModal={() => fecharModal()}  EditAgendamento={agendamentoSelecionado} />
               </Pressable>
           </Pressable>
         </Modal>

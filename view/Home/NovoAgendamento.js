@@ -2,11 +2,11 @@ import React, { useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { FloatingLabelInput } from 'react-native-floating-label-input';
 
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import { StyleSheet, Text, View, Button, TextInput, Alert } from "react-native";
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import adicionarAgendamento, { AtualizarAgendamentoAsync } from "../../services/agendamentoService";
-import { AtualizarAgendamento } from '../../database/agendamentoRepository';
+import { AtualizarAgendamento, VerificarDuplicados } from '../../database/agendamentoRepository';
 
 const Validation = Yup.object().shape({
   Nome: Yup.string()
@@ -28,8 +28,37 @@ const Validation = Yup.object().shape({
     .required('Obrigatorio'),
 });
 
+
+async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, prestador, servico) {
+  try {
+    const agendamento = {
+      id,
+      nome,
+      telefone,
+      data,
+      hora,
+      prestador,
+      servico,
+    };
+    console.log("Agendamento:", agendamento);
+    var res = await AtualizarAgendamentoAsync(agendamento);
+    console.log("Resposta:", res);
+    fecharModal();
+  } catch (error) {
+    console.error("Erro ao inserir o agendamento:", error);
+
+  }
+}
+
 async function criarAgendamento(fecharModal, nome, telefone, data, hora, prestador, servico) {
   try {
+
+    var duplicado = await VerificarDuplicados(data, hora);
+
+    if(duplicado) {
+      
+    }
+
     const agendamento = {
       nome,
       telefone,
@@ -105,19 +134,47 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
     Servico: EditAgendamento?.Servico || '',
   };
 
+  
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={Validation}
-      onSubmit={(values) => {
-        EditAgendamento ? AtualizarAgendamentoAsync({
-          Nome: values.Nome,
-          Telefone: values.Telefone,
-          Data: DateString,
-          Hora: timeString,
-          Prestador: values.Prestador,
-          Servico: values.Servico
-        }) : criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico)
+      onSubmit={async (values) => {
+        // Verifique se há um agendamento duplicado antes de qualquer ação
+        const duplicado = await VerificarDuplicados(DateString, timeString);
+        if (duplicado) {
+          // Exiba o alerta se for duplicado
+          Alert.alert(
+            "Agendamento Duplicado",
+            "Já existe um agendamento para esta data e hora. Deseja continuar?",
+            [
+              {
+                text: "Não",
+                onPress: () => console.log("Usuário cancelou o agendamento."),
+                style: "cancel",
+              },
+              {
+                text: "Sim",
+                onPress: async () => {
+                  // Se o usuário optar por continuar, execute a lógica de criação ou edição do agendamento
+                  if (EditAgendamento) {
+                    await editarAgendamento(fecharModal, EditAgendamento.id, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico);
+                  } else {
+                    await criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico);
+                  }
+                },
+              },
+            ],
+            { cancelable: false } // impede que o usuário saia sem tomar uma decisão
+          );
+        } else {
+          // Se não for duplicado, execute diretamente a lógica de criação ou edição do agendamento
+          if (EditAgendamento) {
+            await editarAgendamento(fecharModal, EditAgendamento.id, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico);
+          } else {
+            await criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico);
+          }
+        }
       }}
 
     >

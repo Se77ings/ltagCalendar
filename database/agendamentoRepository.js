@@ -43,9 +43,10 @@ export async function ObterAgendamentosPaginado(pagina = 1, limite = 2) {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true });
       
     const result = await db.getFirstAsync(
-      `SELECT nome FROM agendamento WHERE data = ? and hora = ?`, 
+      `SELECT COUNT(*) as total FROM agendamento WHERE data = ? AND hora = ?`, 
       [data, hora]
     );
-  
-    return result.length > 0; 
+    
+    return result != null && result.total > 0;
   }
+  
