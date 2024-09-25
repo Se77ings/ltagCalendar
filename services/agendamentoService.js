@@ -62,6 +62,7 @@ export async function VerificarDuplicadosAsync(data, hora) {
 }
 
 export async function AtualizarAgendamentoAsync(agendamento) {
+  console.log(agendamento)
   try {
     validarAgendamento(agendamento);
     

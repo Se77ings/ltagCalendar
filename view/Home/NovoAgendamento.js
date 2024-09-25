@@ -5,7 +5,7 @@ import { FloatingLabelInput } from 'react-native-floating-label-input';
 import { StyleSheet, Text, View, Button, TextInput } from "react-native";
 import * as Yup from 'yup';
 import { Formik } from 'formik';
-import adicionarAgendamento from "../../services/agendamentoService";
+import adicionarAgendamento, { AtualizarAgendamentoAsync } from "../../services/agendamentoService";
 import { AtualizarAgendamento } from '../../database/agendamentoRepository';
 
 const Validation = Yup.object().shape({
@@ -58,7 +58,6 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
     // Verifica se EditAgendamento não está vazio
     if (EditAgendamento) {
       // Lógica a ser executada quando EditAgendamento tem valor
-      console.log("EditAgendamento recebido:", EditAgendamento);
       setDate(new Date(EditAgendamento.Data)); // Definindo o estado da data
       setTime(new Date(`1970-01-01T${EditAgendamento.Hora}:00`)); // Definindo o estado da hora
       setDateString(EditAgendamento.Data); // Atualiza a string da data
@@ -111,7 +110,7 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
       initialValues={initialValues}
       validationSchema={Validation}
       onSubmit={(values) => {
-        EditAgendamento ? AtualizarAgendamento({
+        EditAgendamento ? AtualizarAgendamentoAsync({
           Nome: values.Nome,
           Telefone: values.Telefone,
           Data: DateString,

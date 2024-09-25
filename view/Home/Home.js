@@ -27,26 +27,6 @@ const AppointmentSlider = () => {
     generateDays();
   }, [currentMonth]); // Atualiza quando o mês atual muda
 
-   async function criarAgendamento() {
-    try {
-      console.log((await obterAgendamentos()).data)
-
-      const agendamento = {
-        nome: "teste",
-        telefone: "11987654321",
-        data: "2024-08-02",
-        hora: "14:00",
-        servico: "Corte de Cabelo",
-        prestador: "Carlos",
-      };
-      await adicionarAgendamento(agendamento);
-      obter();
-
-    } catch (error) {
-      console.error("Erro ao inserir o agendamento mockado:", error);
-    }
-  }
-
     async function obter() {
       var result = await obterAgendamentos();
 
@@ -135,6 +115,7 @@ const AppointmentSlider = () => {
 
   const editarAgendamento = (item) => 
     {
+      console.log(item)
         setAgendamentoSelecionado(item);
         setModalVisible(true)
   };
