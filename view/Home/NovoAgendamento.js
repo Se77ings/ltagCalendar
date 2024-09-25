@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { FloatingLabelInput } from 'react-native-floating-label-input';
 
-import { StyleSheet, Text, View, Button, TextInput } from "react-native";
+import { StyleSheet, Text, View, Button, TextInput, Alert } from "react-native";
 import * as Yup from 'yup';
 import { Formik } from 'formik';
 import adicionarAgendamento, { AtualizarAgendamentoAsync } from "../../services/agendamentoService";
@@ -105,19 +105,30 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
     Servico: EditAgendamento?.Servico || '',
   };
 
+  async function sendUpdate (){
+    const result = await AtualizarAgendamentoAsync({
+      id: EditAgendamento.Id,
+      nome: EditAgendamento.Nome,
+      telefone: EditAgendamento.Telefone,
+      data: DateString,
+      hora: timeString,
+      prestador: EditAgendamento.Prestador,
+      servico: EditAgendamento.Servico
+    });
+    if(result.success){
+      Alert.alert('Sucesso', 'Agendamento atualizado com sucesso!');
+      fecharModal();
+    } else {
+      Alert.alert('Erro', 'Erro ao atualizar o agendamento');
+    }
+  }
+
   return (
     <Formik
       initialValues={initialValues}
       validationSchema={Validation}
       onSubmit={(values) => {
-        EditAgendamento ? AtualizarAgendamentoAsync({
-          Nome: values.Nome,
-          Telefone: values.Telefone,
-          Data: DateString,
-          Hora: timeString,
-          Prestador: values.Prestador,
-          Servico: values.Servico
-        }) : criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico)
+        EditAgendamento ? sendUpdate() : criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico)
       }}
 
     >
