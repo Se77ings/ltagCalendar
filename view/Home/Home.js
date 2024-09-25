@@ -22,33 +22,31 @@ const AppointmentSlider = () => {
   //VARIAVEIS DOS MEUS AGENDAMENTOS
   const [modalVisible, setModalVisible] = useState(false);
 
-
   useEffect(() => {
     generateDays();
   }, [currentMonth]); // Atualiza quando o mês atual muda
 
-    async function obter() {
-      var result = await obterAgendamentos();
+  async function obter() {
+    var result = await obterAgendamentos();
 
-      setAgendamentos(result.data);
-    }
+    setAgendamentos(result.data);
+  }
 
   const [agendamentos, setAgendamentos] = useState([]);
-
 
   const initialize = async () => {
     try {
       await initializaDatabase();
-      console.log('Banco de dados inicializado com sucesso.');
+      console.log("Banco de dados inicializado com sucesso.");
     } catch (error) {
-      console.error('Erro ao inicializar o banco de dados:', error);
+      console.error("Erro ao inicializar o banco de dados:", error);
     }
   };
-  
-  useEffect(() => {  
+
+  useEffect(() => {
     initialize();
-    obter(); 
-  }, []); 
+    obter();
+  }, []);
 
   // Função para gerar os dias do mês atual
   const generateDays = () => {
@@ -107,28 +105,27 @@ const abrirModal = () => {
       [
         {
           text: "Cancelar",
-          style: "cancel"
+          style: "cancel",
         },
         {
           text: "Excluir",
           onPress: async () => {
             const result = await RemoverAgendamentoAsync(id);
             if (result.success) {
-              obter(); 
+              obter();
             }
           },
-          style: "destructive"
-        }
+          style: "destructive",
+        },
       ],
       { cancelable: true }
     );
   };
 
-  const editarAgendamento = (item) => 
-    {
-      console.log(item)
-        setAgendamentoSelecionado(item);
-        setModalVisible(true)
+  const editarAgendamento = (item) => {
+    console.log(item);
+    setAgendamentoSelecionado(item);
+    setModalVisible(true);
   };
 
   const isPast = (date, time) => {
@@ -138,16 +135,17 @@ const abrirModal = () => {
   };
 
   const formatarData = (data) => {
-    const partes = data.split('-'); // Divide a string em partes
+    const partes = data.split("-"); // Divide a string em partes
     return `${partes[2]}/${partes[1]}/${partes[0]}`; // Retorna no formato DD-MM-YYYY
   };
+
   const renderAgendamento = ({ item }) => (
     <View
       style={[
         styles.agendamento,
         isPast(formatarData(item.Data), item.Hora) ? styles.agendamentoAtrasado : null, // Aplica o estilo vermelho se o horário for anterior à data atual
       ]}>
-      <Image source={{ uri: 'https://encurtador.com.br/3Bh7L' }} style={styles.imagemServico} />
+      <Image source={{ uri: "https://encurtador.com.br/3Bh7L" }} style={styles.imagemServico} />
       <View style={styles.info}>
         <Text style={styles.nome}>{item.Nome}</Text>
         <Text style={styles.servico}>{item.Servico}</Text>
@@ -165,23 +163,19 @@ const abrirModal = () => {
     </View>
   );
 
-   const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
+  const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
 
   function Main() {
     return (
       <>
-        
         <View style={styles.container}>
           <View style={styles.headerContainer}>
             <View style={styles.logoContainer}>
-              <Image
-                source={{ uri: "https://img.freepik.com/psd-gratuitas/logotipo-abstrato-gradiente_23-2150689648.jpg" }} 
-                style={styles.logo}
-              />
+              <Image source={{ uri: "https://img.freepik.com/psd-gratuitas/logotipo-abstrato-gradiente_23-2150689648.jpg" }} style={styles.logo} />
               <View style={styles.texts}>
                 <Text style={styles.shopName_}>SEJA BEM-VINDO!!</Text>
                 <Text style={styles.shopName}>LTAG CALENDAR</Text>
-              </View> 
+              </View>
             </View>
             {/* <Button title="ssadasda" onPress={()=>{criarAgendamento()}}></Button > */}
             <TouchableOpacity
@@ -196,9 +190,7 @@ const abrirModal = () => {
             <TouchableOpacity onPress={goToPreviousMonth}>
               <Text style={styles.arrow}>←</Text>
             </TouchableOpacity>
-            <Text style={styles.monthText}>
-              {currentMonth.format("MMMM YYYY")} 
-            </Text>
+            <Text style={styles.monthText}>{currentMonth.format("MMMM YYYY")}</Text>
             <TouchableOpacity onPress={goToNextMonth}>
               <Text style={styles.arrow}>→</Text>
             </TouchableOpacity>
@@ -291,7 +283,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 10,
     paddingBottom: 20,
-    paddingTop: 20
+    paddingTop: 20,
   },
   logoContainer: {
     flexDirection: "row",
