@@ -9,14 +9,12 @@ export default async function adicionarAgendamento(agendamento) {
     
     return {
       success: true,
-      data: null,
       error: null
     }; 
   } catch (error) {
     console.error('Erro ao criar agendamento:', error);
     return {
       success: false,
-      data: null,
       error: 'Erro ao criar agendamento: ' + error
     }; 
   }
