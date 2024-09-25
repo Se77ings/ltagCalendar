@@ -39,13 +39,16 @@ export async function ObterAgendamentosPaginado(pagina = 1, limite = 2) {
     return result;
   }
 
-  export async function VerificarDuplicados(data, hora) {
+  export async function VerificarDuplicados(data, hora, id = null) {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true });
-      
-    const result = await db.getFirstAsync(
-      `SELECT COUNT(*) as total FROM agendamento WHERE data = ? AND hora = ?`, 
-      [data, hora]
-    );
+  
+    const query = id 
+      ? `SELECT COUNT(*) as total FROM agendamento WHERE data = ? AND hora = ? AND id != ?`
+      : `SELECT COUNT(*) as total FROM agendamento WHERE data = ? AND hora = ?`;
+  
+    const params = id ? [data, hora, id] : [data, hora];
+    
+    const result = await db.getFirstAsync(query, params);
     
     return result != null && result.total > 0;
   }

@@ -52,13 +52,6 @@ async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, pr
 
 async function criarAgendamento(fecharModal, nome, telefone, data, hora, prestador, servico) {
   try {
-
-    var duplicado = await VerificarDuplicados(data, hora);
-
-    if(duplicado) {
-      
-    }
-
     const agendamento = {
       nome,
       telefone,
@@ -140,8 +133,12 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
       initialValues={initialValues}
       validationSchema={Validation}
       onSubmit={async (values) => {
-        // Verifique se há um agendamento duplicado antes de qualquer ação
-        const duplicado = await VerificarDuplicados(DateString, timeString);
+        var id = null;
+
+        if(EditAgendamento != null)
+          id = EditAgendamento.id;
+
+        const duplicado = await VerificarDuplicados(DateString, timeString, id);
         if (duplicado) {
           // Exiba o alerta se for duplicado
           Alert.alert(
