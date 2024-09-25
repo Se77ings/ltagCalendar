@@ -38,3 +38,14 @@ export async function ObterAgendamentosPaginado(pagina = 1, limite = 2) {
   
     return result;
   }
+
+  export async function VerificarDuplicados(data, hora) {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true });
+      
+    const result = await db.getFirstAsync(
+      `SELECT nome FROM agendamento WHERE data = ? and hora = ?`, 
+      [data, hora]
+    );
+  
+    return result.length > 0; 
+  }

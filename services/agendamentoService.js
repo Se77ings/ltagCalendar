@@ -1,4 +1,4 @@
-import CriarAgendamento, { AtualizarAgendamento, ObterAgendamentos, ObterAgendamentosPaginado } from "../database/agendamentoRepository";
+import CriarAgendamento, { AtualizarAgendamento, ObterAgendamentos, ObterAgendamentosPaginado, RemoverAgendamento, VerificarDuplicados } from "../database/agendamentoRepository";
 
 export default async function adicionarAgendamento(agendamento) {
   try {
@@ -45,7 +45,23 @@ function validarAgendamento(agendamento) {
   }
 }
 
+export async function VerificarDuplicadosAsync(data, hora) {
+    try {
+      var result = VerificarDuplicados(data, hora);
 
+      return {
+        success: true,
+        data: result,
+        error: null
+      }; 
+    } catch(error) {
+      return {
+        success: false,
+        data: null,
+        error: error
+      }; 
+    }
+}
 
 export async function AtualizarAgendamentoAsync(agendamento) {
   try {
@@ -108,7 +124,7 @@ export async function ObterAgendamentosPaginadoAsync(limit, offset) {
   }
 }
 
-export async function RemoverAgendamento(id) {
+export async function RemoverAgendamentoAsync(id) {
   try {
     await RemoverAgendamento(id);
     console.log('Agendamento removido com sucesso.');

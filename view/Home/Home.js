@@ -1,46 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Image, Modal, Pressable } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Image, Modal, Pressable, Button } from "react-native";
 import moment from "moment";
 import "moment/locale/pt-br"; // Importa o locale em português
 import NovoAgendamento from "./NovoAgendamento";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-
-//MEU OBJETO PARA TESTE
-const agendamentosData = [
-  {
-    id: "1",
-    nome: "João Silva",
-    data: "2024-09-24",
-    horario: "10:00",
-    servico: "Sombrancelha",
-    imagemServico: "https://via.placeholder.com/100",
-  },
-  {
-    id: "2",
-    nome: "Lucas Eduardo",
-    data: "2024-09-25",
-    horario: "11:00",
-    servico: "Pezim",
-    imagemServico: "https://via.placeholder.com/100",
-  },
-  {
-    id: "3",
-    nome: "Carlos Pereira",
-    data: "2024-09-02",
-    horario: "13:00",
-    servico: "Barba",
-    imagemServico: "https://via.placeholder.com/100",
-  },
-  {
-    id: "4",
-    nome: "Jõao Vitor",
-    data: "2024-09-03",
-    horario: "15:00",
-    servico: "Cabelo e Barba",
-    imagemServico: "https://via.placeholder.com/100",
-  },
-];
+import initializaDatabase from "../../database/initializeDatabase";
+import adicionarAgendamento, { obterAgendamentos, RemoverAgendamentoAsync } from "../../services/agendamentoService";
 
 const AppointmentSlider = () => {
   const Stack = createStackNavigator();
@@ -51,19 +17,58 @@ const AppointmentSlider = () => {
   const [currentMonth, setCurrentMonth] = useState(moment()); // Mês atual
   const [days, setDays] = useState([]);
   const [selectedDate, setSelectedDate] = useState("");
+  const [agendamentoSelecionado, setAgendamentoSelecionado] = useState();
 
   //VARIAVEIS DOS MEUS AGENDAMENTOS
-  const [agendamentos, setAgendamentos] = useState(agendamentosData);
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedAgendamento, setSelectedAgendamento] = useState(null);
-  const [nome, setNome] = useState("");
-  const [horario, setHorario] = useState("");
-  const [servico, setServico] = useState("");
-  const [data, setData] = useState("");
+
 
   useEffect(() => {
     generateDays();
   }, [currentMonth]); // Atualiza quando o mês atual muda
+
+   async function criarAgendamento() {
+    try {
+      console.log((await obterAgendamentos()).data)
+
+      const agendamento = {
+        nome: "teste",
+        telefone: "11987654321",
+        data: "2024-08-02",
+        hora: "14:00",
+        servico: "Corte de Cabelo",
+        prestador: "Carlos",
+      };
+      await adicionarAgendamento(agendamento);
+      obter();
+
+    } catch (error) {
+      console.error("Erro ao inserir o agendamento mockado:", error);
+    }
+  }
+
+    async function obter() {
+      var result = await obterAgendamentos();
+
+      setAgendamentos(result.data);
+    }
+
+  const [agendamentos, setAgendamentos] = useState([]);
+
+
+  const initialize = async () => {
+    try {
+      await initializaDatabase();
+      console.log('Banco de dados inicializado com sucesso.');
+    } catch (error) {
+      console.error('Erro ao inicializar o banco de dados:', error);
+    }
+  };
+  
+  useEffect(() => {  
+    initialize();
+    obter(); 
+  }, []); 
 
   // Função para gerar os dias do mês atual
   const generateDays = () => {
@@ -84,7 +89,6 @@ const AppointmentSlider = () => {
   // Função para quando um dia for pressionado
   const onDayPress = (day) => {
     setSelectedDate(day.fullDate);
-    Alert.alert("Data selecionada", `Você selecionou: ${day.fullDate}`);
   };
 
   // Função para ir para o mês anterior
@@ -105,11 +109,35 @@ const AppointmentSlider = () => {
     </TouchableOpacity>
   );
 
-  //CRIANDO LÓGICA PARA MOSTRAR OS AGENDAMENTOS
+  const excluirAgendamento = (id) => {
+    Alert.alert(
+      "Confirmar Exclusão",
+      "Você tem certeza que deseja excluir este agendamento?",
+      [
+        {
+          text: "Cancelar",
+          style: "cancel"
+        },
+        {
+          text: "Excluir",
+          onPress: async () => {
+            const result = await RemoverAgendamentoAsync(id);
+            if (result.success) {
+              obter(); 
+            }
+          },
+          style: "destructive"
+        }
+      ],
+      { cancelable: true }
+    );
+  };
 
-  const excluirAgendamento = (id) => {};
-
-  const editarAgendamento = (item) => {};
+  const editarAgendamento = (item) => 
+    {
+        setAgendamentoSelecionado(item);
+        setModalVisible(true)
+  };
 
   const isPast = (date, time) => {
     const now = moment();
@@ -117,18 +145,22 @@ const AppointmentSlider = () => {
     return appointmentDateTime.isBefore(now);
   };
 
+  const formatarData = (data) => {
+    const partes = data.split('-'); // Divide a string em partes
+    return `${partes[2]}/${partes[1]}/${partes[0]}`; // Retorna no formato DD-MM-YYYY
+  };
   const renderAgendamento = ({ item }) => (
     <View
       style={[
         styles.agendamento,
-        isPast(item.data, item.horario) ? styles.agendamentoAtrasado : null, // Aplica o estilo vermelho se o horário for anterior à data atual
+        isPast(formatarData(item.Data), item.Hora) ? styles.agendamentoAtrasado : null, // Aplica o estilo vermelho se o horário for anterior à data atual
       ]}>
-      <Image source={{ uri: item.imagemServico }} style={styles.imagemServico} />
+      <Image source={{ uri: 'https://encurtador.com.br/3Bh7L' }} style={styles.imagemServico} />
       <View style={styles.info}>
-        <Text style={styles.nome}>{item.nome}</Text>
-        <Text style={styles.servico}>{item.servico}</Text>
-        <Text style={styles.horario}>Horário:{item.horario}</Text>
-        <Text style={styles.data}>{item.data}</Text>
+        <Text style={styles.nome}>{item.Nome}</Text>
+        <Text style={styles.servico}>{item.Servico}</Text>
+        <Text style={styles.horario}>Horário:{item.Hora}</Text>
+        <Text style={styles.data}>{formatarData(item.Data)}</Text>
       </View>
       <View style={styles.botoes}>
         <TouchableOpacity style={styles.botaoEditar} onPress={() => editarAgendamento(item)}>
@@ -141,18 +173,17 @@ const AppointmentSlider = () => {
     </View>
   );
 
-  //CRIANDO UMA VARIAVEL PARA FILTRAR AS DATAS ANTES DE PASSAR PARA O FLATLIST
-
-  const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.data === selectedDate);
+   const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
 
   function Main() {
     return (
       <>
+        
         <View style={styles.container}>
           <View style={styles.headerContainer}>
             <View style={styles.logoContainer}>
               <Image
-                source={{ uri: "https://img.freepik.com/psd-gratuitas/logotipo-abstrato-gradiente_23-2150689648.jpg" }} // Substitua pela URL da logo da sua loja
+                source={{ uri: "https://img.freepik.com/psd-gratuitas/logotipo-abstrato-gradiente_23-2150689648.jpg" }} 
                 style={styles.logo}
               />
               <View style={styles.texts}>
@@ -160,7 +191,7 @@ const AppointmentSlider = () => {
                 <Text style={styles.shopName}>LTAG CALENDAR</Text>
               </View> 
             </View>
-
+            {/* <Button title="ssadasda" onPress={()=>{criarAgendamento()}}></Button > */}
             <TouchableOpacity
               style={styles.newAppointmentButton}
               onPress={() => setModalVisible(true)} // Navega para a página NovoAgendamento
@@ -174,7 +205,7 @@ const AppointmentSlider = () => {
               <Text style={styles.arrow}>←</Text>
             </TouchableOpacity>
             <Text style={styles.monthText}>
-              {currentMonth.format("MMMM YYYY")} {/* Nome do mês em português */}
+              {currentMonth.format("MMMM YYYY")} 
             </Text>
             <TouchableOpacity onPress={goToNextMonth}>
               <Text style={styles.arrow}>→</Text>
@@ -201,7 +232,6 @@ const AppointmentSlider = () => {
           ) : (
             <Text style={styles.semAgendamentos}>Nenhum agendamento para esta data</Text> // Mensagem para datas sem agendamentos
           )}
-          {selectedDate ? console.log(selectedDate) : null}
         </View>
         <Modal visible={modalVisible} transparent={true} animationType="slide">
           <Pressable
@@ -211,7 +241,7 @@ const AppointmentSlider = () => {
             style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
               <Pressable>
 
-            <NovoAgendamento fecharModal={() => setModalVisible(false)} />
+            <NovoAgendamento fecharModal={() => setModalVisible(false)}  EditAgendamento={agendamentoSelecionado} />
               </Pressable>
           </Pressable>
         </Modal>
@@ -269,6 +299,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 10,
     paddingBottom: 20,
+    paddingTop: 20
   },
   logoContainer: {
     flexDirection: "row",
