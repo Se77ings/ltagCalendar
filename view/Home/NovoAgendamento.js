@@ -1,34 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { FloatingLabelInput } from 'react-native-floating-label-input';
 
-import { StyleSheet, Text, View, Button, TextInput, Pressable} from "react-native";
+import { StyleSheet, Text, View, Button, TextInput } from "react-native";
 import * as Yup from 'yup';
-import { Formik } from 'formik'; 
+import { Formik } from 'formik';
 import adicionarAgendamento from "../../services/agendamentoService";
+import { AtualizarAgendamento } from '../../database/agendamentoRepository';
 
 const Validation = Yup.object().shape({
   Nome: Yup.string()
     .min(3, 'Minimo de 3 caracteres!')
     .max(50, 'Máximo de 50 caracteres!')
     .required('Obrigatorio'),
-    
-    Telefone: Yup.string()
-    .matches(/^\d{10,11}$/, 'O telefone deve ter 10 ou 11 dígitos e conter apenas números')
-    .required('Obrigatório'),
 
-    Data: Yup.string()
-    .matches(/^\d{4}-\d{2}-\d{2}$/, 'A data deve estar no formato DD/MM/YYYY.')
-    .required('Campo obrigatório.'),
-  
-  // Hora: Yup.string()
-  //   .matches(/^([01]\d|2[0-3]):([0-5]\d)$/, 'A hora deve estar no formato HH:mm.')
-  //   .required('Campo obrigatório.'),
-    
+  // Telefone: Yup.string()
+  // .matches(/^\d{10,11}$/, 'O telefone deve ter 10 ou 11 dígitos e conter apenas números')
+  // .required('Obrigatório'),
+
   Prestador: Yup.string()
     .min(3, 'Minimo de 3 caracteres!')
     .max(50, 'Máximo de 50 caracteres!'),
-      
+
   Servico: Yup.string()
     .min(3, 'Minimo de 3 caracteres!')
     .max(50, 'Máximo de 50 caracteres!')
@@ -52,16 +45,42 @@ async function criarAgendamento(fecharModal, nome, telefone, data, hora, prestad
     fecharModal();
   } catch (error) {
     console.error("Erro ao inserir o agendamento:", error);
-    
+
   }
 }
 
 
 
-export default function NovoAgendamento({ fecharModal }) {
+export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
+  const [agendamento, setAgendamento] = useState(null);
+
+  useEffect(() => {
+    // Verifica se EditAgendamento não está vazio
+    if (EditAgendamento) {
+      // Lógica a ser executada quando EditAgendamento tem valor
+      console.log("EditAgendamento recebido:", EditAgendamento);
+      setDate(new Date(EditAgendamento.Data)); // Definindo o estado da data
+      setTime(new Date(`1970-01-01T${EditAgendamento.Hora}:00`)); // Definindo o estado da hora
+      setDateString(EditAgendamento.Data); // Atualiza a string da data
+      setTimeString(EditAgendamento.Hora); // Atualiza a string da hora
+    } else {
+      // Lógica a ser executada quando EditAgendamento está vazio
+      console.log("Nenhum agendamento para editar.");
+      setDate(new Date()); // Reseta para a data atual
+      setTime(new Date()); // Reseta para a hora atual
+      setDateString(new Date().toISOString().split('T')[0]); // Define a string da data atual
+      setTimeString(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })); // Define a string da hora atual
+    }
+  }, [EditAgendamento]);
+
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [DateString, setDateString] = useState(date.toISOString().split('T')[0]);
+
+
+  const [time, setTime] = useState(new Date());
+  const [showtime, setShowtime] = useState(false);
+  const [timeString, setTimeString] = useState(time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
 
   const onChange = (event, selectedDate) => {
@@ -70,12 +89,6 @@ export default function NovoAgendamento({ fecharModal }) {
     setDate(currentDate);
     setDateString(currentDate.toISOString().split('T')[0]);
   };
-
-  //time
-  const [time, setTime] = useState(new Date());  
-  const [showtime, setShowtime] = useState(false);
-  const [timeString, setTimeString] = useState(time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
-
   const onChangeTime = (event, selectedTime) => {
     const currentTime = selectedTime || time;
     setShowtime(false);
@@ -84,30 +97,39 @@ export default function NovoAgendamento({ fecharModal }) {
   };
 
 
-  //fim time
+  const initialValues = {
+    Nome: EditAgendamento?.Nome || '',
+    Telefone: EditAgendamento?.Telefone || '',
+    Data: EditAgendamento?.Data || date.toLocaleDateString('en-CA'),
+    Hora: EditAgendamento?.Hora || time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    Prestador: EditAgendamento?.Prestador || '',
+    Servico: EditAgendamento?.Servico || '',
+  };
 
   return (
-    <Formik 
-      initialValues={{
-        Nome: '',
-        Telefone: '',
-        Data: '',
-        Hora: '',
-        Prestador: '',
-        Servico: ''
-      }}
+    <Formik
+      initialValues={initialValues}
       validationSchema={Validation}
-      onSubmit={(values) => criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico)}
+      onSubmit={(values) => {
+        EditAgendamento ? AtualizarAgendamento({
+          Nome: values.Nome,
+          Telefone: values.Telefone,
+          Data: DateString,
+          Hora: timeString,
+          Prestador: values.Prestador,
+          Servico: values.Servico
+        }) : criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico)
+      }}
 
     >
       {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
 
-        
-        <View style={styles.container}> 
+
+        <View style={styles.container}>
           <View style={styles.inputContainer}>
             <FloatingLabelInput
               style={styles.input}
-              labelStyles={{ backgroundColor: "white", paddingHorizontal:10}}
+              labelStyles={{ backgroundColor: "white", paddingHorizontal: 10 }}
               onChangeText={handleChange('Nome')}
               value={values.Nome}
               label="Nome"
@@ -117,10 +139,10 @@ export default function NovoAgendamento({ fecharModal }) {
             ) : null}
           </View>
 
-          <View style={styles.inputContainer}>          
+          <View style={styles.inputContainer}>
             <FloatingLabelInput
               style={styles.input}
-              labelStyles={{ backgroundColor: "white", paddingHorizontal:10}}
+              labelStyles={{ backgroundColor: "white", paddingHorizontal: 10 }}
               onChangeText={handleChange('Telefone')}
               value={values.Telefone}
               label="Telefone"
@@ -143,10 +165,10 @@ export default function NovoAgendamento({ fecharModal }) {
               onChange={onChange}
             />
           )}
-            <TextInput
+          <TextInput
             style={styles.input}
             onChangeText={handleChange('date')}
-            value={date.toLocaleDateString()}
+            value={DateString}
             editable={false} // Impedir edição manual
           />
 
@@ -164,26 +186,26 @@ export default function NovoAgendamento({ fecharModal }) {
             <TextInput
               style={styles.input}
               onChangeText={handleChange('Hora')}
-              value={time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              value={timeString}
               editable={false}
             />
           </View>
 
           <View style={styles.inputContainer}>
             <FloatingLabelInput
-              labelStyles={{ backgroundColor: "white", paddingHorizontal:10}}
+              labelStyles={{ backgroundColor: "white", paddingHorizontal: 10 }}
               onChangeText={handleChange('Prestador')}
               value={values.Prestador}
               label="Prestador"
             />
-          {errors.Prestador && touched.Prestador ? (
-            <Text style={styles.error}>{errors.Prestador}</Text>
-          ) : null}
+            {errors.Prestador && touched.Prestador ? (
+              <Text style={styles.error}>{errors.Prestador}</Text>
+            ) : null}
           </View>
 
           <View style={styles.inputContainer}>
             <FloatingLabelInput
-              labelStyles={{ backgroundColor: "white", paddingHorizontal:10,}}
+              labelStyles={{ backgroundColor: "white", paddingHorizontal: 10, }}
               onChangeText={handleChange('Servico')}
               value={values.Servico}
               label="Servico"
@@ -193,9 +215,9 @@ export default function NovoAgendamento({ fecharModal }) {
             ) : null}
           </View>
 
-          <View style={{ marginTop: 10, flexDirection: "row", justifyContent: "space-between" }}>
-              <Button
-              title="Cadastrar validação"
+          <View style={{ marginTop: 10, flexDirection: "row", justifyContent: "center" }}>
+            <Button
+              title={EditAgendamento ? "Editar" : "Cadastrar"}
               onPress={handleSubmit} // Chama o handleSubmit para validar o formulário
             />
           </View>
