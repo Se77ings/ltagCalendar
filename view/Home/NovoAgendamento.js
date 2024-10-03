@@ -14,9 +14,9 @@ const Validation = Yup.object().shape({
     .max(50, 'Máximo de 50 caracteres!')
     .required('Obrigatorio'),
 
-  // Telefone: Yup.string()
-  // .matches(/^\d{10,11}$/, 'O telefone deve ter 10 ou 11 dígitos e conter apenas números')
-  // .required('Obrigatório'),
+  Telefone: Yup.string()
+    .matches(/^\d{10,11}$/, 'O telefone deve ter 10 ou 11 dígitos e conter apenas números')
+    .required('Obrigatório'),
 
   Prestador: Yup.string()
     .min(3, 'Minimo de 3 caracteres!')
@@ -60,7 +60,8 @@ async function criarAgendamento(fecharModal, nome, telefone, data, hora, prestad
       prestador,
       servico,
     };
-    console.log("Agendamento:", agendamento);
+    console.log(hora);
+    console.log("hora:", agendamento.hora);
     var res = await adicionarAgendamento(agendamento);
     console.log("Resposta:", res);
     // console.log("Sucesso", "Agendamento cadastrado com sucesso!");
@@ -101,7 +102,7 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
 
   const [time, setTime] = useState(new Date());
   const [showtime, setShowtime] = useState(false);
-  const [timeString, setTimeString] = useState(time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  const [timeString, setTimeString] = useState(time);
 
 
   const onChange = (event, selectedDate) => {
@@ -114,7 +115,7 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
     const currentTime = selectedTime || time;
     setShowtime(false);
     setTime(currentTime);
-    setTimeString(currentTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+    setTimeString(`${currentTime.getHours().toString().padStart(2, '0')}:${currentTime.getMinutes().toString().padStart(2, '0')}`);
   };
 
 
