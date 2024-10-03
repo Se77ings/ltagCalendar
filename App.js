@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Button, TouchableOpacity, Modal, Pressable } from "react-native";
+import { StyleSheet, Text, View, Button, TouchableOpacity, Modal, Pressable, SafeAreaView } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -10,24 +10,25 @@ import Home from "./view/Home/Home";
 export default function App() {
   const Tab = createBottomTabNavigator();
   return (
-    <NavigationContainer>
-      <Tab.Navigator initialRouteName="Home" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d" } }}>
-        <Tab.Screen
-          name="Home"
-          component={Home}
-          options={{
-            headerShown: false,
-            tabBarLabel: "Início",
-            tabBarLabelStyle: { fontSize: 12, color: "white" },
-            tabBarIcon: () => (
-              <View style={styles.iconDiv}>
-                <Ionicons name="home-outline" color={"white"} size={22} />
-              </View>
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <StatusBar style="light" />
+        <Tab.Navigator initialRouteName="Home" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d" } }}>
+          <Tab.Screen
+            name="Home"
+            component={Home}
+            options={{
+              headerShown: false,
+              tabBarLabel: "Início",
+              tabBarLabelStyle: { fontSize: 12, color: "white" },
+              tabBarIcon: () => (
+                <View style={styles.iconDiv}>
+                  <Ionicons name="home-outline" color={"white"} size={22} />
+                </View>
+              ),
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
   );
 }
 

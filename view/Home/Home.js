@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Image, Modal, Pressable, Button } from "react-native";
 import moment from "moment";
 import "moment/locale/pt-br"; // Importa o locale em português
 import NovoAgendamento from "./NovoAgendamento";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import initializaDatabase from "../../database/initializeDatabase";
 import adicionarAgendamento, { obterAgendamentos, RemoverAgendamentoAsync } from "../../services/agendamentoService";
@@ -31,6 +31,7 @@ const AppointmentSlider = () => {
 
     setAgendamentos(result.data);
   }
+  const flatListRef = useRef(null);
 
   const [agendamentos, setAgendamentos] = useState([]);
 
@@ -42,6 +43,13 @@ const AppointmentSlider = () => {
       console.error("Erro ao inicializar o banco de dados:", error);
     }
   };
+  const scrollToDay = (item) => {
+    flatListRef.current.scrollToItem({
+      item: item,
+      animated: true,
+      viewPosition: 0.5, // Centraliza o item na tela
+    });
+  };
 
   useEffect(() => {
     initialize();
@@ -50,8 +58,8 @@ const AppointmentSlider = () => {
 
   // Função para gerar os dias do mês atual
   const generateDays = () => {
-    const totalDays = currentMonth.daysInMonth(); // Total de dias no mês atual
     let daysArray = [];
+    const totalDays = currentMonth.daysInMonth(); // Total de dias no mês atual
 
     for (let i = 1; i <= totalDays; i++) {
       const date = currentMonth.date(i);
@@ -66,7 +74,11 @@ const AppointmentSlider = () => {
 
   // Função para quando um dia for pressionado
   const onDayPress = (day) => {
-    setSelectedDate(day.fullDate);
+    scrollToDay(day)
+    setSelectedDate(day);
+
+    console.log(day)
+
   };
 
   // Função para ir para o mês anterior
@@ -81,21 +93,23 @@ const AppointmentSlider = () => {
 
   // Renderiza cada dia no slider
   const renderDay = ({ item }) => (
-    <TouchableOpacity style={[styles.dayContainer, item.fullDate === selectedDate && styles.selectedDayContainer]} onPress={() => onDayPress(item)}>
+    <TouchableOpacity style={[styles.dayContainer, item.fullDate === selectedDate.fullDate && styles.selectedDayContainer]} onPress={() => {
+      onDayPress(item)
+    }}>
       <Text style={styles.dayName}>{item.dayName}</Text>
       <Text style={styles.dayNumber}>{item.day}</Text>
     </TouchableOpacity>
   );
 
-const fecharModal = () => {
-  setModalVisible(false);
-  obter();
-}
+  const fecharModal = () => {
+    setModalVisible(false);
+    obter();
+  }
 
-const abrirModal = () => {
-  setAgendamentoSelecionado(null);
-  setModalVisible(true);
-};
+  const abrirModal = () => {
+    setAgendamentoSelecionado(null);
+    setModalVisible(true);
+  };
 
 
   const excluirAgendamento = (id) => {
@@ -168,8 +182,15 @@ const abrirModal = () => {
   function Main() {
     return (
       <>
-        <View style={styles.container}>
-          <View style={styles.headerContainer}>
+        <View style={[styles.container, { height: "100%" }]}>
+          <TouchableOpacity
+            style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }}
+            onPress={() => abrirModal()} // NovoAgendamento
+          >
+            <Text style={styles.newAppointmentText}>+</Text>
+          </TouchableOpacity>
+
+          <View style={[styles.headerContainer, {}]}>
             <View style={styles.logoContainer}>
               <Image source={{ uri: "https://img.freepik.com/psd-gratuitas/logotipo-abstrato-gradiente_23-2150689648.jpg" }} style={styles.logo} />
               <View style={styles.texts}>
@@ -178,12 +199,6 @@ const abrirModal = () => {
               </View>
             </View>
             {/* <Button title="ssadasda" onPress={()=>{criarAgendamento()}}></Button > */}
-            <TouchableOpacity
-              style={styles.newAppointmentButton}
-              onPress={() => abrirModal()} // Navega para a página NovoAgendamento
-            >
-              <Text style={styles.newAppointmentText}>NOVO AGENDAMENTO</Text>
-            </TouchableOpacity>
           </View>
 
           <View style={styles.header}>
@@ -197,13 +212,25 @@ const abrirModal = () => {
           </View>
 
           <View>
-            <FlatList data={days} horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item) => item.fullDate} renderItem={renderDay} contentContainerStyle={styles.listContainer} />
+            <FlatList
+              ref={flatListRef}
+              data={days}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={(item) => item.fullDate}
+              renderItem={renderDay}
+              contentContainerStyle={styles.listContainer}
+            />
           </View>
 
           <Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
+          <Button title="Teste" onPress={() => {
+            console.log(selectedDate)
+            scrollToDay(selectedDate)
+
+          }} />
 
           {selectedDate === "" ? (
-            // Se não houver data selecionada, exibe todos os agendamentos
             <FlatList
               data={agendamentos} // Exibe todos os agendamentos
               renderItem={renderAgendamento}
@@ -211,11 +238,11 @@ const abrirModal = () => {
               contentContainerStyle={styles.lista}
             />
           ) : // Se houver uma data selecionada, filtra os agendamentos
-          agendamentosFiltrados.length > 0 ? (
-            <FlatList data={agendamentosFiltrados.length > 0 ? agendamentosFiltrados : agendamentos} renderItem={renderAgendamento} keyExtractor={(item) => item.id} contentContainerStyle={styles.lista} />
-          ) : (
-            <Text style={styles.semAgendamentos}>Nenhum agendamento para esta data</Text> // Mensagem para datas sem agendamentos
-          )}
+            agendamentosFiltrados.length > 0 ? (
+              <FlatList data={agendamentosFiltrados.length > 0 ? agendamentosFiltrados : agendamentos} renderItem={renderAgendamento} keyExtractor={(item) => item.id} contentContainerStyle={styles.lista} />
+            ) : (
+              <Text style={styles.semAgendamentos}>Nenhum agendamento para esta data</Text> // Mensagem para datas sem agendamentos
+            )}
         </View>
         <Modal visible={modalVisible} transparent={true} animationType="slide">
           <Pressable
@@ -223,10 +250,10 @@ const abrirModal = () => {
               setModalVisible(false);
             }}
             style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
-              <Pressable>
+            <Pressable>
 
-            <NovoAgendamento fecharModal={() => fecharModal()}  EditAgendamento={agendamentoSelecionado} />
-              </Pressable>
+              <NovoAgendamento fecharModal={() => fecharModal()} EditAgendamento={agendamentoSelecionado} />
+            </Pressable>
           </Pressable>
         </Modal>
       </>
@@ -269,8 +296,9 @@ const styles = StyleSheet.create({
   },
 
   container: {
-    flex: 1,
     backgroundColor: "#fff",
+    // borderWidth:1,
+    borderColor: "red"
   },
   headerContainer: {
     backgroundColor: "#13213c",
@@ -289,7 +317,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
-    paddingTop: 20,
+    marginTop: 30, //não é o ideal!
     paddingLeft: 20,
   },
 
@@ -312,18 +340,18 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "#ffffff",
   },
-  newAppointmentButton: {
-    backgroundColor: "#0045a0",
-    paddingVertical: 10,
-    paddingHorizontal: 100,
-    borderRadius: 20,
-    alignSelf: "center",
-    marginTop: 10,
-  },
+
   newAppointmentText: {
-    fontSize: 16,
+    fontSize: 32,
     fontWeight: "bold",
     color: "#fff",
+    backgroundColor: "#0045a0",
+    width: 43,
+    height: 43,
+    textAlign: "center",
+    borderRadius: 50,
+
+
   },
 
   header: {
@@ -468,7 +496,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   input: {
-    borderWidth: 1,
+    // borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 5,
     padding: 10,
