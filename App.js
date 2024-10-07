@@ -5,35 +5,52 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import Home from "./view/Home/Home";
-
+import Config from "./view/Configuracoes/Config";
+import Header from "./assets/components/Header";
 
 export default function App() {
+
   const Tab = createBottomTabNavigator();
   return (
-      <NavigationContainer>
-        <StatusBar style="light" />
-        <Tab.Navigator initialRouteName="Home" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d" } }}>
-          <Tab.Screen
-            name="Home"
-            component={Home}
-            options={{
-              headerShown: false,
-              tabBarLabel: "Início",
-              tabBarLabelStyle: { fontSize: 12, color: "white" },
-              tabBarIcon: () => (
-                <View style={styles.iconDiv}>
-                  <Ionicons name="home-outline" color={"white"} size={22} />
-                </View>
-              ),
-            }}
-          />
-        </Tab.Navigator>
-      </NavigationContainer>
+    <NavigationContainer>
+      <StatusBar style="light" />
+      <Tab.Navigator initialRouteName="Home" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d" } }}>
+        <Tab.Screen
+          name="Home"
+          component={Home}
+          options={{
+            headerShown: false,
+            // headerShown: true,
+            // headerTitle: () => <Header />,
+            tabBarLabel: "Início",
+            tabBarLabelStyle: { fontSize: 12, color: "white" },
+            tabBarIcon: () => (
+              <View style={styles.iconDiv}>
+                <Ionicons name="home-outline" color={"white"} size={22} />
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Configurações"
+          component={Config}
+          options={{
+            headerShown: false,
+            tabBarLabel: "Configurações",
+            tabBarLabelStyle: { fontSize: 12, color: "white" },
+            tabBarIcon: () => (
+              <View style={styles.iconDiv}>
+                <Ionicons name="settings-outline" color={"white"} size={22} />
+              </View>
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    </NavigationContainer>
   );
 }
 
 const styles = StyleSheet.create({
-
   iconDiv: {
     borderWidth: 1.5,
     borderColor: "white",

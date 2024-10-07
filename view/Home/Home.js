@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Image, Modal, Pressable, Button } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Image, Modal, Pressable, Button, InteractionManager } from "react-native";
 import moment from "moment";
 import "moment/locale/pt-br"; // Importa o locale em português
 import NovoAgendamento from "./NovoAgendamento";
@@ -7,56 +7,51 @@ import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import initializaDatabase from "../../database/initializeDatabase";
 import adicionarAgendamento, { obterAgendamentos, RemoverAgendamentoAsync } from "../../services/agendamentoService";
+import styles from "../../assets/styles/styles";
+import Header from "../../assets/components/Header";
+// parei na parte onde tento fazer o scrollTo para o dia atual
 
-const AppointmentSlider = () => {
-  const Stack = createStackNavigator();
-  const navigation = useNavigation();
-  // Define moment para português
-  moment.locale("pt-br");
-
-  const [currentMonth, setCurrentMonth] = useState(moment()); // Mês atual
+const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay }) => {
   const [days, setDays] = useState([]);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [agendamentoSelecionado, setAgendamentoSelecionado] = useState();
+  const [currentMonth, setCurrentMonth] = useState(moment()); // Mês atual
 
-  //VARIAVEIS DOS MEUS AGENDAMENTOS
-  const [modalVisible, setModalVisible] = useState(false);
+  useEffect(() => {
+    let hoje = moment();
+    hojeOBJ = {
+      day: hoje.format("DD"),
+      dayName: hoje.format("ddd"),
+      fullDate: hoje.format("YYYY-MM-DD"),
+    };
+
+    const timeoutId = setTimeout(() => {
+      if (flatListRef.current && days.length > 0) {
+        // Verifica se o array days está preenchido
+        const index = days.findIndex((day) => day.fullDate === hojeOBJ.fullDate);
+        if (index !== -1) {
+          flatListRef.current.scrollToIndex({ index, animated: true, viewPosition: 0.5 });
+          setSelectedDate(hojeOBJ);
+        } else {
+          flatListRef.current.scrollToIndex({ index: 0, animated: true, viewPosition: 0.5 });
+          setSelectedDate(days[0]); // Verifica se days[0] existe antes de acessá-lo
+        }
+      }
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [days]);
 
   useEffect(() => {
     generateDays();
   }, [currentMonth]); // Atualiza quando o mês atual muda
 
-  async function obter() {
-    var result = await obterAgendamentos();
-
-    setAgendamentos(result.data);
-  }
-  const flatListRef = useRef(null);
-
-  const [agendamentos, setAgendamentos] = useState([]);
-
-  const initialize = async () => {
-    try {
-      await initializaDatabase();
-      console.log("Banco de dados inicializado com sucesso.");
-    } catch (error) {
-      console.error("Erro ao inicializar o banco de dados:", error);
-    }
-  };
-  const scrollToDay = (item) => {
-    flatListRef.current.scrollToItem({
-      item: item,
-      animated: true,
-      viewPosition: 0.5, // Centraliza o item na tela
-    });
+  const goToPreviousMonth = () => {
+    setCurrentMonth(currentMonth.clone().subtract(1, "month"));
   };
 
-  useEffect(() => {
-    initialize();
-    obter();
-  }, []);
+  const goToNextMonth = () => {
+    setCurrentMonth(currentMonth.clone().add(1, "month"));
+  };
 
-  // Função para gerar os dias do mês atual
   const generateDays = () => {
     let daysArray = [];
     const totalDays = currentMonth.daysInMonth(); // Total de dias no mês atual
@@ -72,46 +67,45 @@ const AppointmentSlider = () => {
     setDays(daysArray);
   };
 
-  // Função para quando um dia for pressionado
   const onDayPress = (day) => {
-    scrollToDay(day)
-    setSelectedDate(day);
-
-    console.log(day)
-
+    scrollToDay(day);
   };
 
-  // Função para ir para o mês anterior
-  const goToPreviousMonth = () => {
-    setCurrentMonth(currentMonth.clone().subtract(1, "month"));
-  };
-
-  // Função para ir para o mês seguinte
-  const goToNextMonth = () => {
-    setCurrentMonth(currentMonth.clone().add(1, "month"));
-  };
-
-  // Renderiza cada dia no slider
   const renderDay = ({ item }) => (
-    <TouchableOpacity style={[styles.dayContainer, item.fullDate === selectedDate.fullDate && styles.selectedDayContainer]} onPress={() => {
-      onDayPress(item)
-    }}>
-      <Text style={styles.dayName}>{item.dayName}</Text>
-      <Text style={styles.dayNumber}>{item.day}</Text>
+    <TouchableOpacity
+      style={styles.dayContainer}
+      onPress={() => {
+        scrollToDay(item);
+        onDayPress(item);
+      }}>
+      <Text style={[styles.dayName, item.fullDate === selectedDate.fullDate && styles.selectedDay]}>{item.dayName}</Text>
+      <Text style={[styles.dayNumber, item.fullDate === selectedDate.fullDate && styles.selectedDay]}>{item.day}</Text>
     </TouchableOpacity>
   );
 
-  const fecharModal = () => {
-    setModalVisible(false);
-    obter();
-  }
+  return (
+    <>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={goToPreviousMonth}>
+          <Text style={styles.arrow}>←</Text>
+        </TouchableOpacity>
+        <Text style={styles.monthText}>{currentMonth.format("MMMM YYYY")}</Text>
+        <TouchableOpacity onPress={goToNextMonth}>
+          <Text style={styles.arrow}>→</Text>
+        </TouchableOpacity>
+      </View>
 
-  const abrirModal = () => {
-    setAgendamentoSelecionado(null);
-    setModalVisible(true);
-  };
+      <View>
+        <View style={{ borderTopWidth: 0.5, marginHorizontal: 20, borderColor: "grey" }} />
 
+        <FlatList ref={flatListRef} data={days} horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item) => item.fullDate} renderItem={renderDay} contentContainerStyle={styles.listContainer} />
+        <View style={{ borderTopWidth: 0.5, marginHorizontal: 20, borderColor: "grey" }} />
+      </View>
+    </>
+  );
+};
 
+const Cards = ({ data, setAgendamentoSelecionado, setModalVisible }) => {
   const excluirAgendamento = (id) => {
     Alert.alert(
       "Confirmar Exclusão",
@@ -137,7 +131,6 @@ const AppointmentSlider = () => {
   };
 
   const editarAgendamento = (item) => {
-    console.log(item);
     setAgendamentoSelecionado(item);
     setModalVisible(true);
   };
@@ -176,332 +169,100 @@ const AppointmentSlider = () => {
       </View>
     </View>
   );
-
-  const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
-
-  function Main() {
-    return (
-      <>
-        <View style={[styles.container, { height: "100%" }]}>
-          <TouchableOpacity
-            style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }}
-            onPress={() => abrirModal()} // NovoAgendamento
-          >
-            <Text style={styles.newAppointmentText}>+</Text>
-          </TouchableOpacity>
-
-          <View style={[styles.headerContainer, {}]}>
-            <View style={styles.logoContainer}>
-              <Image source={{ uri: "https://img.freepik.com/psd-gratuitas/logotipo-abstrato-gradiente_23-2150689648.jpg" }} style={styles.logo} />
-              <View style={styles.texts}>
-                <Text style={styles.shopName_}>SEJA BEM-VINDO!!</Text>
-                <Text style={styles.shopName}>LTAG CALENDAR</Text>
-              </View>
-            </View>
-            {/* <Button title="ssadasda" onPress={()=>{criarAgendamento()}}></Button > */}
-          </View>
-
-          <View style={styles.header}>
-            <TouchableOpacity onPress={goToPreviousMonth}>
-              <Text style={styles.arrow}>←</Text>
-            </TouchableOpacity>
-            <Text style={styles.monthText}>{currentMonth.format("MMMM YYYY")}</Text>
-            <TouchableOpacity onPress={goToNextMonth}>
-              <Text style={styles.arrow}>→</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View>
-            <FlatList
-              ref={flatListRef}
-              data={days}
-              horizontal
-              showsHorizontalScrollIndicator={false}
-              keyExtractor={(item) => item.fullDate}
-              renderItem={renderDay}
-              contentContainerStyle={styles.listContainer}
-            />
-          </View>
-
-          <Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
-          <Button title="Teste" onPress={() => {
-            console.log(selectedDate)
-            scrollToDay(selectedDate)
-
-          }} />
-
-          {selectedDate === "" ? (
-            <FlatList
-              data={agendamentos} // Exibe todos os agendamentos
-              renderItem={renderAgendamento}
-              keyExtractor={(item) => item.id}
-              contentContainerStyle={styles.lista}
-            />
-          ) : // Se houver uma data selecionada, filtra os agendamentos
-            agendamentosFiltrados.length > 0 ? (
-              <FlatList data={agendamentosFiltrados.length > 0 ? agendamentosFiltrados : agendamentos} renderItem={renderAgendamento} keyExtractor={(item) => item.id} contentContainerStyle={styles.lista} />
-            ) : (
-              <Text style={styles.semAgendamentos}>Nenhum agendamento para esta data</Text> // Mensagem para datas sem agendamentos
-            )}
-        </View>
-        <Modal visible={modalVisible} transparent={true} animationType="slide">
-          <Pressable
-            onPress={() => {
-              setModalVisible(false);
-            }}
-            style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
-            <Pressable>
-
-              <NovoAgendamento fecharModal={() => fecharModal()} EditAgendamento={agendamentoSelecionado} />
-            </Pressable>
-          </Pressable>
-        </Modal>
-      </>
-    );
-  }
-
   return (
-    <Stack.Navigator initialRouteName="Main">
-      <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
-      <Stack.Screen name="NovoAgendamento" component={NovoAgendamento} />
-    </Stack.Navigator>
+    <FlatList
+      data={data} // Exibe todos os agendamentos
+      renderItem={renderAgendamento}
+      keyExtractor={(item) => item.id}
+      contentContainerStyle={styles.lista}
+    />
   );
 };
 
-const styles = StyleSheet.create({
-  agendamentoAtrasado: {
-    // backgroundColor: 'red',
-    borderColor: "red",
-    borderWidth: 3,
-    borderStyle: "solid",
-  },
+const Home = () => {
+  moment.locale("pt-br");
+  const [selectedDate, setSelectedDate] = useState("");
+  const [agendamentoSelecionado, setAgendamentoSelecionado] = useState();
+  const [modalVisible, setModalVisible] = useState(false);
+  const flatListRef = useRef(null);
+  const [agendamentos, setAgendamentos] = useState([]);
 
-  containerFlatList: {
-    flex: 1, // O contêiner ocupará o espaço disponível na tela
-    justifyContent: "center", // Centraliza o conteúdo verticalmente quando não há itens
-  },
-  emptyContainer: {
-    flex: 1, // Garante que o container da mensagem ocupe o espaço inteiro
-    justifyContent: "center", // Centraliza a mensagem no eixo vertical
-    alignItems: "center", // Centraliza a mensagem no eixo horizontal
-  },
-  semAgendamentos: {
-    fontSize: 16,
-    color: "#999",
-    alignSelf: "center",
-  },
-  lista: {
-    paddingBottom: 10, // Adiciona espaçamento na lista se necessário
-    backgroundColor: "red",
-  },
+  useEffect(() => {
+    initialize();
+    obter();
+  }, []);
 
-  container: {
-    backgroundColor: "#fff",
-    // borderWidth:1,
-    borderColor: "red"
-  },
-  headerContainer: {
-    backgroundColor: "#13213c",
-    borderBottomLeftRadius: 30, // Bordas arredondadas inferiores
-    borderBottomRightRadius: 30, // Bordas arredondadas inferiores
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 10,
-    paddingBottom: 20,
-    paddingTop: 20,
-  },
-  logoContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-    marginTop: 30, //não é o ideal!
-    paddingLeft: 20,
-  },
+  const scrollToDay = (item) => {
+    setSelectedDate(item);
 
-  texts: {
-    flexDirection: "column",
-  },
-  logo: {
-    width: 50,
-    height: 50,
-    borderRadius: 25, // Logo arredondada
-    marginRight: 10,
-  },
-  shopName: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#ffffff",
-  },
-  shopName_: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#ffffff",
-  },
+    flatListRef.current.scrollToItem({
+      item: item,
+      animated: true,
+      viewPosition: 0.5, // Centraliza o item na tela
+    });
+  };
 
-  newAppointmentText: {
-    fontSize: 32,
-    fontWeight: "bold",
-    color: "#fff",
-    backgroundColor: "#0045a0",
-    width: 43,
-    height: 43,
-    textAlign: "center",
-    borderRadius: 50,
+  async function obter() {
+    var result = await obterAgendamentos();
+    setAgendamentos(result.data);
+  }
 
+  const initialize = async () => {
+    try {
+      await initializaDatabase();
+      console.log("Banco de dados inicializado com sucesso.");
+    } catch (error) {
+      console.error("Erro ao inicializar o banco de dados:", error);
+    }
+  };
 
-  },
+  const fecharModal = () => {
+    setModalVisible(false);
+    obter();
+  };
 
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 20,
-  },
+  const abrirModal = () => {
+    setAgendamentoSelecionado(null);
+    setModalVisible(true);
+  };
 
-  monthText: {
-    fontSize: 20,
-    fontWeight: "bold",
-    textAlign: "center",
-    textTransform: "uppercase", // Para capitalizar o nome do mês
-  },
-  arrow: {
-    fontSize: 24,
-    paddingHorizontal: 10,
-    color: "#13213c",
-  },
-  listContainer: {
-    paddingHorizontal: 10,
-  },
-  dayContainer: {
-    width: 60,
-    // height: 80,
-    justifyContent: "center",
-    alignItems: "center",
-    marginHorizontal: 10,
-    borderRadius: 10,
-    backgroundColor: "#f0f0f0",
-    padding: 10,
-  },
-  selectedDayContainer: {
-    backgroundColor: "#00adf5",
-  },
-  dayName: {
-    fontSize: 16,
-    color: "#333",
-    textTransform: "capitalize", // Capitalizar o nome do dia
-  },
-  dayNumber: {
-    fontSize: 22,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  selectedText: {
-    marginTop: 20,
-    fontSize: 16,
-    color: "green",
-  },
+  const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
+  return (
+    <>
+      <View style={[styles.container]}>
+        <TouchableOpacity
+          style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }}
+          onPress={() => abrirModal()} // NovoAgendamento
+        >
+          <Text style={styles.newAppointmentText}>+</Text>
+        </TouchableOpacity>
+        <Header title={"Menu Inicial"} />
+        <View style={{ paddingTop: 20 }}>
+          <SliderData flatListRef={flatListRef} selectedDate={selectedDate} setSelectedDate={setSelectedDate} scrollToDay={scrollToDay} />
+          <Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
+        </View>
+        {selectedDate === "" ? (
+          <Cards data={agendamentos} setAgendamentoSelecionado={setAgendamentoSelecionado} setModalVisible={setModalVisible} />
+        ) : agendamentosFiltrados.length > 0 ? (
+          // <FlatList data={agendamentosFiltrados.length > 0 ? agendamentosFiltrados : agendamentos} renderItem={renderAgendamento} keyExtractor={(item) => item.id} contentContainerStyle={styles.lista} />
+          <Cards data={agendamentosFiltrados} setAgendamentoSelecionado={setAgendamentoSelecionado} setModalVisible={setModalVisible} />
+        ) : (
+          <Text style={styles.semAgendamentos}>Nenhum agendamento para esta data</Text> // Mensagem para datas sem agendamentos
+        )}
+      </View>
+      <Modal visible={modalVisible} transparent={true} animationType="slide">
+        <Pressable
+          onPress={() => {
+            setModalVisible(false);
+          }}
+          style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
+          <Pressable>
+            <NovoAgendamento fecharModal={() => fecharModal()} EditAgendamento={agendamentoSelecionado} />
+          </Pressable>
+        </Pressable>
+      </Modal>
+    </>
+  );
+};
 
-  // ESTILO DE "TODOS OS AGENDAMENTOS"
-
-  titulo: {
-    fontSize: 19,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 10,
-    color: "#000000",
-    paddingTop: 20,
-  },
-  lista: {
-    paddingBottom: 20,
-  },
-  agendamento: {
-    backgroundColor: "#fff",
-    borderRadius: 10,
-    padding: 15,
-    marginBottom: 15,
-    flexDirection: "row",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 5,
-    elevation: 5,
-  },
-  imagemServico: {
-    width: 80,
-    height: 80,
-    borderRadius: 10,
-    marginRight: 15,
-  },
-  info: {
-    flex: 1,
-  },
-  nome: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  horario: {
-    fontSize: 16,
-    color: "#555",
-    marginVertical: 5,
-  },
-  data: {
-    fontSize: 16,
-    color: "#555",
-    marginVertical: 5,
-    fontWeight: "600",
-    color: "#000000",
-  },
-  servico: {
-    fontSize: 16,
-    color: "#555",
-    paddingTop: 2,
-  },
-  botoes: {
-    flexDirection: "row",
-  },
-  botaoEditar: {
-    backgroundColor: "#0045a0",
-    padding: 10,
-    borderRadius: 5,
-    marginRight: 10,
-  },
-  botaoExcluir: {
-    backgroundColor: "#f44336",
-    padding: 10,
-    borderRadius: 5,
-  },
-  textoBotao: {
-    color: "#fff",
-    fontWeight: "bold",
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  },
-  modalContent: {
-    width: "80%",
-    backgroundColor: "#fff",
-    padding: 20,
-    borderRadius: 10,
-  },
-  modalTitulo: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  input: {
-    // borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
-  },
-});
-
-export default AppointmentSlider;
+export default Home;

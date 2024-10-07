@@ -1,0 +1,18 @@
+- Tela de listagem de serviços (iniciar listagem por favoritos).
+
+ - Tela de Cadastro/Edição de Serviços 
+	- Nome, Descrição e marcar como favorito
+
+ - Tela de Cadastro de Colaboradores 
+	- Nome Colaborador e Serviços que ele pode realizar
+	- Tabela Vinculo (poderá marcar se tem afinidade com o serviço.)
+
+ - Tela de Realizar/Visualizar Agendamentos 
+	- Vai pode remover e adicionar serviços (ao menos um deve ficar), além de poder adicionar colaboradores que realizaram o atendimento (listar os com afinidades primeiro)
+	- O atendimento pode ser alterado, além de excluído (precisa avisar com alert). Esse antedimento NÃO pode voltar para agendamento.
+
+ - Tela de listar Agendamentos 
+	- Adicionar botão de realizar atendimento, além de filtro para exibir atendimentos finalizados ou pode ser uma tela separada para ver esses finalizados.)
+
+ - Tela de Criar/Editar Agendamento -
+	 Deve ter uma listagem de serviços para selecionar e uma listagem de colaboradores.
