@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { FloatingLabelInput } from 'react-native-floating-label-input';
+import { Picker } from '@react-native-picker/picker';
+
 
 import { StyleSheet, Text, View, Button, TextInput, Alert } from "react-native";
 import * as Yup from 'yup';
@@ -177,122 +179,139 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
 
     >
       {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
-
-
         <View style={styles.container}>
-          <View style={styles.inputContainer}>
             <FloatingLabelInput
-              style={styles.input}
-              labelStyles={{ backgroundColor: "white", paddingHorizontal: 10 }}
-              onChangeText={handleChange('Nome')}
-              value={values.Nome}
-              label="Nome"
+                labelStyles={styles.labelStyle}
+                containerStyles={styles.input}
+                onChangeText={handleChange('Nome')}
+                value={values.Nome}
+                label="Nome"
             />
             {errors.Nome && touched.Nome ? (
-              <Text style={styles.error}>{errors.Nome}</Text>
+                <Text style={styles.error}>{errors.Nome}</Text>
             ) : null}
-          </View>
 
-          <View style={styles.inputContainer}>
             <FloatingLabelInput
-              style={styles.input}
-              labelStyles={{ backgroundColor: "white", paddingHorizontal: 10 }}
-              onChangeText={handleChange('Telefone')}
-              value={values.Telefone}
-              label="Telefone"
-              keyboardType="numeric"
+                labelStyles={styles.labelStyle}
+                containerStyles={styles.input}
+                onChangeText={handleChange('Telefone')}
+                value={values.Telefone}
+                label="Telefone"
+                keyboardType="numeric"
             />
             {errors.Telefone && touched.Telefone ? (
-              <Text style={styles.error}>{errors.Telefone}</Text>
+                <Text style={styles.error}>{errors.Telefone}</Text>
             ) : null}
-          </View>
 
-
-          <Button title="Data" onPress={() => setShow(true)} />
-          {show && (
-            <DateTimePicker
-              testID="dateTimePicker"
-              value={date}
-              mode="date" // Modo de data
-              is24Hour={true}
-              display="calendar"
-              onChange={onChange}
-            />
-          )}
-          <TextInput
-            style={styles.input}
-            onChangeText={handleChange('date')}
-            value={DateString}
-            editable={false} // Impedir edição manual
-          />
-
-          <Button title="Hora" onPress={() => setShowtime(true)} />
-          {showtime && (
-            <DateTimePicker
-              value={time}
-              mode="time"
-              is24Hour={true}
-              display="spinner"
-              onChange={onChangeTime}
-            />
-          )}
-          <View style={styles.inputContainer}>
+            {show && (
+                <DateTimePicker
+                    testID="dateTimePicker"
+                    value={date}
+                    mode="date" // Modo de data
+                    is24Hour={true}
+                    display="calendar"
+                    onChange={onChange}
+                    style={styles.input}
+                />
+            )}
             <TextInput
-              style={styles.input}
-              onChangeText={handleChange('Hora')}
-              value={timeString}
-              editable={false}
+                style={styles.input}
+                onChangeText={handleChange('date')}
+                value={DateString}
+                onPress={() => setShow(true)}
             />
-          </View>
 
-          <View style={styles.inputContainer}>
-            <FloatingLabelInput
-              labelStyles={{ backgroundColor: "white", paddingHorizontal: 10 }}
-              onChangeText={handleChange('Prestador')}
-              value={values.Prestador}
-              label="Prestador"
-            />
+            {showtime && (
+                <DateTimePicker
+                    value={time}
+                    mode="time"
+                    is24Hour={true}
+                    display="clock"
+                    onChange={onChangeTime}
+                    style={styles.input}
+                />
+            )}
+            <View style={styles.inputContainer}>
+                <TextInput
+                    style={styles.input}
+                    onChangeText={handleChange('Hora')}
+                    value={timeString}
+                    onPress={() => setShowtime(true)}
+                />
+            </View>
+
+            <Picker
+                selectedValue={values.Prestador}
+                style={styles.picker}
+                onValueChange={(itemValue, itemIndex) =>
+                    handleChange('Prestador')(itemValue)
+                }>
+                <Picker.Item label="Selecione um prestador" value="" />
+                <Picker.Item label="Prestador 1" value="Prestador 1" />
+                <Picker.Item label="Prestador 2" value="Prestador 2" />
+                <Picker.Item label="Prestador 3" value="Prestador 3" />
+            </Picker>
             {errors.Prestador && touched.Prestador ? (
-              <Text style={styles.error}>{errors.Prestador}</Text>
+                <Text style={styles.error}>{errors.Prestador}</Text>
             ) : null}
-          </View>
 
-          <View style={styles.inputContainer}>
-            <FloatingLabelInput
-              labelStyles={{ backgroundColor: "white", paddingHorizontal: 10, }}
-              onChangeText={handleChange('Servico')}
-              value={values.Servico}
-              label="Servico"
-            />
+            <Picker
+                selectedValue={values.Servico}
+                style={styles.picker}
+                onValueChange={(itemValue, itemIndex) =>
+                    handleChange('Servico')(itemValue)
+                }>
+                <Picker.Item label="Selecione um serviço" value="" />
+                <Picker.Item label="Serviço 1" value="Serviço 1" />
+                <Picker.Item label="Serviço 2" value="Serviço 2" />
+                <Picker.Item label="Serviço 3" value="Serviço 3" />
+            </Picker>
             {errors.Servico && touched.Servico ? (
-              <Text style={styles.error}>{errors.Servico}</Text>
+                <Text style={styles.error}>{errors.Servico}</Text>
             ) : null}
-          </View>
 
-          <View style={{ marginTop: 10, flexDirection: "row", justifyContent: "center" }}>
-            <Button
-              title={EditAgendamento ? "Editar" : "Cadastrar"}
-              onPress={handleSubmit} // Chama o handleSubmit para validar o formulário
-            />
-          </View>
+            <View style={{ marginTop: 10, flexDirection: "row", justifyContent: "center" }}>
+                <Button
+                    title={EditAgendamento ? "Editar" : "Cadastrar"}
+                    onPress={handleSubmit} // Chama o handleSubmit para validar o formulário
+                />
+            </View>
         </View>
-      )}
+    )}
+
     </Formik>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white", alignSelf: "center", width: "90%", padding: 30, borderRadius: 20
+    backgroundColor: "white", alignSelf: "center", width: "90%", padding: 30, borderRadius: 20,
+    justifyContent: "space-between",
   },
+
+  picker: {
+    height: 50,
+    width: '100%',
+    backgroundColor: '#f0f0f0', // Cor de fundo do Picker
+    color: '#333', // Cor do texto selecionado
+    borderColor: '#007bff',
+    borderWidth: 1,
+    borderRadius: 10,
+  },
+
+  labelStyle: {
+    backgroundColor: "white", paddingHorizontal: 10,
+  },
+
   input: {
     textAlign: 'center',
-    height: 40,
+    height: 45,
     fontSize: 20,
     borderColor: 'black',
     borderWidth: 1,
     marginBottom: 10,
     paddingHorizontal: 10,
+    borderRadius: 5,
   },
   inputContainer: {
     marginBottom: 10,
