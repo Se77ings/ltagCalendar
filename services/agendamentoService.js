@@ -1,10 +1,15 @@
-import CriarAgendamento, { AtualizarAgendamento, ObterAgendamentos, ObterAgendamentosPaginado, RemoverAgendamento, VerificarDuplicados } from "../database/agendamentoRepository";
+import CriarAgendamento, { AtualizarAgendamento, ObterAgendamentos, ObterAgendamentosPaginado, RemoverAgendamento, VerificarDuplicados, VincularAgendamentoServicos } from "../database/agendamentoRepository";
 
 export default async function adicionarAgendamento(agendamento) {
   try {
     validarAgendamento(agendamento);
     
-    await CriarAgendamento(agendamento);
+    var agendamentoid = await CriarAgendamento(agendamento);
+
+    agendamento.servicos.forEach(servico => {
+      VincularAgendamentoServicos(agendamentoid, servico.Id)
+    });
+
     console.log('Agendamento criado com sucesso.');
     
     return {
@@ -23,7 +28,8 @@ export default async function adicionarAgendamento(agendamento) {
 function validarAgendamento(agendamento) {
   const { nome, telefone, data, hora, servico } = agendamento;
 
-  if (!nome || !telefone || !data || !hora || !servico) {
+  //Teoricamente agora será um array de Ids
+  if (!nome || !telefone || !data || !hora || !servico) { //TODO: serão vários serviços agora (validar)
     throw new Error('Todos os campos obrigatórios devem ser preenchidos.');
   }
 
