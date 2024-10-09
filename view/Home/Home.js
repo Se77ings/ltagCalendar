@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Alert, Image, Modal, Pressable, Button, InteractionManager } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, ScrollView, Alert, Image, Modal, Pressable, Button, InteractionManager } from "react-native";
 import moment from "moment";
 import "moment/locale/pt-br"; // Importa o locale em português
 import NovoAgendamento from "./NovoAgendamento";
@@ -135,11 +135,21 @@ const Cards = ({ data, setAgendamentoSelecionado, setModalVisible }) => {
     setModalVisible(true);
   };
 
-  const isPast = (date, time) => {
-    const now = moment();
-    const appointmentDateTime = moment(`${date} ${time}`, "YYYY-MM-DD HH:mm");
-    return appointmentDateTime.isBefore(now);
+  const isPast = (time) => {
+    const [hours, minutes] = time.split(":").map(Number);
+    
+    const now = new Date();
+    console.log(now.getTime())
+    // const appointmentTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
+  
+    // console.log(`verificando se ${appointmentTime} é menor que ${now}`);
+  
+    // return appointmentTime < now;
   };
+  
+  
+  console.log(isPast("09/10/2024", "21:25")); // Output: depends on the current date and time  
+
 
   const formatarData = (data) => {
     const partes = data.split("-"); // Divide a string em partes
@@ -169,14 +179,7 @@ const Cards = ({ data, setAgendamentoSelecionado, setModalVisible }) => {
       </View>
     </View>
   );
-  return (
-    <FlatList
-      data={data} // Exibe todos os agendamentos
-      renderItem={renderAgendamento}
-      keyExtractor={(item) => item.id}
-      contentContainerStyle={styles.lista}
-    />
-  );
+  return <FlatList data={data} renderItem={renderAgendamento} keyExtractor={(item) => item.id} contentContainerStyle={styles.lista} scrollEnabled={false} />;
 };
 
 const Home = () => {
@@ -191,6 +194,10 @@ const Home = () => {
     initialize();
     obter();
   }, []);
+
+  const filterAgendamentos = (agendamento) => {
+    return agendamento.filter((agendamento) => agendamento.Data === selectedDate.fullDate);
+  };
 
   const scrollToDay = (item) => {
     setSelectedDate(item);
@@ -236,19 +243,18 @@ const Home = () => {
         >
           <Text style={styles.newAppointmentText}>+</Text>
         </TouchableOpacity>
-        <Header title={"Menu Inicial"} />
-        <View style={{ paddingTop: 20 }}>
-          <SliderData flatListRef={flatListRef} selectedDate={selectedDate} setSelectedDate={setSelectedDate} scrollToDay={scrollToDay} />
-          <Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
-        </View>
-        {selectedDate === "" ? (
-          <Cards data={agendamentos} setAgendamentoSelecionado={setAgendamentoSelecionado} setModalVisible={setModalVisible} />
-        ) : agendamentosFiltrados.length > 0 ? (
-          // <FlatList data={agendamentosFiltrados.length > 0 ? agendamentosFiltrados : agendamentos} renderItem={renderAgendamento} keyExtractor={(item) => item.id} contentContainerStyle={styles.lista} />
-          <Cards data={agendamentosFiltrados} setAgendamentoSelecionado={setAgendamentoSelecionado} setModalVisible={setModalVisible} />
-        ) : (
-          <Text style={styles.semAgendamentos}>Nenhum agendamento para esta data</Text> // Mensagem para datas sem agendamentos
-        )}
+        <ScrollView>
+          <Header title={"Menu Inicial"} />
+          <View style={{ paddingTop: 20 }}>
+            <SliderData flatListRef={flatListRef} selectedDate={selectedDate} setSelectedDate={setSelectedDate} scrollToDay={scrollToDay} />
+            <Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
+          </View>
+          {agendamentos && (
+            <>
+              <Cards data={filterAgendamentos(agendamentos)} setAgendamentoSelecionado={setAgendamentoSelecionado} setModalVisible={setModalVisible} />
+            </>
+          )}
+        </ScrollView>
       </View>
       <Modal visible={modalVisible} transparent={true} animationType="slide">
         <Pressable
