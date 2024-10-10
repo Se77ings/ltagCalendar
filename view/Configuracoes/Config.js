@@ -35,7 +35,7 @@ const Config = () => {
     <Stack.Navigator initialRouteName="ConfigScreen">
       <Stack.Screen name="ConfigScreen" component={ConfigScreen} options={{ headerShown: false }} />
       <Stack.Screen name="Colaboradores" component={Colaboradores} options={{headerShown: false}} />
-      <Stack.Screen name="Servicos" component={Servicos} options={{headerShown:false}}/>
+      <Stack.Screen name="Servicos" component={Servicos} options={{headerShown:true}}/>
     </Stack.Navigator>
   );
 };

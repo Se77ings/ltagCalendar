@@ -106,6 +106,48 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
   const [showtime, setShowtime] = useState(false);
   const [timeString, setTimeString] = useState(time);
 
+  const [data, setData] = useState({
+      prestadores: [],
+      servicos: [],
+      selectedPrestador: '',
+      selectedServico: '',
+      errors: {},
+  });
+
+  const fetchPrestadores = async () => {
+    try {
+        const response = await fetch('URL_DA_API_PARA_PRESTADORES'); //chama o metodo para buscar os dados no banco
+        const prestadores = await response.json();
+        setData(prevData => ({ ...prevData, prestadores }));
+    } catch (error) {
+        console.error(error);
+    }
+  };
+
+  // Função para buscar serviços
+  const fetchServicos = async () => {
+    try {
+        const response = await fetch('URL_DA_API_PARA_SERVIÇOS');
+        const servicos = await response.json();
+        setData(prevData => ({ ...prevData, servicos }));
+    } catch (error) {
+        console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    fetchPrestadores();
+    fetchServicos();
+  }, []);
+
+  const handlePrestadorChange = (itemValue) => {
+    setData(prevData => ({ ...prevData, selectedPrestador: itemValue }));
+  };
+
+  const handleServicoChange = (itemValue) => {
+      setData(prevData => ({ ...prevData, selectedServico: itemValue }));
+  };
+
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
@@ -179,7 +221,7 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
 
     >
       {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
-        <View style={styles.container}>
+          <View style={styles.container}>
             <FloatingLabelInput
                 labelStyles={styles.labelStyle}
                 containerStyles={styles.input}
@@ -241,30 +283,28 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
             </View>
 
             <Picker
-                selectedValue={values.Prestador}
-                style={styles.picker}
-                onValueChange={(itemValue, itemIndex) =>
-                    handleChange('Prestador')(itemValue)
-                }>
-                <Picker.Item label="Selecione um prestador" value="" />
-                <Picker.Item label="Prestador 1" value="Prestador 1" />
-                <Picker.Item label="Prestador 2" value="Prestador 2" />
-                <Picker.Item label="Prestador 3" value="Prestador 3" />
+              selectedValue={data.selectedPrestador}
+              style={styles.picker}
+              onValueChange={handlePrestadorChange}
+            >
+              <Picker.Item label="Selecione um prestador" value="" />
+              {data.prestadores.map((prestador) => (
+                  <Picker.Item key={prestador.id} label={prestador.nome} value={prestador.id} />
+              ))}
             </Picker>
             {errors.Prestador && touched.Prestador ? (
                 <Text style={styles.error}>{errors.Prestador}</Text>
             ) : null}
 
             <Picker
-                selectedValue={values.Servico}
-                style={styles.picker}
-                onValueChange={(itemValue, itemIndex) =>
-                    handleChange('Servico')(itemValue)
-                }>
-                <Picker.Item label="Selecione um serviço" value="" />
-                <Picker.Item label="Serviço 1" value="Serviço 1" />
-                <Picker.Item label="Serviço 2" value="Serviço 2" />
-                <Picker.Item label="Serviço 3" value="Serviço 3" />
+              selectedValue={data.selectedServico}
+              style={styles.picker}
+              onValueChange={handleServicoChange}
+            >
+              <Picker.Item label="Selecione um serviço" value="" />
+              {data.servicos.map((servico) => (
+                  <Picker.Item key={servico.id} label={servico.nome} value={servico.id} />
+              ))}
             </Picker>
             {errors.Servico && touched.Servico ? (
                 <Text style={styles.error}>{errors.Servico}</Text>
@@ -276,8 +316,8 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
                     onPress={handleSubmit} // Chama o handleSubmit para validar o formulário
                 />
             </View>
-        </View>
-    )}
+          </View>
+      )}
 
     </Formik>
   );
@@ -292,20 +332,22 @@ const styles = StyleSheet.create({
   picker: {
     height: 50,
     width: '100%',
-    backgroundColor: '#f0f0f0', // Cor de fundo do Picker
-    color: '#333', // Cor do texto selecionado
+    backgroundColor: '#262626', // Cor de fundo do Picker
+    color: 'white', // Cor do texto selecionado
     borderColor: '#007bff',
     borderWidth: 1,
     borderRadius: 10,
+    marginBottom: 10
   },
 
   labelStyle: {
-    backgroundColor: "white", paddingHorizontal: 10,
+    backgroundColor: "white", paddingHorizontal: 10, 
   },
 
   input: {
     textAlign: 'center',
     height: 45,
+    color: 'black',
     fontSize: 20,
     borderColor: 'black',
     borderWidth: 1,

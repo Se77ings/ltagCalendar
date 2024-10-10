@@ -10,9 +10,9 @@ const Colaboradores = ({}) => {
     const navigation = useNavigation();
     return(
         <View style={styles.container}>
-            <Header title="Colaboradores" />
+            <Header title="Colaboradores"/>
             <Text style={styles.text} onPress={() => navigation.navigate("ConfigScreen")}>Volver</Text>
-            </View>
+        </View>
     );
 }
 
