@@ -16,3 +16,5 @@
 
  - Tela de Criar/Editar Agendamento -
 	 Deve ter uma listagem de serviços para selecionar e uma listagem de colaboradores.
+
+options={{ headerShown: true , title: "Recuperar Senha", headerStyle: { backgroundColor: "#3291ed" }, headerTintColor: "#fff", headerTitleStyle: { fontWeight: "bold" }}}
