@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TextInput, Button, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, Button, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import Header from "../../assets/components/Header";
+import { Ionicons } from '@expo/vector-icons'; // Se estiver usando Expo, ou outro ícone de sua escolha
+import { FloatingLabelInput } from 'react-native-floating-label-input';
+
+
 
 const Servicos = () => {
   const navigation = useNavigation();
@@ -22,7 +25,10 @@ const Servicos = () => {
     setDescricao("");
     setColaboradores(prev => [...prev, { id: colaboradores.length + 1, nome, descricao }]);
 
-    // Animação para esconder o formulário
+    EscodeForm();
+  };
+
+  const EscodeForm = () => {
     Animated.timing(formAnimation, {
       toValue: 0,
       duration: 300,
@@ -30,7 +36,7 @@ const Servicos = () => {
     }).start(() => {
       setShowForm(false);
     });
-  };
+  }
 
   const fetchColaboradores = async () => {
     try {
@@ -49,12 +55,18 @@ const Servicos = () => {
 
   const renderColaborador = ({ item }) => (
     <View style={styles.colaboradorCard}>
-      <Text style={styles.colaboradorNome}>{item.nome}</Text>
-      <Text style={styles.colaboradorDescricao}>{item.descricao}</Text>
+      <View>
+        <Text style={styles.colaboradorNome}>{item.nome}</Text>
+        <Text style={styles.colaboradorDescricao}>{item.descricao}</Text>
+      </View>
+      <View style={{alignItems: 'center'}}>
+        <Text style={{fontSize: 12, color:'#276000'}}>Clique para editar</Text>
+        {/* <Button title="Editar" color={'#666699'} onPress={() => navigation.navigate("EditarColaborador", { colaborador: item })} /> */}
+      </View>
     </View>
   );
 
-  const toggleForm = () => {
+  const toggleForm = (close) => {
     if (!showForm) {
       setShowForm(true);
       // Animação para mostrar o formulário
@@ -64,21 +76,26 @@ const Servicos = () => {
         useNativeDriver: false,
       }).start();
     } else {
+      if(close){
+      }
       handleSubmit();
     }
   };
 
   const formHeight = formAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 300], // Ajuste a altura conforme necessário
+    outputRange: [0, 250], 
   });
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Animated.View style={{ height: formHeight, overflow: 'hidden' }}>
+        <Animated.View style={{width:'90%', height: formHeight, overflow: 'hidden' }}>
           {showForm && (
-            <>
+            <View style={{borderWidth: 2, borderColor:'#666699', borderRadius:20, padding:20, backgroundColor:'#c2c2d6'}}>
+              <TouchableOpacity style={styles.closeButton} onPress={EscodeForm}>
+                <Ionicons name="close" size={24} color="#fff" />
+              </TouchableOpacity>
               <Text style={styles.label}>Nome do Serviço:</Text>
               <TextInput
                 style={styles.input}
@@ -96,7 +113,7 @@ const Servicos = () => {
                 multiline
                 numberOfLines={4}
               />
-            </>
+            </View>
           )}
         </Animated.View>
 
@@ -106,15 +123,24 @@ const Servicos = () => {
           renderItem={renderColaborador}
           keyExtractor={(item) => item.id.toString()}
           contentContainerStyle={styles.gridContainer}
+          style={{ width: '90%', backgroundColor: '#a3a3c2',borderRadius:15}}
         />
       </ScrollView>
-      <View style={{ margin: 10 }}>
-        <Button
-          title={showForm ? "Salvar" : "Cadastrar"}
-          color={'#007bff'}
-          onPress={toggleForm}
-        />
-      </View>
+      <View style={{ margin: 'auto', marginBottom: 10, width: '84%' }}>
+      <TouchableOpacity
+        style={{
+          backgroundColor: '#3d3d5c',
+          borderRadius: 10,
+          padding: 10,
+          alignItems: 'center'
+        }}
+        onPress={toggleForm}
+      >
+        <Text style={{ color: 'white' }}>
+          {showForm ? "Salvar" : "Cadastrar"}
+        </Text>
+      </TouchableOpacity>
+    </View>
     </View>
   );
 };
@@ -123,21 +149,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    backgroundColor: '#f8f9fa',
-    paddingTop: 25,
+    paddingTop: 0,
+    
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 10,  // Distância do topo
+    right: 10, // Distância da direita
+    zIndex: 1,
+    backgroundColor: '#666699',
+    borderRadius: 15,
+    padding: 0,
   },
   Header: {
     width: '100%',
     alignItems: 'center'
   },
   scrollContainer: {
-    padding: 20,
+    padding: 15,
     justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%',
   },
   label: {
     fontSize: 16,
     marginBottom: 8,
-    color: '#333',
+    color: '#666699',
   },
   input: {
     height: 50,
@@ -147,32 +184,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 20,
     backgroundColor: '#fff',
-  },
+   },
   textArea: {
     height: 50,
     borderColor: '#ced4da',
     borderWidth: 1,
     borderRadius: 5,
     paddingHorizontal: 10,
-    marginBottom: 20,
+    marginBottom: 5,
     backgroundColor: '#fff',
   },
   gridTitle: {
-    fontSize: 18,
-    margin: 20,
+    fontSize: 20,
+    margin: 0,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#666699',
   },
   gridContainer: {
     paddingHorizontal: 20,
   },
   colaboradorCard: {
-    backgroundColor: '#fff',
     padding: 15,
-    borderRadius: 5,
-    borderColor: '#ced4da',
     borderWidth: 1,
-    marginBottom: 10,
+    marginTop: 15,
+    borderColor:'#666699', 
+    borderRadius:10, 
+    padding:20, 
+    width: '100%',
+    backgroundColor:'#e0e0eb'
   },
   colaboradorNome: {
     fontWeight: 'bold',
