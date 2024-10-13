@@ -1,14 +1,22 @@
 import * as SQLite from 'expo-sqlite';
 
-export default async function CriarAgendamento(agendamento) {
+export default async function CriarAgendamento(agendamento) { //TODO: no serviço, validar se tem ao menos um serviço no agendamento
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );
          
-    await db.runAsync('INSERT INTO agendamento (Nome, Telefone, Data, Hora, Servico, Prestador) VALUES (?, ?, ?, ?, ?, ?);',
-        agendamento.nome, agendamento.telefone, agendamento.data, agendamento.hora, agendamento.servico, agendamento.prestador);
+    const result = await db.runAsync('INSERT INTO agendamento (Nome, Telefone, Data, Hora, ColaboradorId, Finalizado) VALUES (?, ?, ?, ?, ?, ?);',
+        agendamento.nome, agendamento.telefone, agendamento.data, agendamento.hora, agendamento.prestador, 0);
+
+    return result.lastInsertRowId;
   }
 
+  export async function VincularAgendamentoServicos(request) { 
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );
+         
+    await db.runAsync('INSERT INTO AgendamentoServicos (AgendamentoId, ServicoId) VALUES (?, ?);',
+      request.agendamentoId, request.servicoId);
+  }
 
-  export async function ObterAgendamentos() {
+export async function ObterAgendamentos() {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
     const allRows = await db.getAllAsync('SELECT * FROM agendamento order by Data desc;');
 
@@ -25,6 +33,8 @@ export async function AtualizarAgendamento(agendamento) {
     await db.runAsync('UPDATE agendamento SET Nome = ?, Telefone = ?, data = ?, hora = ?, Servico = ?, Prestador = ? WHERE id = ?;',
         agendamento.nome, agendamento.telefone, agendamento.data, agendamento.hora, agendamento.servico, agendamento.prestador, agendamento.id);
 }
+
+ 
 
 export async function ObterAgendamentosPaginado(pagina = 1, limite = 2) {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true });

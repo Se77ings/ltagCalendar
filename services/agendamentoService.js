@@ -1,10 +1,15 @@
-import CriarAgendamento, { AtualizarAgendamento, ObterAgendamentos, ObterAgendamentosPaginado, RemoverAgendamento, VerificarDuplicados } from "../database/agendamentoRepository";
+import CriarAgendamento, { AtualizarAgendamento, ObterAgendamentos, ObterAgendamentosPaginado, RemoverAgendamento, VerificarDuplicados, VincularAgendamentoServicos } from "../database/agendamentoRepository";
 
 export default async function adicionarAgendamento(agendamento) {
   try {
     validarAgendamento(agendamento);
     
-    await CriarAgendamento(agendamento);
+    var agendamentoid = await CriarAgendamento(agendamento);
+
+    agendamento.servicos.forEach(servico => {
+      VincularAgendamentoServicos(agendamentoid, servico.Id)
+    });
+
     console.log('Agendamento criado com sucesso.');
     
     return {
@@ -20,11 +25,11 @@ export default async function adicionarAgendamento(agendamento) {
   }
 }
 
-function validarAgendamento(agendamento) {
+function validarAgendamento(agendamento) { //Serviço agora é um array de ids, precisa ter ao menos um id nesse array.
   const { nome, telefone, data, hora, servico } = agendamento;
 
-  if (!nome || !telefone || !data || !hora || !servico) {
-    throw new Error('Todos os campos obrigatórios devem ser preenchidos.');
+  if (!nome || !telefone || !data || !hora || !Array.isArray(servico) || servico.length === 0) {
+    throw new Error('Todos os campos obrigatórios devem ser preenchidos, incluindo pelo menos um serviço.');
   }
 
   const dataRegex = /^\d{4}-\d{2}-\d{2}$/;
