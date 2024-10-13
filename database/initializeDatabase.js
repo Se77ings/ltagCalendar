@@ -10,9 +10,16 @@ export default async function initializaDatabase() {
       Telefone TEXT NOT NULL,
       Data TEXT NOT NULL, 
       Hora TEXT NOT NULL,
-      ColaboradorId INTEGER NOT NULL,
       Finalizado INTEGER NOT NULL CHECK (finalizado IN (0, 1)),
       FOREIGN KEY (colaborador_id) REFERENCES colaborador(id)
+    );
+
+    CREATE TABLE IF NOT EXISTS AgendamentoColaborador (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    AgendamentoId INTEGER NOT NULL,
+    ColaboradorId INTEGER NOT NULL,
+    FOREIGN KEY (AgendamentoId) REFERENCES agendamento(id),
+    FOREIGN KEY (ColaboradorId) REFERENCES colaborador(id)
     );
 
     CREATE TABLE IF NOT EXISTS AgendamentoServicos (

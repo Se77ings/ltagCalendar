@@ -1,4 +1,4 @@
-import CriarAgendamento, { AtualizarAgendamento, ObterAgendamentos, ObterAgendamentosPaginado, RemoverAgendamento, VerificarDuplicados, VincularAgendamentoServicos } from "../database/agendamentoRepository";
+import CriarAgendamento, { AtualizarAgendamento, ObterAgendamentos, ObterAgendamentosPaginado, RealizarAtendimento, RemoverAgendamento, VerificarDuplicados, VincularAgendamentoServicos, VincularAtendimentoColaboradores } from "../database/agendamentoRepository";
 
 export default async function adicionarAgendamento(agendamento) {
   try {
@@ -22,6 +22,30 @@ export default async function adicionarAgendamento(agendamento) {
       success: false,
       error: 'Erro ao criar agendamento: ' + error
     }; 
+  }
+}
+
+export async function RealizarAtendimentoAsync(request) {
+  try {
+    
+    await RealizarAtendimento(request);
+    
+    request.Colaboradores.forEach(colaborador => {
+      VincularAtendimentoColaboradores(request.Id, colaborador.Id)
+    });
+    
+    return {
+      success: true,
+      data: null,
+      error: null
+    }; 
+  } catch (error) {
+    console.error('Erro ao realizar atendimento:', error);
+    return {
+      success: false,
+      data: null,
+      error: 'Erro ao realizar atendimento: ' + error
+    };
   }
 }
 
