@@ -25,12 +25,11 @@ export default async function adicionarAgendamento(agendamento) {
   }
 }
 
-function validarAgendamento(agendamento) {
+function validarAgendamento(agendamento) { //Serviço agora é um array de ids, precisa ter ao menos um id nesse array.
   const { nome, telefone, data, hora, servico } = agendamento;
 
-  //Teoricamente agora será um array de Ids
-  if (!nome || !telefone || !data || !hora || !servico) { //TODO: serão vários serviços agora (validar)
-    throw new Error('Todos os campos obrigatórios devem ser preenchidos.');
+  if (!nome || !telefone || !data || !hora || !Array.isArray(servico) || servico.length === 0) {
+    throw new Error('Todos os campos obrigatórios devem ser preenchidos, incluindo pelo menos um serviço.');
   }
 
   const dataRegex = /^\d{4}-\d{2}-\d{2}$/;

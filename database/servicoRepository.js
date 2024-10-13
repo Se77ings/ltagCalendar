@@ -8,7 +8,7 @@ export default async function CriarServico(servico) {
         servico.nome, servico.descricao, servico.favorito);
   }
   
-  export async function ObterServicos() {
+  export async function ObterServicosPorFavorito() {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
     const allRows = await db.getAllAsync('SELECT * FROM servicos order by Favorito desc;');
 
@@ -30,6 +30,13 @@ export async function ObterServicosPorColaborador(colaboradorId) {
     return result;
 }
 
+export async function ExisteAtendimentoComServico(servicoId) {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
+    const result = await db.getAsync('SELECT COUNT(*) as total FROM AtendimentoServicos WHERE ServicoId = ?;', [servicoId]);
+
+    return result.total > 0;
+}
+
 export async function RemoverServico(id) { //TODO: no ServicoService preciso validar se tem algum atendimento com esse serviço
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
     await db.runAsync('DELETE FROM servico WHERE id = ?;', id);
@@ -37,8 +44,8 @@ export async function RemoverServico(id) { //TODO: no ServicoService preciso val
 
 export async function AtualizarServico(servico) { //TODO: no ServicoService preciso validar se tem algum atendimento com esse serviço
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
-    await db.runAsync('UPDATE servico SET Nome = ?, Descricao = ?, Favorito = ?;',
-        servico.nome, servico.descricao, servico.favorito);
+    await db.runAsync('UPDATE servico SET Nome = ?, Descricao = ?, Favorito = ? WHERE id = ?;',
+        servico.nome, servico.descricao, servico.favorito, servico.id);
 }
 
 export async function VincularServicoColaborador(request) { 

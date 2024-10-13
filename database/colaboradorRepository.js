@@ -21,3 +21,25 @@ export default async function CriarColaborador(colaborador) {
 
     return result;
 }
+
+export async function ObterColaboradores() {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
+    const result = await db.getAllAsync(`
+        SELECT 
+            *
+        FROM colaborador c
+    `, [servicoId]);
+
+    return result;
+}
+
+export async function RemoverColaborador(id) { 
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
+    await db.runAsync('DELETE FROM colaborador WHERE id = ?;', id);
+}
+
+export async function AtualizarColaborador(colaborador) {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
+    await db.runAsync('UPDATE colaborador SET Nome = ? WHERE id = ?;',
+        colaborador.nome, colaborador.id);
+}
