@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { View, Text, FlatList, TouchableOpacity, ScrollView, Alert, Image, Modal, Pressable, Button, InteractionManager } from "react-native";
 import moment from "moment";
 import "moment/locale/pt-br"; // Importa o locale em português
@@ -9,7 +9,15 @@ import initializaDatabase from "../../database/initializeDatabase";
 import adicionarAgendamento, { obterAgendamentos, RemoverAgendamentoAsync } from "../../services/agendamentoService";
 import styles from "../../assets/styles/styles";
 import Header from "../../assets/components/Header";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Picker } from "@react-native-picker/picker";
+import SectionedMultiSelect from "react-native-sectioned-multi-select";
+
 // parei na parte onde tento fazer o scrollTo para o dia atual
+const formatarData = (data) => {
+  const partes = data.split("-"); // Divide a string em partes
+  return `${partes[2]}/${partes[1]}/${partes[0]}`; // Retorna no formato DD-MM-YYYY
+};
 
 const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay }) => {
   const [days, setDays] = useState([]);
@@ -105,7 +113,7 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay })
   );
 };
 
-const Cards = ({ data, setAgendamentoSelecionado, setModalVisible }) => {
+const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, setmodalCompleteAgendamento }) => {
   const excluirAgendamento = (id) => {
     Alert.alert(
       "Confirmar Exclusão",
@@ -132,49 +140,77 @@ const Cards = ({ data, setAgendamentoSelecionado, setModalVisible }) => {
 
   const editarAgendamento = (item) => {
     setAgendamentoSelecionado(item);
-    setModalVisible(true);
+    console.log(item);
+    setmodalCreate(true);
   };
 
-  const isPast = (time) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    
+  const finalizarAgendamento = (item) => {
+    setAgendamentoSelecionado(item);
+    console.log(item);
+    setmodalCompleteAgendamento(true);
+  };
+
+  const getLocalTime = () => {
     const now = new Date();
-    console.log(now.getTime())
-    // const appointmentTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
-  
-    // console.log(`verificando se ${appointmentTime} é menor que ${now}`);
-  
-    // return appointmentTime < now;
+    const localTime = new Intl.DateTimeFormat("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "America/Sao_Paulo", // Ajuste para o fuso horário desejado
+    }).format(now);
+    return localTime;
   };
-  
-  
-  console.log(isPast("09/10/2024", "21:25")); // Output: depends on the current date and time  
 
+  const getLocalDate = () => {
+    const now = new Date();
+    const localDate = new Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "America/Sao_Paulo", // Ajuste para o fuso horário desejado
+    }).format(now);
+    return localDate;
+  };
 
-  const formatarData = (data) => {
-    const partes = data.split("-"); // Divide a string em partes
-    return `${partes[2]}/${partes[1]}/${partes[0]}`; // Retorna no formato DD-MM-YYYY
+  const isPast = (date, time) => {
+    const agora = getLocalTime();
+    const hoje = getLocalDate();
+    const [day, month, year] = date.split("/").map(Number);
+    const [currentDay, currentMonth, currentYear] = hoje.split("/").map(Number);
+    const [currentHour, currentMinute] = agora.split(":").map(Number);
+    const [timeHour, timeMinute] = time.split(":").map(Number);
+    const receivedDate = new Date(year, month - 1, day);
+    const currentDate = new Date(currentYear, currentMonth - 1, currentDay);
+
+    if (receivedDate < currentDate) {
+      return true;
+    }
+
+    if (receivedDate.getTime() === currentDate.getTime()) {
+      if (timeHour < currentHour || (timeHour === currentHour && timeMinute < currentMinute)) {
+        return true;
+      }
+    }
+    return false;
   };
 
   const renderAgendamento = ({ item }) => (
-    <View
-      style={[
-        styles.agendamento,
-        isPast(formatarData(item.Data), item.Hora) ? styles.agendamentoAtrasado : null, // Aplica o estilo vermelho se o horário for anterior à data atual
-      ]}>
+    <View style={[styles.agendamento, isPast(formatarData(item.Data), item.Hora) ? styles.agendamentoAtrasado : null]}>
       <Image source={{ uri: "https://encurtador.com.br/3Bh7L" }} style={styles.imagemServico} />
       <View style={styles.info}>
         <Text style={styles.nome}>{item.Nome}</Text>
         <Text style={styles.servico}>{item.Servico}</Text>
-        <Text style={styles.horario}>Horário:{item.Hora}</Text>
-        <Text style={styles.data}>{formatarData(item.Data)}</Text>
+        <Text style={[styles.horario, isPast(formatarData(item.Data), item.Hora) && { color: "red", fontWeight: "bold" }]}>Horário:{item.Hora}</Text>
       </View>
       <View style={styles.botoes}>
-        <TouchableOpacity style={styles.botaoEditar} onPress={() => editarAgendamento(item)}>
-          <Text style={styles.textoBotao}>Editar</Text>
+        <TouchableOpacity style={[styles.botao, {}]} onPress={() => editarAgendamento(item)}>
+          <Ionicons name="create-outline" color={"#0045a0"} size={22} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.botaoExcluir} onPress={() => excluirAgendamento(item.id)}>
-          <Text style={styles.textoBotao}>Excluir</Text>
+        <TouchableOpacity style={[styles.botao, {}]} onPress={() => excluirAgendamento(item.id)}>
+          <Ionicons name="trash" color={"#f44336"} size={22} />
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.botao, {}]} onPress={() => finalizarAgendamento(item)}>
+          <Ionicons name="checkmark" color={"#008000"} size={22} />
         </TouchableOpacity>
       </View>
     </View>
@@ -183,10 +219,18 @@ const Cards = ({ data, setAgendamentoSelecionado, setModalVisible }) => {
 };
 
 const Home = () => {
+  /*Mudar para um componente*/
+  const [selectedItems, setSelectedItems] = useState([]);
+
+  const onSelectedItemsChange = useCallback((items) => {
+    setSelectedItems(items);
+  }, []);
+
   moment.locale("pt-br");
   const [selectedDate, setSelectedDate] = useState("");
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalCompleteAgendamento, setmodalCompleteAgendamento] = useState(false);
+  const [modalCreate, setmodalCreate] = useState(false);
   const flatListRef = useRef(null);
   const [agendamentos, setAgendamentos] = useState([]);
 
@@ -224,14 +268,35 @@ const Home = () => {
   };
 
   const fecharModal = () => {
-    setModalVisible(false);
+    setmodalCreate(false);
     obter();
   };
 
   const abrirModal = () => {
     setAgendamentoSelecionado(null);
-    setModalVisible(true);
+    setmodalCreate(true);
   };
+
+  const fakeData = [
+    {
+      name: "Favoritos",
+      id: 0,
+      children: [
+        { name: "Serviço A", id: 20 },
+        { name: "Serviço B", id: 21 },
+      ],
+    },
+    {
+      name: "Serviços",
+      id: 1,
+      children: [
+        { name: "Serviço C", id: 22 },
+        { name: "Serviço D", id: 23 },
+        { name: "Serviço E", id: 24 },
+        { name: "Serviço F", id: 25 },
+      ],
+    },
+  ];
 
   const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
   return (
@@ -251,19 +316,75 @@ const Home = () => {
           </View>
           {agendamentos && (
             <>
-              <Cards data={filterAgendamentos(agendamentos)} setAgendamentoSelecionado={setAgendamentoSelecionado} setModalVisible={setModalVisible} />
+              <Cards data={filterAgendamentos(agendamentos)} setAgendamentoSelecionado={setAgendamentoSelecionado} setmodalCreate={setmodalCreate} setmodalCompleteAgendamento={setmodalCompleteAgendamento} />
             </>
           )}
         </ScrollView>
       </View>
-      <Modal visible={modalVisible} transparent={true} animationType="slide">
+      <Modal visible={modalCreate} transparent={true} animationType="slide">
         <Pressable
           onPress={() => {
-            setModalVisible(false);
+            setmodalCreate(false);
           }}
           style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
           <Pressable>
             <NovoAgendamento fecharModal={() => fecharModal()} EditAgendamento={agendamentoSelecionado} />
+          </Pressable>
+        </Pressable>
+      </Modal>
+      <Modal visible={modalCompleteAgendamento} transparent={true} animationType="slide">
+        <Pressable
+          onPress={() => {
+            setmodalCompleteAgendamento(false);
+          }}
+          style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
+          <Pressable>
+            {agendamentoSelecionado && (
+              <View style={{ backgroundColor: "white", width: "75%", alignSelf: "center", borderRadius: 7, padding: 20 }}>
+                <Text>Finalizar atendimento</Text>
+                <Text>Atendimento nº {agendamentoSelecionado.id}</Text>
+                <Text>Cliente: {agendamentoSelecionado.Nome}</Text>
+                <Text>Serviço: {agendamentoSelecionado.Servico}</Text>
+                <Text>
+                  Data: {formatarData(agendamentoSelecionado.Data)} às {agendamentoSelecionado.Hora}
+                </Text>
+                <Picker>
+                  <Picker.Item label="Finalizado" value="Finalizado" />
+                  <Picker.Item label="Não compareceu" value="Não compareceu" />
+                  <Picker.Item label="Cancelado" value="Cancelado" />
+                </Picker>
+
+                {/* <SectionedMultiSelect
+                
+          items={items} 
+          uniqueKey='id'
+          subKey='children'
+          selectText='Choose some things...'
+          showDropDowns={true}
+          readOnlyHeadings={true}
+          onSelectedItemsChange={this.onSelectedItemsChange}
+          selectedItems={this.state.selectedItems}
+        /> */}
+                <SectionedMultiSelect
+                  items={fakeData}
+                  uniqueKey="id"
+                  subKey="children"
+                  selectText="Selecione um colaborador"
+                  showDropDowns={true}
+                  readOnlyHeadings={true}
+                  onSelectedItemsChange={onSelectedItemsChange}
+                  selectedItems={selectedItems}
+                  IconRenderer={Ionicons}
+                  selectToggleIconComponent={<Ionicons name="arrow-down" size={20} color="gray" />}
+                  dropDownToggleIconDownComponent={<Ionicons name="arrow-down" size={20} color="gray" />}
+                  dropDownToggleIconUpComponent={<Ionicons name="arrow-up" size={20} color="gray" />}
+                  selectedIconComponent={<Ionicons name="checkmark" size={20} color="gray" />}
+                  expandDropDowns={true}
+                />
+
+                <Button title="Finalizar" onPress={() => setmodalCompleteAgendamento(false)} color={"red"} style={{ backgroundColor: "red" }} />
+              </View>
+            )}
           </Pressable>
         </Pressable>
       </Modal>

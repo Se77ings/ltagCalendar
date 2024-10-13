@@ -26,7 +26,7 @@ export default function App() {
             tabBarLabelStyle: { fontSize: 12, color: "white" },
             tabBarIcon: () => (
               <View style={styles.iconDiv}>
-                <Ionicons name="home-outline" color={"white"} size={22} />
+                <Ionicons name="home" color={"white"} size={22} />
               </View>
             ),
           }}
@@ -40,7 +40,7 @@ export default function App() {
             tabBarLabelStyle: { fontSize: 12, color: "white" },
             tabBarIcon: () => (
               <View style={styles.iconDiv}>
-                <Ionicons name="settings-outline" color={"white"} size={22} />
+                <Ionicons name="settings" color={"white"} size={22} />
               </View>
             ),
           }}
