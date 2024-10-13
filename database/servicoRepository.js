@@ -10,7 +10,7 @@ export default async function CriarServico(servico) {
   
   export async function ObterServicosPorFavorito() {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
-    const allRows = await db.getAllAsync('SELECT * FROM servicos order by Favorito desc;');
+    const allRows = await db.getAllAsync('SELECT * FROM servico order by Favorito desc;');
 
     return allRows;
 }
@@ -21,7 +21,7 @@ export async function ObterServicosPorColaborador(colaboradorId) {
         SELECT 
             s.*,
             sc.Afinidade 
-        FROM servicos s
+        FROM servico s
         INNER JOIN ServicosPorColaborador sc ON s.id = sc.ServicoId
         WHERE sc.ColaboradorId = ?
         ORDER BY sc.Afinidade DESC;
