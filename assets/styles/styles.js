@@ -11,7 +11,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 20,
     backgroundColor: "#14213d",
-    color:"white"
+    color: "white",
   },
   agendamentoAtrasado: {
     backgroundColor: "#ffdbdb",
@@ -209,12 +209,12 @@ const styles = StyleSheet.create({
   },
   botoes: {
     flexDirection: "column",
-    justifyContent:"space-between"
+    justifyContent: "space-between",
   },
-  botao:{
+  botao: {
     padding: 10,
     borderRadius: 10,
-    marginVertical: 5
+    marginVertical: 5,
   },
 
   textoBotao: {
@@ -244,6 +244,28 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#F3F4F6",
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 5,
+  },
+  infoLabel: {
+    fontSize: 16,
+    color: "#312fbf",
+    marginLeft: 5,
+    flex: 1,
+  },
+  infoValue: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    flex: 1,
+    textAlign: "right",
   },
 });
 

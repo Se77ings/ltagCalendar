@@ -7,11 +7,12 @@ import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import initializaDatabase from "../../database/initializeDatabase";
 import adicionarAgendamento, { obterAgendamentos, RemoverAgendamentoAsync } from "../../services/agendamentoService";
+import { ObterServicosPorColaboradorAsync, ObterTodosServicosAsync } from "../../services/servicoService";
 import styles from "../../assets/styles/styles";
 import Header from "../../assets/components/Header";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
-import SectionedMultiSelect from "react-native-sectioned-multi-select";
+import Atendimento from "./Atendimento";
 
 // parei na parte onde tento fazer o scrollTo para o dia atual
 const formatarData = (data) => {
@@ -91,6 +92,22 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay })
     </TouchableOpacity>
   );
 
+  const ITEM_HEIGHT = 70; // Altura de cada item
+  const getItemLayout = (data, index) => ({
+    length: ITEM_HEIGHT, // altura de cada item
+    offset: ITEM_HEIGHT * index, // deslocamento com base no índice
+    index,
+  });
+
+  const handleScrollToIndexFailed = (info) => {
+    const wait = new Promise((resolve) => setTimeout(resolve, 500));
+    wait.then(() => {
+      flatListRef.current?.scrollToIndex({
+        index: info.index,
+        animated: true,
+      });
+    });
+  };
   return (
     <>
       <View style={styles.header}>
@@ -106,7 +123,7 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay })
       <View>
         <View style={{ borderTopWidth: 0.5, marginHorizontal: 20, borderColor: "grey" }} />
 
-        <FlatList ref={flatListRef} data={days} horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item) => item.fullDate} renderItem={renderDay} contentContainerStyle={styles.listContainer} />
+        <FlatList ref={flatListRef} getItemLayout={getItemLayout} onScrollToIndexFailed={handleScrollToIndexFailed} data={days} horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item) => item.fullDate} renderItem={renderDay} contentContainerStyle={styles.listContainer} />
         <View style={{ borderTopWidth: 0.5, marginHorizontal: 20, borderColor: "grey" }} />
       </View>
     </>
@@ -140,13 +157,11 @@ const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, setmodalComple
 
   const editarAgendamento = (item) => {
     setAgendamentoSelecionado(item);
-    console.log(item);
     setmodalCreate(true);
   };
 
   const finalizarAgendamento = (item) => {
     setAgendamentoSelecionado(item);
-    console.log(item);
     setmodalCompleteAgendamento(true);
   };
 
@@ -221,6 +236,7 @@ const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, setmodalComple
 const Home = () => {
   /*Mudar para um componente*/
   const [selectedItems, setSelectedItems] = useState([]);
+  const navigation = useNavigation();
 
   const onSelectedItemsChange = useCallback((items) => {
     setSelectedItems(items);
@@ -233,6 +249,12 @@ const Home = () => {
   const [modalCreate, setmodalCreate] = useState(false);
   const flatListRef = useRef(null);
   const [agendamentos, setAgendamentos] = useState([]);
+
+  async function obter() {
+    var result = await obterAgendamentos();
+    setAgendamentos(result.data);
+  }
+
 
   useEffect(() => {
     initialize();
@@ -253,11 +275,6 @@ const Home = () => {
     });
   };
 
-  async function obter() {
-    var result = await obterAgendamentos();
-    setAgendamentos(result.data);
-  }
-
   const initialize = async () => {
     try {
       await initializaDatabase();
@@ -277,51 +294,37 @@ const Home = () => {
     setmodalCreate(true);
   };
 
-  const fakeData = [
-    {
-      name: "Favoritos",
-      id: 0,
-      children: [
-        { name: "Serviço A", id: 20 },
-        { name: "Serviço B", id: 21 },
-      ],
-    },
-    {
-      name: "Serviços",
-      id: 1,
-      children: [
-        { name: "Serviço C", id: 22 },
-        { name: "Serviço D", id: 23 },
-        { name: "Serviço E", id: 24 },
-        { name: "Serviço F", id: 25 },
-      ],
-    },
-  ];
+  // const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
 
-  const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
+
   return (
     <>
       <View style={[styles.container]}>
         <TouchableOpacity
           style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }}
-          onPress={() => abrirModal()} // NovoAgendamento
+          onPress={() => navigation.navigate("NovoAgendamento")} // NovoAgendamento
         >
           <Text style={styles.newAppointmentText}>+</Text>
         </TouchableOpacity>
-        <ScrollView>
+        <ScrollView contentContainerStyle={{}}>
           <Header title={"Menu Inicial"} />
           <View style={{ paddingTop: 20 }}>
             <SliderData flatListRef={flatListRef} selectedDate={selectedDate} setSelectedDate={setSelectedDate} scrollToDay={scrollToDay} />
             <Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
           </View>
-          {agendamentos && (
+          {filterAgendamentos(agendamentos).length != 0 ? (
             <>
               <Cards data={filterAgendamentos(agendamentos)} setAgendamentoSelecionado={setAgendamentoSelecionado} setmodalCreate={setmodalCreate} setmodalCompleteAgendamento={setmodalCompleteAgendamento} />
             </>
+          ) : (
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              <Text style={{ textAlign: "center", marginTop: 20 }}>Ainda não há nenhum agendamento para este dia</Text>
+              <Text style={{ textAlign: "center", marginTop: 0 }}>Utilize o item abaixo para adicionar um agendamento</Text>
+            </View>
           )}
         </ScrollView>
       </View>
-      <Modal visible={modalCreate} transparent={true} animationType="slide">
+      {/* <Modal visible={modalCreate} transparent={true} animationType="slide">
         <Pressable
           onPress={() => {
             setmodalCreate(false);
@@ -331,59 +334,19 @@ const Home = () => {
             <NovoAgendamento fecharModal={() => fecharModal()} EditAgendamento={agendamentoSelecionado} />
           </Pressable>
         </Pressable>
-      </Modal>
+      </Modal> */}
       <Modal visible={modalCompleteAgendamento} transparent={true} animationType="slide">
         <Pressable
-          onPress={() => {
-            setmodalCompleteAgendamento(false);
-          }}
-          style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
-          <Pressable>
+          onPress={() => setmodalCompleteAgendamento(false)}
+          style={{
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Pressable style={{ width: "90%" }}>
             {agendamentoSelecionado && (
-              <View style={{ backgroundColor: "white", width: "75%", alignSelf: "center", borderRadius: 7, padding: 20 }}>
-                <Text>Finalizar atendimento</Text>
-                <Text>Atendimento nº {agendamentoSelecionado.id}</Text>
-                <Text>Cliente: {agendamentoSelecionado.Nome}</Text>
-                <Text>Serviço: {agendamentoSelecionado.Servico}</Text>
-                <Text>
-                  Data: {formatarData(agendamentoSelecionado.Data)} às {agendamentoSelecionado.Hora}
-                </Text>
-                <Picker>
-                  <Picker.Item label="Finalizado" value="Finalizado" />
-                  <Picker.Item label="Não compareceu" value="Não compareceu" />
-                  <Picker.Item label="Cancelado" value="Cancelado" />
-                </Picker>
-
-                {/* <SectionedMultiSelect
-                
-          items={items} 
-          uniqueKey='id'
-          subKey='children'
-          selectText='Choose some things...'
-          showDropDowns={true}
-          readOnlyHeadings={true}
-          onSelectedItemsChange={this.onSelectedItemsChange}
-          selectedItems={this.state.selectedItems}
-        /> */}
-                <SectionedMultiSelect
-                  items={fakeData}
-                  uniqueKey="id"
-                  subKey="children"
-                  selectText="Selecione um colaborador"
-                  showDropDowns={true}
-                  readOnlyHeadings={true}
-                  onSelectedItemsChange={onSelectedItemsChange}
-                  selectedItems={selectedItems}
-                  IconRenderer={Ionicons}
-                  selectToggleIconComponent={<Ionicons name="arrow-down" size={20} color="gray" />}
-                  dropDownToggleIconDownComponent={<Ionicons name="arrow-down" size={20} color="gray" />}
-                  dropDownToggleIconUpComponent={<Ionicons name="arrow-up" size={20} color="gray" />}
-                  selectedIconComponent={<Ionicons name="checkmark" size={20} color="gray" />}
-                  expandDropDowns={true}
-                />
-
-                <Button title="Finalizar" onPress={() => setmodalCompleteAgendamento(false)} color={"red"} style={{ backgroundColor: "red" }} />
-              </View>
+             <Atendimento agendamentoSelecionado={agendamentoSelecionado} formatarData={formatarData} setmodalCompleteAgendamento={setmodalCompleteAgendamento}/>
             )}
           </Pressable>
         </Pressable>
@@ -392,4 +355,21 @@ const Home = () => {
   );
 };
 
-export default Home;
+const Main = () => {
+  const Stack = createStackNavigator();
+
+  return (
+    <Stack.Navigator initialRouteName="Main">
+      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+      <Stack.Screen name="NovoAgendamento" component={NovoAgendamento} options={{ headerTitle: "Novo Agendamento", headerTitleAlign: "center" }} />
+    </Stack.Navigator>
+  );
+
+  /*  <View style={{height:"100%", justifyContent:"center"}}>
+      <Formik>>
+        .....
+      </Formik>
+    </View>*/
+};
+
+export default Main;
