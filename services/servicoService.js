@@ -116,8 +116,8 @@ export async function RemoverServicoAsync(id) {
 
   export async function ObterTodosServicosAsync() {
     try {
+      console.log('Entrei no obter todos servicos');
       var allRows = await ObterServicosPorFavorito();
-  
       return {
         success: true,
         data: allRows,

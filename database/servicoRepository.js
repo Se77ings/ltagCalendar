@@ -6,14 +6,16 @@ export default async function CriarServico(servico) {
          
     await db.runAsync('INSERT INTO servico (Nome, Descricao, Favorito) VALUES (?, ?, ?);',
         servico.nome, servico.descricao, servico.favorito);
-  }
-  
-  export async function ObterServicosPorFavorito() {
+}
+
+export async function ObterServicosPorFavorito() {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
-    const allRows = await db.getAllAsync('SELECT * FROM servicos order by Favorito desc;');
+    const allRows = await db.getAllAsync('SELECT * FROM servico order by Favorito desc;');
 
     return allRows;
 }
+    
+  
 
 export async function ObterServicosPorColaborador(colaboradorId) {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         

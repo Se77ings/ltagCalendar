@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, TextInput, Button, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
+import { View, Text, Switch ,TouchableOpacity, TextInput, Button, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from '@expo/vector-icons'; // Se estiver usando Expo, ou outro ícone de sua escolha
-import { FloatingLabelInput } from 'react-native-floating-label-input';
+import adicionarServico, { ObterTodosServicosAsync } from "../../services/servicoService";
 
 const Servicos = () => {
   const navigation = useNavigation();
@@ -13,6 +13,8 @@ const Servicos = () => {
   const [errors, setErrors] = useState({ nome: "", descricao: "" });
   const [editingColaborador, setEditingColaborador] = useState(null);
   const formAnimation = useRef(new Animated.Value(0)).current; // Inicializa o valor da animação
+  const [favorito, setFavorito] = useState(false);
+
 
   const validateFields = () => {
     let valid = true;
@@ -46,8 +48,9 @@ const Servicos = () => {
       );
       setEditingColaborador(null);
     } else {
-      // Adicionar novo colaborador
-      setColaboradores(prev => [...prev, { id: colaboradores.length + 1, nome, descricao }]);
+      let NovoServico = {nome, descricao, favorito};
+      adicionarServico(NovoServico);
+      // setColaboradores(prev => [...prev, { id: colaboradores.length + 1, nome, descricao }]);
     }
 
     Alert.alert("Sucesso", "Serviço cadastrado com sucesso!");
@@ -69,12 +72,16 @@ const Servicos = () => {
 
   const fetchColaboradores = async () => {
     try {
-      // Simulando uma busca em um banco de dados
-      const response = await fetch('URL_DA_API_PARA_COLABORADORES');
-      const data = await response.json();
-      setColaboradores(data);
+      let response = await ObterTodosServicosAsync();
+      // console.log(response);
+      if (response.success) {
+        setColaboradores(response.data);
+        // console.log('colaboradores: ----->> ',colaboradores)
+      } else {
+        console.error('Erro ao obter serviços:', response.error);
+      }
     } catch (error) {
-      console.error(error);
+      console.error('Erro ao buscar colaboradores:', error);
     }
   };
 
@@ -94,9 +101,17 @@ const Servicos = () => {
   const renderColaborador = ({ item }) => (
     <TouchableOpacity onPress={() => handleEdit(item)}>
       <View style={styles.colaboradorCard}>
-        <View>
-          <Text style={styles.colaboradorNome}>{item.nome}</Text>
-          <Text style={styles.colaboradorDescricao}>{item.descricao}</Text>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View>
+            <Text style={styles.colaboradorNome}>{item.Nome}</Text>
+            <Text style={styles.colaboradorDescricao}>{item.Descricao}</Text>
+          </View>
+          <Ionicons
+            name="star"
+            size={24}
+            color={item.Favorito ? "#666699" : "gray"}
+            style={{ alignSelf: 'flex-start' }}
+          />
         </View>
         <View style={{ alignItems: 'center' }}>
           <Text style={{ fontSize: 12, color: '#276000' }}>Clique para editar</Text>
@@ -121,14 +136,13 @@ const Servicos = () => {
 
   const formHeight = formAnimation.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 255],
+    outputRange: [0, 270],
   });
 
-  const handleScroll = () => {
 
-      EscodeForm();
-    
-  };
+
+  const toggleSwitch = () => setFavorito(previousState => !previousState);
+
 
   return (
     <View style={styles.container}>
@@ -158,7 +172,16 @@ const Servicos = () => {
                 numberOfLines={4}
               />
               {errors.descricao ? <Text style={styles.error}>{errors.descricao}</Text> : null}
-
+              <View style={styles.switchContainer}>
+                <Text style={styles.label}>Favoritar?</Text>
+                <Switch
+                  trackColor={{ false: "white", true: "white" }}
+                  thumbColor={favorito ? "#3d3d5c" : "#f4f3f4"}
+                  ios_backgroundColor="#3e3e3e"
+                  onValueChange={toggleSwitch}
+                  value={favorito}
+                />
+              </View>
               {/* escluir */}
               {/* <Button onPress={handleSubmit} title={editingColaborador ? "Editar" : "Salvar"} color={'#3d3d5c'} /> */} 
             </View>
@@ -198,6 +221,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
     paddingTop: 0,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 0,
   },
   closeButton: {
     position: 'absolute',
