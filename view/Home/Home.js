@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import { View, Text, FlatList, TouchableOpacity, ScrollView, Alert, Image, Modal, Pressable, Button, InteractionManager } from "react-native";
 import moment from "moment";
 import "moment/locale/pt-br"; // Importa o locale em português
@@ -7,9 +7,18 @@ import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import initializaDatabase from "../../database/initializeDatabase";
 import adicionarAgendamento, { obterAgendamentos, RemoverAgendamentoAsync } from "../../services/agendamentoService";
+import { ObterServicosPorColaboradorAsync, ObterTodosServicosAsync } from "../../services/servicoService";
 import styles from "../../assets/styles/styles";
 import Header from "../../assets/components/Header";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { Picker } from "@react-native-picker/picker";
+import Atendimento from "./Atendimento";
+
 // parei na parte onde tento fazer o scrollTo para o dia atual
+const formatarData = (data) => {
+  const partes = data.split("-"); // Divide a string em partes
+  return `${partes[2]}/${partes[1]}/${partes[0]}`; // Retorna no formato DD-MM-YYYY
+};
 
 const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay }) => {
   const [days, setDays] = useState([]);
@@ -83,6 +92,22 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay })
     </TouchableOpacity>
   );
 
+  const ITEM_HEIGHT = 70; // Altura de cada item
+  const getItemLayout = (data, index) => ({
+    length: ITEM_HEIGHT, // altura de cada item
+    offset: ITEM_HEIGHT * index, // deslocamento com base no índice
+    index,
+  });
+
+  const handleScrollToIndexFailed = (info) => {
+    const wait = new Promise((resolve) => setTimeout(resolve, 500));
+    wait.then(() => {
+      flatListRef.current?.scrollToIndex({
+        index: info.index,
+        animated: true,
+      });
+    });
+  };
   return (
     <>
       <View style={styles.header}>
@@ -98,14 +123,14 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay })
       <View>
         <View style={{ borderTopWidth: 0.5, marginHorizontal: 20, borderColor: "grey" }} />
 
-        <FlatList ref={flatListRef} data={days} horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item) => item.fullDate} renderItem={renderDay} contentContainerStyle={styles.listContainer} />
+        <FlatList ref={flatListRef} getItemLayout={getItemLayout} onScrollToIndexFailed={handleScrollToIndexFailed} data={days} horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item) => item.fullDate} renderItem={renderDay} contentContainerStyle={styles.listContainer} />
         <View style={{ borderTopWidth: 0.5, marginHorizontal: 20, borderColor: "grey" }} />
       </View>
     </>
   );
 };
 
-const Cards = ({ data, setAgendamentoSelecionado, setModalVisible }) => {
+const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, setmodalCompleteAgendamento }) => {
   const excluirAgendamento = (id) => {
     Alert.alert(
       "Confirmar Exclusão",
@@ -132,49 +157,75 @@ const Cards = ({ data, setAgendamentoSelecionado, setModalVisible }) => {
 
   const editarAgendamento = (item) => {
     setAgendamentoSelecionado(item);
-    setModalVisible(true);
+    setmodalCreate(true);
   };
 
-  const isPast = (time) => {
-    const [hours, minutes] = time.split(":").map(Number);
-    
+  const finalizarAgendamento = (item) => {
+    setAgendamentoSelecionado(item);
+    setmodalCompleteAgendamento(true);
+  };
+
+  const getLocalTime = () => {
     const now = new Date();
-    console.log(now.getTime())
-    // const appointmentTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes);
-  
-    // console.log(`verificando se ${appointmentTime} é menor que ${now}`);
-  
-    // return appointmentTime < now;
+    const localTime = new Intl.DateTimeFormat("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+      timeZone: "America/Sao_Paulo", // Ajuste para o fuso horário desejado
+    }).format(now);
+    return localTime;
   };
-  
-  
-  console.log(isPast("09/10/2024", "21:25")); // Output: depends on the current date and time  
 
+  const getLocalDate = () => {
+    const now = new Date();
+    const localDate = new Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      timeZone: "America/Sao_Paulo", // Ajuste para o fuso horário desejado
+    }).format(now);
+    return localDate;
+  };
 
-  const formatarData = (data) => {
-    const partes = data.split("-"); // Divide a string em partes
-    return `${partes[2]}/${partes[1]}/${partes[0]}`; // Retorna no formato DD-MM-YYYY
+  const isPast = (date, time) => {
+    const agora = getLocalTime();
+    const hoje = getLocalDate();
+    const [day, month, year] = date.split("/").map(Number);
+    const [currentDay, currentMonth, currentYear] = hoje.split("/").map(Number);
+    const [currentHour, currentMinute] = agora.split(":").map(Number);
+    const [timeHour, timeMinute] = time.split(":").map(Number);
+    const receivedDate = new Date(year, month - 1, day);
+    const currentDate = new Date(currentYear, currentMonth - 1, currentDay);
+
+    if (receivedDate < currentDate) {
+      return true;
+    }
+
+    if (receivedDate.getTime() === currentDate.getTime()) {
+      if (timeHour < currentHour || (timeHour === currentHour && timeMinute < currentMinute)) {
+        return true;
+      }
+    }
+    return false;
   };
 
   const renderAgendamento = ({ item }) => (
-    <View
-      style={[
-        styles.agendamento,
-        isPast(formatarData(item.Data), item.Hora) ? styles.agendamentoAtrasado : null, // Aplica o estilo vermelho se o horário for anterior à data atual
-      ]}>
+    <View style={[styles.agendamento, isPast(formatarData(item.Data), item.Hora) ? styles.agendamentoAtrasado : null]}>
       <Image source={{ uri: "https://encurtador.com.br/3Bh7L" }} style={styles.imagemServico} />
       <View style={styles.info}>
         <Text style={styles.nome}>{item.Nome}</Text>
         <Text style={styles.servico}>{item.Servico}</Text>
-        <Text style={styles.horario}>Horário:{item.Hora}</Text>
-        <Text style={styles.data}>{formatarData(item.Data)}</Text>
+        <Text style={[styles.horario, isPast(formatarData(item.Data), item.Hora) && { color: "red", fontWeight: "bold" }]}>Horário:{item.Hora}</Text>
       </View>
       <View style={styles.botoes}>
-        <TouchableOpacity style={styles.botaoEditar} onPress={() => editarAgendamento(item)}>
-          <Text style={styles.textoBotao}>Editar</Text>
+        <TouchableOpacity style={[styles.botao, {}]} onPress={() => editarAgendamento(item)}>
+          <Ionicons name="create-outline" color={"#0045a0"} size={22} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.botaoExcluir} onPress={() => excluirAgendamento(item.id)}>
-          <Text style={styles.textoBotao}>Excluir</Text>
+        <TouchableOpacity style={[styles.botao, {}]} onPress={() => excluirAgendamento(item.id)}>
+          <Ionicons name="trash" color={"#f44336"} size={22} />
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.botao, {}]} onPress={() => finalizarAgendamento(item)}>
+          <Ionicons name="checkmark" color={"#008000"} size={22} />
         </TouchableOpacity>
       </View>
     </View>
@@ -183,12 +234,27 @@ const Cards = ({ data, setAgendamentoSelecionado, setModalVisible }) => {
 };
 
 const Home = () => {
+  /*Mudar para um componente*/
+  const [selectedItems, setSelectedItems] = useState([]);
+  const navigation = useNavigation();
+
+  const onSelectedItemsChange = useCallback((items) => {
+    setSelectedItems(items);
+  }, []);
+
   moment.locale("pt-br");
   const [selectedDate, setSelectedDate] = useState("");
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState();
-  const [modalVisible, setModalVisible] = useState(false);
+  const [modalCompleteAgendamento, setmodalCompleteAgendamento] = useState(false);
+  const [modalCreate, setmodalCreate] = useState(false);
   const flatListRef = useRef(null);
   const [agendamentos, setAgendamentos] = useState([]);
+
+  async function obter() {
+    var result = await obterAgendamentos();
+    setAgendamentos(result.data);
+  }
+
 
   useEffect(() => {
     initialize();
@@ -209,11 +275,6 @@ const Home = () => {
     });
   };
 
-  async function obter() {
-    var result = await obterAgendamentos();
-    setAgendamentos(result.data);
-  }
-
   const initialize = async () => {
     try {
       await initializaDatabase();
@@ -224,46 +285,69 @@ const Home = () => {
   };
 
   const fecharModal = () => {
-    setModalVisible(false);
+    setmodalCreate(false);
     obter();
   };
 
   const abrirModal = () => {
     setAgendamentoSelecionado(null);
-    setModalVisible(true);
+    setmodalCreate(true);
   };
 
-  const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
+  // const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
+
+
   return (
     <>
       <View style={[styles.container]}>
         <TouchableOpacity
           style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }}
-          onPress={() => abrirModal()} // NovoAgendamento
+          onPress={() => navigation.navigate("NovoAgendamento")} // NovoAgendamento
         >
           <Text style={styles.newAppointmentText}>+</Text>
         </TouchableOpacity>
-        <ScrollView>
+        <ScrollView contentContainerStyle={{}}>
           <Header title={"Menu Inicial"} />
           <View style={{ paddingTop: 20 }}>
             <SliderData flatListRef={flatListRef} selectedDate={selectedDate} setSelectedDate={setSelectedDate} scrollToDay={scrollToDay} />
             <Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
           </View>
-          {agendamentos && (
+          {filterAgendamentos(agendamentos).length != 0 ? (
             <>
-              <Cards data={filterAgendamentos(agendamentos)} setAgendamentoSelecionado={setAgendamentoSelecionado} setModalVisible={setModalVisible} />
+              <Cards data={filterAgendamentos(agendamentos)} setAgendamentoSelecionado={setAgendamentoSelecionado} setmodalCreate={setmodalCreate} setmodalCompleteAgendamento={setmodalCompleteAgendamento} />
             </>
+          ) : (
+            <View style={{ flex: 1, justifyContent: "center" }}>
+              <Text style={{ textAlign: "center", marginTop: 20 }}>Ainda não há nenhum agendamento para este dia</Text>
+              <Text style={{ textAlign: "center", marginTop: 0 }}>Utilize o item abaixo para adicionar um agendamento</Text>
+            </View>
           )}
         </ScrollView>
       </View>
-      <Modal visible={modalVisible} transparent={true} animationType="slide">
+      {/* <Modal visible={modalCreate} transparent={true} animationType="slide">
         <Pressable
           onPress={() => {
-            setModalVisible(false);
+            setmodalCreate(false);
           }}
           style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
           <Pressable>
             <NovoAgendamento fecharModal={() => fecharModal()} EditAgendamento={agendamentoSelecionado} />
+          </Pressable>
+        </Pressable>
+      </Modal> */}
+      <Modal visible={modalCompleteAgendamento} transparent={true} animationType="slide">
+        <Pressable
+          onPress={() => setmodalCompleteAgendamento(false)}
+          style={{
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Pressable style={{ width: "90%" }}>
+            {agendamentoSelecionado && (
+             <Atendimento agendamentoSelecionado={agendamentoSelecionado} formatarData={formatarData} setmodalCompleteAgendamento={setmodalCompleteAgendamento}/>
+            )}
           </Pressable>
         </Pressable>
       </Modal>
@@ -271,4 +355,21 @@ const Home = () => {
   );
 };
 
-export default Home;
+const Main = () => {
+  const Stack = createStackNavigator();
+
+  return (
+    <Stack.Navigator initialRouteName="Main">
+      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+      <Stack.Screen name="NovoAgendamento" component={NovoAgendamento} options={{ headerTitle: "Novo Agendamento", headerTitleAlign: "center" }} />
+    </Stack.Navigator>
+  );
+
+  /*  <View style={{height:"100%", justifyContent:"center"}}>
+      <Formik>>
+        .....
+      </Formik>
+    </View>*/
+};
+
+export default Main;

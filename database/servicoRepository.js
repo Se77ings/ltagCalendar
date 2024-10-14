@@ -23,7 +23,7 @@ export async function ObterServicosPorColaborador(colaboradorId) {
         SELECT 
             s.*,
             sc.Afinidade 
-        FROM servicos s
+        FROM servico s
         INNER JOIN ServicosPorColaborador sc ON s.id = sc.ServicoId
         WHERE sc.ColaboradorId = ?
         ORDER BY sc.Afinidade DESC;

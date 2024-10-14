@@ -4,7 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
-import Home from "./view/Home/Home";
+import Main from "./view/Home/Home";
 import Config from "./view/Configuracoes/Config";
 import Header from "./assets/components/Header";
 
@@ -14,10 +14,10 @@ export default function App() {
   return (
     <NavigationContainer>
       <StatusBar style="light" />
-      <Tab.Navigator initialRouteName="Home" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d" } }}>
+      <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d" } }}>
         <Tab.Screen
-          name="Home"
-          component={Home}
+          name="Main"
+          component={Main}
           options={{
             headerShown: false,
             // headerShown: true,
@@ -26,7 +26,7 @@ export default function App() {
             tabBarLabelStyle: { fontSize: 12, color: "white" },
             tabBarIcon: () => (
               <View style={styles.iconDiv}>
-                <Ionicons name="home-outline" color={"white"} size={22} />
+                <Ionicons name="home" color={"white"} size={22} />
               </View>
             ),
           }}
@@ -40,7 +40,7 @@ export default function App() {
             tabBarLabelStyle: { fontSize: 12, color: "white" },
             tabBarIcon: () => (
               <View style={styles.iconDiv}>
-                <Ionicons name="settings-outline" color={"white"} size={22} />
+                <Ionicons name="settings" color={"white"} size={22} />
               </View>
             ),
           }}

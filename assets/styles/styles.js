@@ -11,12 +11,12 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 20,
     backgroundColor: "#14213d",
-    color:"white"
+    color: "white",
   },
   agendamentoAtrasado: {
-    // backgroundColor: 'red',
-    borderColor: "red",
-    borderWidth: 3,
+    backgroundColor: "#ffdbdb",
+    // borderColor: "red",
+    // borderWidth: 3,
     borderStyle: "solid",
   },
 
@@ -47,8 +47,8 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     backgroundColor: "#13213c",
-    borderBottomLeftRadius: 30, // Bordas arredondadas inferiores
-    borderBottomRightRadius: 30, // Bordas arredondadas inferiores
+    borderBottomLeftRadius: 15, // Bordas arredondadas inferiores
+    borderBottomRightRadius: 15, // Bordas arredondadas inferiores
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
@@ -64,8 +64,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 30, //não é o ideal!
     paddingLeft: 20,
-    // borderWidth:1,
-    // borderColor:"blue",
     width: "100%",
   },
 
@@ -210,19 +208,15 @@ const styles = StyleSheet.create({
     paddingTop: 2,
   },
   botoes: {
-    flexDirection: "row",
+    flexDirection: "column",
+    justifyContent: "space-between",
   },
-  botaoEditar: {
-    backgroundColor: "#0045a0",
+  botao: {
     padding: 10,
-    borderRadius: 5,
-    marginRight: 10,
+    borderRadius: 10,
+    marginVertical: 5,
   },
-  botaoExcluir: {
-    backgroundColor: "#f44336",
-    padding: 10,
-    borderRadius: 5,
-  },
+
   textoBotao: {
     color: "#fff",
     fontWeight: "bold",
@@ -250,6 +244,28 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 10,
     marginBottom: 10,
+  },
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    backgroundColor: "#F3F4F6",
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 5,
+  },
+  infoLabel: {
+    fontSize: 16,
+    color: "#312fbf",
+    marginLeft: 5,
+    flex: 1,
+  },
+  infoValue: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    flex: 1,
+    textAlign: "right",
   },
 });
 

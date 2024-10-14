@@ -9,6 +9,20 @@ export default async function CriarAgendamento(agendamento) { //TODO: no serviç
     return result.lastInsertRowId;
   }
 
+  export async function RealizarAtendimento(request) {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );
+         
+    await db.runAsync('UPDATE agendamento SET Finalizado = 1 WHERE id = ?;',
+        request.colaboradorId, request.agendamentoId);
+  }
+
+export async function VincularAtendimentoColaboradores(request) { 
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );
+         
+    await db.runAsync('INSERT INTO AgendamentoColaborador (AgendamentoId, ColaboradorId) VALUES (?, ?);',
+      request.agendamentoId, request.colaboradorId);
+  }
+
   export async function VincularAgendamentoServicos(request) { 
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );
          
