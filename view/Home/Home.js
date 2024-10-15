@@ -262,7 +262,12 @@ const Home = () => {
   }, []);
 
   const filterAgendamentos = (agendamento) => {
-    return agendamento.filter((agendamento) => agendamento.Data === selectedDate.fullDate);
+    if(agendamento){
+
+      return agendamento.filter((agendamento) => agendamento.Data === selectedDate.fullDate);
+    }else{
+      return [];
+    }
   };
 
   const scrollToDay = (item) => {
