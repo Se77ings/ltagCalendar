@@ -23,6 +23,20 @@ export async function VincularAtendimentoColaboradores(request) {
       request.agendamentoId, request.colaboradorId);
   }
 
+  export async function DesvincularAtendimentoColaboradores(agendamentoId, colaboradorId) {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true });
+  
+    await db.runAsync('DELETE FROM AgendamentoColaborador WHERE AgendamentoId = ? AND ColaboradorId = ?;', 
+      [agendamentoId, colaboradorId]);
+  }
+  
+export async function DesvincularAgendamentoServicos(agendamentoId, servicoId) {
+  const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true });
+
+  await db.runAsync('DELETE FROM AgendamentoServicos WHERE AgendamentoId = ? AND ServicoId = ?;', 
+    [agendamentoId, servicoId]);
+}
+
   export async function VincularAgendamentoServicos(request) { 
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );
          

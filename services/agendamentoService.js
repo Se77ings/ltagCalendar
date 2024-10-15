@@ -1,4 +1,5 @@
-import CriarAgendamento, { AtualizarAgendamento, ObterAgendamentos, ObterAgendamentosPaginado, RealizarAtendimento, RemoverAgendamento, VerificarDuplicados, VincularAgendamentoServicos, VincularAtendimentoColaboradores } from "../database/agendamentoRepository";
+import CriarAgendamento, { AtualizarAgendamento, DesvincularAgendamentoServicos, DesvincularAtendimentoColaboradores, ObterAgendamentos, ObterAgendamentosPaginado, RealizarAtendimento, RemoverAgendamento, VerificarDuplicados, VincularAgendamentoServicos, VincularAtendimentoColaboradores } from "../database/agendamentoRepository";
+import { RemoverServico } from "../database/servicoRepository";
 
 export default async function adicionarAgendamento(agendamento) {
   try {
@@ -7,7 +8,13 @@ export default async function adicionarAgendamento(agendamento) {
     var agendamentoid = await CriarAgendamento(agendamento);
 
     agendamento.servicos.forEach(servico => {
+      DesvincularAgendamentoServicos(agendamento.Id, servico.Id);
       VincularAgendamentoServicos(agendamentoid, servico.Id)
+    });
+
+    agendamento.Colaboradores.forEach(colaborador => {
+      DesvincularAtendimentoColaboradores(agendamento.Id, colaborador.Id);
+      VincularAtendimentoColaboradores(agendamento.Id, colaborador.Id)
     });
 
     console.log('Agendamento criado com sucesso.');
@@ -30,7 +37,13 @@ export async function RealizarAtendimentoAsync(request) {
     
     await RealizarAtendimento(request);
     
+    request.servicos.forEach(servico => {
+      DesvincularAgendamentoServicos(request.Id, servico.Id);
+      VincularAgendamentoServicos(request, servico.Id)
+    });
+
     request.Colaboradores.forEach(colaborador => {
+      DesvincularAtendimentoColaboradores(request.Id, colaborador.Id);
       VincularAtendimentoColaboradores(request.Id, colaborador.Id)
     });
     
@@ -96,7 +109,16 @@ export async function AtualizarAgendamentoAsync(agendamento) {
     validarAgendamento(agendamento);
     
     await AtualizarAgendamento(agendamento);
-    console.log('Agendamento Alterado com sucesso');
+    
+    agendamento.servicos.forEach(servico => {
+      DesvincularAgendamentoServicos(agendamento.Id, servico.Id);
+      VincularAgendamentoServicos(agendamentoid, servico.Id)
+    });
+
+    agendamento.Colaboradores.forEach(colaborador => {
+      DesvincularAtendimentoColaboradores(agendamento.Id, colaborador.Id);
+      VincularAtendimentoColaboradores(agendamento.Id, colaborador.Id)
+    });
     
     return {
       success: true,
