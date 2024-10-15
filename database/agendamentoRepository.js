@@ -3,7 +3,7 @@ import * as SQLite from 'expo-sqlite';
 export default async function CriarAgendamento(agendamento) { //TODO: no serviço, validar se tem ao menos um serviço no agendamento
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );
          
-    const result = await db.runAsync('INSERT INTO agendamento (Nome, Telefone, Data, Hora, ColaboradorId, Finalizado) VALUES (?, ?, ?, ?, ?, ?);',
+    const result = await db.runAsync('INSERT INTO agendamento (Nome, Telefone, Data, Hora, Finalizado) VALUES (?, ?, ?, ?, ?);',
         agendamento.nome, agendamento.telefone, agendamento.data, agendamento.hora, agendamento.prestador, 0);
 
     return result.lastInsertRowId;
