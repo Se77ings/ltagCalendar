@@ -2,6 +2,8 @@ import CriarAgendamento, { AtualizarAgendamento, DesvincularAgendamentoServicos,
 import { RemoverServico } from "../database/servicoRepository";
 
 export default async function adicionarAgendamento(agendamento) {
+  console.log("Dados que recebi:")
+  console.log(agendamento)
   try {
     validarAgendamento(agendamento);
     
