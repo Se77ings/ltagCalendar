@@ -9,10 +9,12 @@ import SectionedMultiSelect from "react-native-sectioned-multi-select";
 
 import styles from "../../assets/styles/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import DropdownSelector from "../../assets/components/DropdownSelector";
 
 const Atendimento = ({ agendamentoSelecionado, formatarData, setmodalCompleteAgendamento }) => {
   const [todosServicos, setTodosServicos] = useState([]);
-
+  const [servicosSelecionados, setServicosSelecionados] = useState([]);
+  const [colaboradoresSelecionados, setColaboradoresSelecionados] = useState([]);
   const fakeData = [
     {
       name: "Favoritos",
@@ -53,101 +55,7 @@ const Atendimento = ({ agendamentoSelecionado, formatarData, setmodalCompleteAge
     obterServicos();
   }, []);
 
-  const DropdownSelector = ({ lista, label, icone }) => {
-    console.log("Recebi a lista:");
-    console.log(lista);
-    const [itemSelecionado, setItemSelecionado] = useState([]);
-
-    useEffect(() => {
-      console.log("Item selecionado:");
-      console.log(itemSelecionado);
-    }, [itemSelecionado]);
-    return (
-      <SectionedMultiSelect
-        items={lista}
-        uniqueKey="id"
-        subKey="children"
-        selectText={label}
-        showDropDowns={false}
-        readOnlyHeadings={true}
-        onSelectedItemsChange={setItemSelecionado}
-        selectedItems={itemSelecionado}
-        IconRenderer={Ionicons}
-        selectToggleIconComponent={<Ionicons name="arrow-down" size={20} color="#312fbf" />}
-        dropDownToggleIconDownComponent={<Ionicons name="arrow-down" size={20} color="#312fbf" />}
-        dropDownToggleIconUpComponent={<Ionicons name="arrow-up" size={20} color="#312fbf" />}
-        selectedIconComponent={<Ionicons name="checkmark" size={20} color="#312fbf" />}
-        renderSelectText={() => {
-          return (
-            <View style={{ flex: 1, flexDirection: "row" }}>
-              <Ionicons name={icone} size={20} color="#312fbf" />
-              {itemSelecionado.length === 0 ? (
-                <Text style={{ color: "#312fbf", fontSize: 16, marginLeft: 5 }}>Selecione {label}</Text>
-              ) : (
-                <Text style={{ color: "#312fbf", fontSize: 16, marginLeft: 5 }}>
-                  {itemSelecionado.length} {label} selecionado(s)
-                </Text>
-              )}
-            </View>
-          );
-        }}
-        styles={{
-          selectToggle: {
-            backgroundColor: "#F3F4F6",
-            borderColor: "#312fbf",
-            padding: 10,
-            borderRadius: 5,
-            marginTop: 5,
-            marginBottom: 10,
-            justifyContent: "space-between",
-          },
-          selectToggleText: {
-            color: "#312fbf",
-            fontSize: 16,
-            fontWeight: "500",
-          },
-          item: {
-            backgroundColor: "#FFFFFF",
-            paddingVertical: 10,
-            paddingHorizontal: 15,
-            borderBottomWidth: 1,
-            borderColor: "#f0f0f0",
-            marginVertical: 3,
-          },
-          selectedItem: {
-            backgroundColor: "#e6eaff",
-          },
-          chipContainer: {
-            backgroundColor: "#312fbf",
-            borderWidth: 0,
-          },
-          chipText: {
-            color: "#FFFFFF",
-          },
-          button: {
-            backgroundColor: "#312fbf",
-            padding: 10,
-            borderRadius: 5,
-          },
-          confirmText: {
-            color: "#FFFFFF",
-          },
-          subItem: {
-            marginVertical: 3,
-          },
-        }}
-        colors={{
-          primary: "#312fbf",
-          success: "#4caf50",
-          cancel: "#1A1A1A",
-          text: "#2e2e2e",
-          selectToggleTextColor: "#312fbf",
-          itemBackground: "#fff",
-          subItemBackground: "#ffffff",
-        }}
-      />
-    );
-  };
+ 
   return (
     <View
       style={{
@@ -197,8 +105,8 @@ const Atendimento = ({ agendamentoSelecionado, formatarData, setmodalCompleteAge
           </Text>
         </View>
         <Text style={styles.infoLabel}>Serviço(s):</Text>
-        <DropdownSelector lista={todosServicos} label="serviço(s)" icone={"briefcase-outline"} />
-        <DropdownSelector lista={fakeData} label={"colaborador(es)"} icone={"people-outline"} />
+        <DropdownSelector lista={todosServicos} label="serviço(s)" icone={"briefcase-outline"} callbackSelecionados={setServicosSelecionados}/>
+        <DropdownSelector lista={fakeData} label={"colaborador(es)"} icone={"people-outline"}  callbackSelecionados={setColaboradoresSelecionados}/>
       </View>
 
       <TouchableOpacity
