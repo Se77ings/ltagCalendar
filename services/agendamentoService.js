@@ -8,15 +8,15 @@ export default async function adicionarAgendamento(agendamento) {
     validarAgendamento(agendamento);
     
     var agendamentoid = await CriarAgendamento(agendamento);
-
+    console.log(agendamentoid);
     agendamento.servico.forEach(servico => {
-      DesvincularAgendamentoServicos(agendamento.Id, servico.Id);
+      DesvincularAgendamentoServicos(agendamentoid, servico.Id);
       VincularAgendamentoServicos(agendamentoid, servico.Id)
     });
 
     agendamento.Colaboradores.forEach(colaborador => {
-      DesvincularAtendimentoColaboradores(agendamento.Id, colaborador.Id);
-      VincularAtendimentoColaboradores(agendamento.Id, colaborador.Id)
+      DesvincularAtendimentoColaboradores(agendamentoid, colaborador.Id);
+      VincularAtendimentoColaboradores(agendamentoid, colaborador.Id)
     });
 
     console.log('Agendamento criado com sucesso.');
