@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, Switch, TouchableOpacity, TextInput, Button, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
+import { View, Text, Switch, TouchableOpacity, TextInput, Pressable, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons"; // Se estiver usando Expo, ou outro ícone de sua escolha
-import adicionarServico, { ObterTodosServicosAsync } from "../../services/servicoService";
+import { Ionicons } from "@expo/vector-icons"; 
+import adicionarServico, { AtualizarServicoAsync, ObterTodosServicosAsync } from "../../services/servicoService";
 import { StatusBar } from "expo-status-bar";
 
 const Servicos = () => {
   const navigation = useNavigation();
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
-  const [colaboradores, setColaboradores] = useState([]);
+  const [servicos, setServicos] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [errors, setErrors] = useState({ nome: "", descricao: "" });
-  const [editingColaborador, setEditingColaborador] = useState(null);
-  const formAnimation = useRef(new Animated.Value(0)).current; // Inicializa o valor da animação
+  const [editingServicos, setEditingServicos] = useState(null);
+  const formAnimation = useRef(new Animated.Value(0)).current; 
   const [favorito, setFavorito] = useState(false);
 
   const validateFields = () => {
@@ -39,14 +39,12 @@ const Servicos = () => {
       return;
     }
 
-    if (editingColaborador) {
-      // Atualizar colaborador existente
-      setColaboradores((prev) => prev.map((colab) => (colab.id === editingColaborador.id ? { ...colab, nome, descricao } : colab)));
-      setEditingColaborador(null);
+    if (editingServicos !== null) {
+      // Atualizar Servicos existente
+      setEditingServicos(null);
     } else {
       let NovoServico = { nome, descricao, favorito };
       adicionarServico(NovoServico);
-      // setColaboradores(prev => [...prev, { id: colaboradores.length + 1, nome, descricao }]);
     }
 
     Alert.alert("Sucesso", "Serviço cadastrado com sucesso!");
@@ -62,45 +60,50 @@ const Servicos = () => {
       useNativeDriver: false,
     }).start(() => {
       setShowForm(false);
-      setEditingColaborador(null);
+      setEditingServicos(null);
     });
   };
 
-  const fetchColaboradores = async () => {
+  const fetchServicos = async () => {
     try {
       let response = await ObterTodosServicosAsync();
-      // console.log(response);
       if (response.success) {
-        setColaboradores(response.data);
-        // console.log('colaboradores: ----->> ',colaboradores)
+        setServicos(response.data);
       } else {
         console.error("Erro ao obter serviços:", response.error);
       }
     } catch (error) {
-      console.error("Erro ao buscar colaboradores:", error);
+      console.error("Erro ao buscar Servicos:", error);
     }
   };
 
   useEffect(() => {
-    fetchColaboradores();
+    fetchServicos();
   }, []);
 
-  const handleEdit = (colaborador) => {
-    setNome(colaborador.nome);
-    setDescricao(colaborador.descricao);
-    setEditingColaborador(colaborador);
-    if (!showForm) {
-      toggleForm();
-    }
-  };
+  // const handleEdit = (Servicos) => {
+  //   setNome(Servicos.nome);
+  //   setDescricao(Servicos.descricao);
+  //   setEditingServicos(Servicos);
+  //   if (!showForm) {
+  //     toggleForm();
+  //   }
+  // };
 
-  const renderColaborador = ({ item }) => (
-    <TouchableOpacity onPress={() => handleEdit(item)}>
-      <View style={styles.colaboradorCard}>
+  const renderServicos = ({ item }) => (
+    <Pressable
+        onPress={async () => {
+          abrirFormulario();
+          setNome(item.Nome);
+          setDescricao(item.Descricao);
+          setFavorito(item.Favorito);
+          setEditingServicos(item);
+        }}>
+      <View style={styles.ServicosCard} >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View>
-            <Text style={styles.colaboradorNome}>{item.Nome}</Text>
-            <Text style={styles.colaboradorDescricao}>{item.Descricao}</Text>
+            <Text style={styles.ServicosNome}>{item.Nome}</Text>
+            <Text style={styles.ServicosDescricao}>{item.Descricao}</Text>
           </View>
           <Ionicons name="star" size={24} color={item.Favorito ? "#666699" : "gray"} style={{ alignSelf: "flex-start" }} />
         </View>
@@ -108,18 +111,22 @@ const Servicos = () => {
           <Text style={{ fontSize: 12, color: "#276000" }}>Clique para editar</Text>
         </View>
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 
-  const toggleForm = () => {
-    if (!showForm) {
-      setShowForm(true);
+  abrirFormulario = () => {
+    setShowForm(true);
       // Animação para mostrar o formulário
       Animated.timing(formAnimation, {
         toValue: 1,
         duration: 300,
         useNativeDriver: false,
       }).start();
+  }
+
+  const toggleForm = () => {
+    if (!showForm) {
+      abrirFormulario();
     } else {
       EscodeForm();
     }
@@ -154,14 +161,20 @@ const Servicos = () => {
                   <Text style={styles.label}>Favoritar?</Text>
                   <Switch trackColor={{ false: "white", true: "white" }} thumbColor={favorito ? "#3d3d5c" : "#f4f3f4"} ios_backgroundColor="#3e3e3e" onValueChange={toggleSwitch} value={favorito} />
                 </View>
-                {/* escluir */}
-                {/* <Button onPress={handleSubmit} title={editingColaborador ? "Editar" : "Salvar"} color={'#3d3d5c'} /> */}
               </View>
             )}
           </Animated.View>
 
-          <Text style={styles.gridTitle}>Colaboradores Cadastrados:</Text>
-          <FlatList data={colaboradores} renderItem={renderColaborador} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15 }} />
+          <Text style={styles.gridTitle}>Servicos Cadastrados:</Text>
+          {servicos && servicos.length > 0 ? (
+            <FlatList data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15 }} />
+          ) : (
+            <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flex: 1, justifyContent: "center" }}>
+            <Text style={{ textAlign: "center" }}>Nenhum Servico cadastrado</Text>
+            {!showForm && <Text style={{ textAlign: "center" }}>Clique no botão abaixo para Cadastrar</Text>}
+          </View>
+          )}
+        
         </ScrollView>
         <View style={{ margin: "auto", marginBottom: 10, width: "84%" }}>
           <TouchableOpacity
@@ -172,7 +185,7 @@ const Servicos = () => {
               alignItems: "center",
             }}
             onPress={showForm ? handleSubmit : toggleForm}>
-            <Text style={{ color: "white" }}>{editingColaborador ? "Editar" : "Salvar"}</Text>
+            <Text style={{ color: "white" }}>{editingServicos ? "Editar" : "Salvar"}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -244,7 +257,7 @@ const styles = StyleSheet.create({
   gridContainer: {
     paddingHorizontal: 20,
   },
-  colaboradorCard: {
+  ServicosCard: {
     padding: 15,
     marginTop: 10,
     marginBottom: 10,
@@ -254,11 +267,11 @@ const styles = StyleSheet.create({
     width: "100%",
     backgroundColor: "#e0e0eb",
   },
-  colaboradorNome: {
+  ServicosNome: {
     fontWeight: "bold",
     fontSize: 16,
   },
-  colaboradorDescricao: {
+  ServicosDescricao: {
     color: "#555",
   },
 });
