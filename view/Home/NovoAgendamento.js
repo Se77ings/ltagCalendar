@@ -13,6 +13,7 @@ import adicionarAgendamento, { AtualizarAgendamentoAsync } from "../../services/
 import { AtualizarAgendamento, VerificarDuplicados } from "../../database/agendamentoRepository";
 import { ObterColaboradores } from "../../database/colaboradorRepository";
 import { ObterServicosPorFavorito } from "../../database/servicoRepository";
+import DropdownSelector from "../../assets/components/DropdownSelector";
 
 const Validation = Yup.object().shape({
   Nome: Yup.string().min(3, "Minimo de 3 caracteres!").max(50, "Máximo de 50 caracteres!").required("Obrigatorio"),
@@ -26,7 +27,7 @@ const Validation = Yup.object().shape({
   // Servico: Yup.string().min(3, "Minimo de 3 caracteres!").max(50, "Máximo de 50 caracteres!").required("Obrigatorio"),
 });
 
-async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, prestador, servico) {
+async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, Colaboradores, servico) {
   try {
     const agendamento = {
       id,
@@ -34,19 +35,19 @@ async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, pr
       telefone,
       data,
       hora,
-      prestador,
+      Colaboradores,
       servico,
     };
-    console.log("Agendamento:", agendamento);
     var res = await AtualizarAgendamentoAsync(agendamento);
-    console.log("Resposta:", res);
     EditAgendamento && fecharModal();
   } catch (error) {
     console.error("Erro ao inserir o agendamento:", error);
   }
 }
 
-async function criarAgendamento(navigation, nome, telefone, data, hora, prestador, servico) {
+//acho que o problema vai ser em alguma letra maiuscula o minuscula, pq aparentemente, o back recebe os dados daqui
+async function criarAgendamento(navigation, nome, telefone, data, hora, Colaboradores, servico) {
+  console.log("Dados que vou enviar ")
   try {
     const agendamento = {
       nome,
@@ -54,13 +55,12 @@ async function criarAgendamento(navigation, nome, telefone, data, hora, prestado
       data,
       hora,
       servico,
-      prestador
+      Colaboradores,
     };
+    console.log(agendamento);
 
-    console.log(hora);
-    console.log("hora:", agendamento.hora);
     var res = await adicionarAgendamento(agendamento);
-    console.log("Resposta:", res);
+
     navigation.navigate("Home");
   } catch (error) {
     console.error("Erro ao inserir o agendamento:", error);
@@ -80,7 +80,7 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
       setTimeString(EditAgendamento.Hora); // Atualiza a string da hora
     } else {
       // Lógica a ser executada quando EditAgendamento está vazio
-      // console.log("Nenhum agendamento para editar.");
+
       setDate(new Date()); // Reseta para a data atual
       setTime(new Date()); // Reseta para a hora atual
       setDateString(new Date().toISOString().split("T")[0]); // Define a string da data atual
@@ -120,11 +120,23 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
   }, []);
 
   const handlePrestadorChange = (itemValue) => {
-    setData((prevData) => ({ ...prevData, selectedPrestador: itemValue }));
+    const selectedPrestador = data.prestadores.filter((prestador) => itemValue.includes(prestador.id));
+
+    setData((prevData) => ({
+      ...prevData,
+      selectedPrestador: selectedPrestador,
+    }));
   };
 
   const handleServicoChange = (itemValue) => {
-    setData((prevData) => ({ ...prevData, selectedServico: itemValue }));
+    // Filtro que retorna os serviços correspondentes aos IDs selecionados
+    const selectedServicos = data.servicos.filter((servico) => itemValue.includes(servico.id));
+
+    // Atualizar o estado com os serviços selecionados
+    setData((prevData) => ({
+      ...prevData,
+      selectedServico: selectedServicos,
+    }));
   };
 
   const onChange = (event, selectedDate) => {
@@ -154,10 +166,6 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
         initialValues={initialValues}
         validationSchema={Validation}
         onSubmit={async (values) => {
-          console.log("porra de valores aqui nessa caralha");
-          console.log(values);
-          console.log(data.selectedPrestador);
-          console.log(data.selectedServico);
           if (data.selectedPrestador === "") {
             Alert.alert("Atenção", "Selecione um prestador ");
             return;
@@ -180,7 +188,6 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
               [
                 {
                   text: "Não",
-                  onPress: () => console.log("Usuário cancelou o agendamento."),
                   style: "cancel",
                 },
                 {
@@ -188,9 +195,9 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
                   onPress: async () => {
                     // Se o usuário optar por continuar, execute a lógica de criação ou edição do agendamento
                     if (EditAgendamento) {
-                      await editarAgendamento(fecharModal, EditAgendamento.id, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, [{ id: data.selectedServico }]);
+                      await editarAgendamento(fecharModal, EditAgendamento.id, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico);
                     } else {
-                      await criarAgendamento(navigation, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, [{ id: data.selectedServico }]);
+                      await criarAgendamento(navigation, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico);
                     }
                   },
                 },
@@ -200,9 +207,9 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
           } else {
             // Se não for duplicado, execute diretamente a lógica de criação ou edição do agendamento
             if (EditAgendamento) {
-              await editarAgendamento(fecharModal, EditAgendamento.id, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, [{ id: data.selectedServico }]);
+              await editarAgendamento(fecharModal, EditAgendamento.id, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico);
             } else {
-              await criarAgendamento(navigation, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, [{ id: data.selectedServico }]);
+              await criarAgendamento(navigation, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico);
             }
           }
         }}>
@@ -252,21 +259,26 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
                 <TextInput style={[styles.input, { color: "black" }]} editable={false} value={timeString} />
                 <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="time" size={24} color="#312fbf" onPress={() => setShowtime(true)} />
               </Pressable>
-
+              {/* 
               <Picker selectedValue={data.selectedPrestador} style={styles.picker} onValueChange={handlePrestadorChange}>
                 <Picker.Item label="Selecione um prestador" />
                 {data.prestadores.map((prestador) => (
                   <Picker.Item key={prestador.id} label={prestador.Nome} value={prestador.id} />
                 ))}
-              </Picker>
+              </Picker> */}
+              {/* <DropdownSelector lista={todosServicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={setServicosSelecionados} selectedItems={servicosSelecionados} /> */}
+
+              <DropdownSelector lista={data.servicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={handleServicoChange} selectedItems={data.selectedServico} opt={"servico"} />
+              {errors.Servico && touched.Servico ? <Text style={styles.error}>{errors.Servico}</Text> : null}
+
+              <DropdownSelector lista={data.prestadores} label={"Colaborador(es)"} icone={"person-outline"} callbackSelecionados={handlePrestadorChange} selectedItems={data.selectedPrestador} opt={"colaborador"} />
               {errors.Prestador && touched.Prestador ? <Text style={styles.error}>{errors.Prestador}</Text> : null}
-              <Picker selectedValue={data.selectedServico} style={styles.picker} onValueChange={handleServicoChange}>
+              {/* <Picker selectedValue={data.selectedServico} style={styles.picker} onValueChange={handleServicoChange}>
                 <Picker.Item label="Selecione um serviço" />
                 {data.servicos.map((servico) => (
                   <Picker.Item key={servico.id} label={servico.Nome} value={servico.id} />
                 ))}
-              </Picker>
-              {errors.Servico && touched.Servico ? <Text style={styles.error}>{errors.Servico}</Text> : null}
+              </Picker> */}
               <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                 <Text style={styles.submitButtonText}>{EditAgendamento ? "Editar" : "Cadastrar"}</Text>
               </TouchableOpacity>
