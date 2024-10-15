@@ -143,7 +143,7 @@ const Colaboradores = () => {
 								numberOfLines={4}
 							/> */}
                 <Text>Selecione os serviços do colaborador:</Text>
-                <DropdownSelector lista={todosServicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={setServicosSelecionados} selectedItems={servicosSelecionados} />
+                <DropdownSelector lista={todosServicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={setServicosSelecionados} selectedItems={servicosSelecionados} opt={"servico"}/>
               </View>
             )}
           </Animated.View>

@@ -4,34 +4,51 @@ import SectionedMultiSelect from "react-native-sectioned-multi-select";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedItems = null }) => {
+const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedItems = null, opt }) => {
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [dadosFormatados, setDadosFormatados] = useState([]);
   // selectedItems = [{"Afinidade": 1, "Descricao": "Corte de cabelo feminino", "Favorito": 0, "Nome": "Serviço B", "id": 2}, {"Afinidade": 1, "Descricao": "Corte de cabelo masculino", "Favorito": 1, "Nome": "Serviço A", "id": 1}]
   useEffect(() => {
-    const favoritos = lista.filter((item) => item.Favorito === 1);
-    const outros = lista.filter((item) => item.Favorito === 0);
+    if (opt == "servico") {
+      console.log("serviço:");
+      console.log(lista);
+      const favoritos = lista.filter((item) => item.Favorito === 1);
+      const outros = lista.filter((item) => item.Favorito === 0);
 
-    const dadosAgrupados = [
-      {
-        name: "Favoritos",
-        id: "list0",
-        children: favoritos.map(({ Nome, id }) => ({
-          name: Nome,
-          id,
-        })),
-      },
-      {
-        name: "Outros",
-        id: "list1",
-        children: outros.map(({ Nome, id }) => ({
-          name: Nome,
-          id,
-        })),
-      },
-    ];
-
-    setDadosFormatados(dadosAgrupados);
+      const dadosAgrupados = [
+        {
+          name: "Favoritos",
+          id: "list0",
+          children: favoritos.map(({ Nome, id }) => ({
+            name: Nome,
+            id,
+          })),
+        },
+        {
+          name: "Outros",
+          id: "list1",
+          children: outros.map(({ Nome, id }) => ({
+            name: Nome,
+            id,
+          })),
+        },
+      ];
+      setDadosFormatados(dadosAgrupados);
+    } else if (opt == "colaborador") {
+      console.log("Colaborador");
+      console.log(lista);
+      const dadosAgrupados = [
+        {
+          name: "Colaboradores",
+          id: "list0",
+          children: lista.map(({ Nome, id }) => ({
+            name: Nome,
+            id,
+          })),
+        },
+      ];
+      setDadosFormatados(dadosAgrupados);
+    }
   }, [lista]);
 
   useEffect(() => {

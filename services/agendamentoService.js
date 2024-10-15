@@ -7,7 +7,7 @@ export default async function adicionarAgendamento(agendamento) {
     
     var agendamentoid = await CriarAgendamento(agendamento);
 
-    agendamento.servicos.forEach(servico => {
+    agendamento.servico.forEach(servico => {
       DesvincularAgendamentoServicos(agendamento.Id, servico.Id);
       VincularAgendamentoServicos(agendamentoid, servico.Id)
     });
