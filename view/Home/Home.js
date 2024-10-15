@@ -324,7 +324,7 @@ const Home = () => {
           )}
         </ScrollView>
       </View>
-      {/* <Modal visible={modalCreate} transparent={true} animationType="slide">
+      <Modal visible={modalCreate} transparent={true} animationType="slide">
         <Pressable
           onPress={() => {
             setmodalCreate(false);
@@ -334,7 +334,7 @@ const Home = () => {
             <NovoAgendamento fecharModal={() => fecharModal()} EditAgendamento={agendamentoSelecionado} />
           </Pressable>
         </Pressable>
-      </Modal> */}
+      </Modal>
       <Modal visible={modalCompleteAgendamento} transparent={true} animationType="slide">
         <Pressable
           onPress={() => setmodalCompleteAgendamento(false)}
