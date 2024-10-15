@@ -1,35 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import { FloatingLabelInput } from 'react-native-floating-label-input';
-import { Picker } from '@react-native-picker/picker';
+import React, { useState, useEffect } from "react";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { FloatingLabelInput } from "react-native-floating-label-input";
+import { Picker } from "@react-native-picker/picker";
+import { StatusBar } from "expo-status-bar";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useNavigation } from "@react-navigation/native";
 
-
-import { StyleSheet, Text, View, Button, TextInput, Alert } from "react-native";
-import * as Yup from 'yup';
-import { Formik } from 'formik';
+import { StyleSheet, Text, View, ScrollView, TextInput, Alert, TouchableOpacity, Pressable } from "react-native";
+import * as Yup from "yup";
+import { Formik } from "formik";
 import adicionarAgendamento, { AtualizarAgendamentoAsync } from "../../services/agendamentoService";
-import { AtualizarAgendamento, VerificarDuplicados } from '../../database/agendamentoRepository';
+import { AtualizarAgendamento, VerificarDuplicados } from "../../database/agendamentoRepository";
+import { ObterColaboradores } from "../../database/colaboradorRepository";
+import { ObterServicosPorFavorito } from "../../database/servicoRepository";
 
 const Validation = Yup.object().shape({
-  Nome: Yup.string()
-    .min(3, 'Minimo de 3 caracteres!')
-    .max(50, 'Máximo de 50 caracteres!')
-    .required('Obrigatorio'),
+  Nome: Yup.string().min(3, "Minimo de 3 caracteres!").max(50, "Máximo de 50 caracteres!").required("Obrigatorio"),
 
   Telefone: Yup.string()
-    .matches(/^\d{10,11}$/, 'O telefone deve ter 10 ou 11 dígitos e conter apenas números')
-    .required('Obrigatório'),
+    .matches(/^\d{10,11}$/, "O telefone deve ter 10 ou 11 dígitos e conter apenas números")
+    .required("Obrigatório"),
 
-  Prestador: Yup.string()
-    .min(3, 'Minimo de 3 caracteres!')
-    .max(50, 'Máximo de 50 caracteres!'),
+  // Prestador: Yup.string().min(3, "Minimo de 3 caracteres!").max(50, "Máximo de 50 caracteres!"),
 
-  Servico: Yup.string()
-    .min(3, 'Minimo de 3 caracteres!')
-    .max(50, 'Máximo de 50 caracteres!')
-    .required('Obrigatorio'),
+  // Servico: Yup.string().min(3, "Minimo de 3 caracteres!").max(50, "Máximo de 50 caracteres!").required("Obrigatorio"),
 });
-
 
 async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, prestador, servico) {
   try {
@@ -45,39 +40,35 @@ async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, pr
     console.log("Agendamento:", agendamento);
     var res = await AtualizarAgendamentoAsync(agendamento);
     console.log("Resposta:", res);
-    fecharModal();
+    EditAgendamento && fecharModal();
   } catch (error) {
     console.error("Erro ao inserir o agendamento:", error);
-
   }
 }
 
-async function criarAgendamento(fecharModal, nome, telefone, data, hora, prestador, servico) {
+async function criarAgendamento(navigation, nome, telefone, data, hora, prestador, servico) {
   try {
     const agendamento = {
       nome,
       telefone,
       data,
       hora,
-      prestador,
       servico,
+      prestador
     };
+
     console.log(hora);
     console.log("hora:", agendamento.hora);
     var res = await adicionarAgendamento(agendamento);
     console.log("Resposta:", res);
-    // console.log("Sucesso", "Agendamento cadastrado com sucesso!");
-    fecharModal();
+    navigation.navigate("Home");
   } catch (error) {
     console.error("Erro ao inserir o agendamento:", error);
-
   }
 }
 
-
-
 export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
-  const [agendamento, setAgendamento] = useState(null);
+  const navigation = useNavigation();
 
   useEffect(() => {
     // Verifica se EditAgendamento não está vazio
@@ -89,275 +80,273 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
       setTimeString(EditAgendamento.Hora); // Atualiza a string da hora
     } else {
       // Lógica a ser executada quando EditAgendamento está vazio
-      console.log("Nenhum agendamento para editar.");
+      // console.log("Nenhum agendamento para editar.");
       setDate(new Date()); // Reseta para a data atual
       setTime(new Date()); // Reseta para a hora atual
-      setDateString(new Date().toISOString().split('T')[0]); // Define a string da data atual
-      setTimeString(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })); // Define a string da hora atual
+      setDateString(new Date().toISOString().split("T")[0]); // Define a string da data atual
+      setTimeString(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })); // Define a string da hora atual
     }
   }, [EditAgendamento]);
 
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
-  const [DateString, setDateString] = useState(date.toISOString().split('T')[0]);
-
-
+  const [DateString, setDateString] = useState(date.toISOString().split("T")[0]);
   const [time, setTime] = useState(new Date());
   const [showtime, setShowtime] = useState(false);
   const [timeString, setTimeString] = useState(time);
-
   const [data, setData] = useState({
-      prestadores: [],
-      servicos: [],
-      selectedPrestador: '',
-      selectedServico: '',
-      errors: {},
+    prestadores: [],
+    servicos: [],
+    selectedPrestador: "",
+    selectedServico: "",
+    errors: {},
   });
 
-  const fetchPrestadores = async () => {
-    try {
-        const response = await fetch('URL_DA_API_PARA_PRESTADORES'); //chama o metodo para buscar os dados no banco
-        const prestadores = await response.json();
-        setData(prevData => ({ ...prevData, prestadores }));
-    } catch (error) {
-        console.error(error);
-    }
+  const fetchColaboradores = async () => {
+    ObterColaboradores().then((result) => {
+      setData((prevData) => ({ ...prevData, prestadores: result }));
+    });
   };
 
-  // Função para buscar serviços
   const fetchServicos = async () => {
-    try {
-        const response = await fetch('URL_DA_API_PARA_SERVIÇOS');
-        const servicos = await response.json();
-        setData(prevData => ({ ...prevData, servicos }));
-    } catch (error) {
-        console.error(error);
-    }
+    ObterServicosPorFavorito().then((result) => {
+      setData((prevData) => ({ ...prevData, servicos: result }));
+    });
   };
 
   useEffect(() => {
-    fetchPrestadores();
+    fetchColaboradores();
     fetchServicos();
   }, []);
 
   const handlePrestadorChange = (itemValue) => {
-    setData(prevData => ({ ...prevData, selectedPrestador: itemValue }));
+    setData((prevData) => ({ ...prevData, selectedPrestador: itemValue }));
   };
 
   const handleServicoChange = (itemValue) => {
-      setData(prevData => ({ ...prevData, selectedServico: itemValue }));
+    setData((prevData) => ({ ...prevData, selectedServico: itemValue }));
   };
-
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShow(false);
     setDate(currentDate);
-    setDateString(currentDate.toISOString().split('T')[0]);
+    setDateString(currentDate.toISOString().split("T")[0]);
   };
   const onChangeTime = (event, selectedTime) => {
     const currentTime = selectedTime || time;
     setShowtime(false);
     setTime(currentTime);
-    setTimeString(`${currentTime.getHours().toString().padStart(2, '0')}:${currentTime.getMinutes().toString().padStart(2, '0')}`);
+    setTimeString(`${currentTime.getHours().toString().padStart(2, "0")}:${currentTime.getMinutes().toString().padStart(2, "0")}`);
   };
-
 
   const initialValues = {
-    Nome: EditAgendamento?.Nome || '',
-    Telefone: EditAgendamento?.Telefone || '',
-    Data: EditAgendamento?.Data || date.toLocaleDateString('en-CA'),
-    Hora: EditAgendamento?.Hora || time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    Prestador: EditAgendamento?.Prestador || '',
-    Servico: EditAgendamento?.Servico || '',
+    Nome: EditAgendamento?.Nome || "",
+    Telefone: EditAgendamento?.Telefone || "",
+    Data: EditAgendamento?.Data || date.toLocaleDateString("en-CA"),
+    Hora: EditAgendamento?.Hora || time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
   };
 
-  
   return (
-    <Formik
-      initialValues={initialValues}
-      validationSchema={Validation}
-      onSubmit={async (values) => {
-        var id = null;
-
-        if(EditAgendamento != null)
-          id = EditAgendamento.id;
-
-        const duplicado = await VerificarDuplicados(DateString, timeString, id);
-        if (duplicado) {
-          // Exiba o alerta se for duplicado
-          Alert.alert(
-            "Agendamento Duplicado",
-            "Já existe um agendamento para esta data e hora. Deseja continuar?",
-            [
-              {
-                text: "Não",
-                onPress: () => console.log("Usuário cancelou o agendamento."),
-                style: "cancel",
-              },
-              {
-                text: "Sim",
-                onPress: async () => {
-                  // Se o usuário optar por continuar, execute a lógica de criação ou edição do agendamento
-                  if (EditAgendamento) {
-                    await editarAgendamento(fecharModal, EditAgendamento.id, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico);
-                  } else {
-                    await criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico);
-                  }
-                },
-              },
-            ],
-            { cancelable: false } // impede que o usuário saia sem tomar uma decisão
-          );
-        } else {
-          // Se não for duplicado, execute diretamente a lógica de criação ou edição do agendamento
-          if (EditAgendamento) {
-            await editarAgendamento(fecharModal, EditAgendamento.id, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico);
-          } else {
-            await criarAgendamento(fecharModal, values.Nome, values.Telefone, DateString, timeString, values.Prestador, values.Servico);
+    <>
+      <StatusBar style="dark" />
+      <Formik
+        initialValues={initialValues}
+        validationSchema={Validation}
+        onSubmit={async (values) => {
+          console.log("porra de valores aqui nessa caralha");
+          console.log(values);
+          console.log(data.selectedPrestador);
+          console.log(data.selectedServico);
+          if (data.selectedPrestador === "") {
+            Alert.alert("Atenção", "Selecione um prestador ");
+            return;
           }
-        }
-      }}
+          if (data.selectedServico === "") {
+            Alert.alert("Atenção", "Selecione um serviço ");
+            return;
+          }
 
-    >
-      {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
-          <View style={styles.container}>
-            <FloatingLabelInput
-                labelStyles={styles.labelStyle}
-                containerStyles={styles.input}
-                onChangeText={handleChange('Nome')}
-                value={values.Nome}
-                label="Nome"
-            />
-            {errors.Nome && touched.Nome ? (
-                <Text style={styles.error}>{errors.Nome}</Text>
-            ) : null}
+          var id = null;
 
-            <FloatingLabelInput
-                labelStyles={styles.labelStyle}
-                containerStyles={styles.input}
-                onChangeText={handleChange('Telefone')}
-                value={values.Telefone}
-                label="Telefone"
-                keyboardType="numeric"
-            />
-            {errors.Telefone && touched.Telefone ? (
-                <Text style={styles.error}>{errors.Telefone}</Text>
-            ) : null}
+          if (EditAgendamento != null) id = EditAgendamento.id;
 
-            {show && (
+          const duplicado = await VerificarDuplicados(DateString, timeString, id);
+          if (duplicado) {
+            // Exiba o alerta se for duplicado
+            Alert.alert(
+              "Agendamento Duplicado",
+              "Já existe um agendamento para esta data e hora. Deseja continuar?",
+              [
+                {
+                  text: "Não",
+                  onPress: () => console.log("Usuário cancelou o agendamento."),
+                  style: "cancel",
+                },
+                {
+                  text: "Sim",
+                  onPress: async () => {
+                    // Se o usuário optar por continuar, execute a lógica de criação ou edição do agendamento
+                    if (EditAgendamento) {
+                      await editarAgendamento(fecharModal, EditAgendamento.id, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, [{ id: data.selectedServico }]);
+                    } else {
+                      await criarAgendamento(navigation, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, [{ id: data.selectedServico }]);
+                    }
+                  },
+                },
+              ],
+              { cancelable: false } // impede que o usuário saia sem tomar uma decisão
+            );
+          } else {
+            // Se não for duplicado, execute diretamente a lógica de criação ou edição do agendamento
+            if (EditAgendamento) {
+              await editarAgendamento(fecharModal, EditAgendamento.id, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, [{ id: data.selectedServico }]);
+            } else {
+              await criarAgendamento(navigation, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, [{ id: data.selectedServico }]);
+            }
+          }
+        }}>
+        {({ handleChange, handleBlur, handleSubmit, errors, touched, values }) => (
+          <ScrollView contentContainerStyle={[!EditAgendamento ? styles.main : { backgroundColor: "rgba(0,0,0,0.5)", height: "100%", justifyContent: "center", padding: 20, elevation: 5 }]}>
+            <View style={styles.formContainer}>
+              <Text style={styles.formTitle}>{EditAgendamento ? "Editar Agendamento" : "Novo Agendamento"}</Text>
+              {EditAgendamento && (
+                <TouchableOpacity
+                  style={{ position: "absolute", top: 10, right: 10, zIndex: 1, backgroundColor: "#312fbf", borderRadius: 15, padding: 0 }}
+                  onPress={() => {
+                    fecharModal();
+                  }}>
+                  <Ionicons name="close" size={24} color="#fff" />
+                </TouchableOpacity>
+              )}
+              <FloatingLabelInput labelStyles={styles.labelStyle} containerStyles={styles.input} onChangeText={handleChange("Nome")} value={values.Nome} label="Nome" />
+              {errors.Nome && touched.Nome ? <Text style={styles.error}>{errors.Nome}</Text> : null}
+              <FloatingLabelInput labelStyles={styles.labelStyle} containerStyles={styles.input} onChangeText={handleChange("Telefone")} value={values.Telefone} label="Telefone" keyboardType="numeric" />
+              {errors.Telefone && touched.Telefone ? <Text style={styles.error}>{errors.Telefone}</Text> : null}
+              {show && <DateTimePicker testID="dateTimePicker" value={date} mode="date" is24Hour={true} display="calendar" onChange={onChange} style={styles.datePicker} />}
+              {show && (
                 <DateTimePicker
-                    testID="dateTimePicker"
-                    value={date}
-                    mode="date" // Modo de data
-                    is24Hour={true}
-                    display="calendar"
-                    onChange={onChange}
-                    style={styles.input}
+                  testID="dateTimePicker"
+                  value={date}
+                  mode="date" // Modo de data
+                  is24Hour={true}
+                  display="calendar"
+                  onChange={onChange}
+                  style={styles.input}
                 />
-            )}
-            <TextInput
-                style={styles.input}
-                onChangeText={handleChange('date')}
-                value={DateString}
-                onPress={() => setShow(true)}
-            />
+              )}
+              <Pressable
+                onPress={() => {
+                  setShow(true);
+                }}>
+                <TextInput editable={false} style={[styles.input, { color: "black" }]} value={DateString} />
+                <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="calendar" size={24} color="#312fbf" onPress={() => setShow(true)} />
+              </Pressable>
 
-            {showtime && (
-                <DateTimePicker
-                    value={time}
-                    mode="time"
-                    is24Hour={true}
-                    display="clock"
-                    onChange={onChangeTime}
-                    style={styles.input}
-                />
-            )}
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    onChangeText={handleChange('Hora')}
-                    value={timeString}
-                    onPress={() => setShowtime(true)}
-                />
+              {showtime && <DateTimePicker value={time} mode="time" is24Hour={true} display="clock" onChange={onChangeTime} style={styles.input} />}
+              <Pressable
+                style={styles.inputContainer}
+                onPress={() => {
+                  setShowtime(true);
+                }}>
+                <TextInput style={[styles.input, { color: "black" }]} editable={false} value={timeString} />
+                <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="time" size={24} color="#312fbf" onPress={() => setShowtime(true)} />
+              </Pressable>
+
+              <Picker selectedValue={data.selectedPrestador} style={styles.picker} onValueChange={handlePrestadorChange}>
+                <Picker.Item label="Selecione um prestador" />
+                {data.prestadores.map((prestador) => (
+                  <Picker.Item key={prestador.id} label={prestador.Nome} value={prestador.id} />
+                ))}
+              </Picker>
+              {errors.Prestador && touched.Prestador ? <Text style={styles.error}>{errors.Prestador}</Text> : null}
+              <Picker selectedValue={data.selectedServico} style={styles.picker} onValueChange={handleServicoChange}>
+                <Picker.Item label="Selecione um serviço" />
+                {data.servicos.map((servico) => (
+                  <Picker.Item key={servico.id} label={servico.Nome} value={servico.id} />
+                ))}
+              </Picker>
+              {errors.Servico && touched.Servico ? <Text style={styles.error}>{errors.Servico}</Text> : null}
+              <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+                <Text style={styles.submitButtonText}>{EditAgendamento ? "Editar" : "Cadastrar"}</Text>
+              </TouchableOpacity>
             </View>
-
-            <Picker
-              selectedValue={data.selectedPrestador}
-              style={styles.picker}
-              onValueChange={handlePrestadorChange}
-            >
-              <Picker.Item label="Selecione um prestador" value="" />
-              {data.prestadores.map((prestador) => (
-                  <Picker.Item key={prestador.id} label={prestador.nome} value={prestador.id} />
-              ))}
-            </Picker>
-            {errors.Prestador && touched.Prestador ? (
-                <Text style={styles.error}>{errors.Prestador}</Text>
-            ) : null}
-
-            <Picker
-              selectedValue={data.selectedServico}
-              style={styles.picker}
-              onValueChange={handleServicoChange}
-            >
-              <Picker.Item label="Selecione um serviço" value="" />
-              {data.servicos.map((servico) => (
-                  <Picker.Item key={servico.id} label={servico.nome} value={servico.id} />
-              ))}
-            </Picker>
-            {errors.Servico && touched.Servico ? (
-                <Text style={styles.error}>{errors.Servico}</Text>
-            ) : null}
-
-            <View style={{ marginTop: 10, flexDirection: "row", justifyContent: "center" }}>
-                <Button
-                    title={EditAgendamento ? "Editar" : "Cadastrar"}
-                    onPress={handleSubmit} // Chama o handleSubmit para validar o formulário
-                />
-            </View>
-          </View>
-      )}
-
-    </Formik>
+          </ScrollView>
+        )}
+      </Formik>
+    </>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "white", alignSelf: "center", width: "90%", padding: 30, borderRadius: 20,
-    justifyContent: "space-between",
+  main: {
+    flexGrow: 1,
+    backgroundColor: "#f8f9fa",
+    padding: 20,
+    justifyContent: "center",
   },
-
-  picker: {
-    height: 50,
-    width: '100%',
-    backgroundColor: '#262626', // Cor de fundo do Picker
-    color: 'white', // Cor do texto selecionado
-    borderColor: '#007bff',
-    borderWidth: 1,
+  formContainer: {
+    backgroundColor: "white",
     borderRadius: 10,
-    marginBottom: 10
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
-
-  labelStyle: {
-    backgroundColor: "white", paddingHorizontal: 10, 
+  formTitle: {
+    fontSize: 22,
+    fontWeight: "bold",
+    textAlign: "center",
+    color: "#312fbf",
+    marginBottom: 20,
   },
-
   input: {
-    textAlign: 'center',
-    height: 45,
-    color: 'black',
-    fontSize: 20,
-    borderColor: 'black',
-    borderWidth: 1,
-    marginBottom: 10,
+    backgroundColor: "#F3F4F6",
+    borderRadius: 5,
     paddingHorizontal: 10,
+    marginVertical: 10,
+    height: 50,
+    justifyContent: "center",
+  },
+  inputText: {
+    color: "#333",
+    fontSize: 16,
+  },
+  labelStyle: {
+    color: "#312fbf",
+  },
+  picker: {
+    backgroundColor: "#F3F4F6",
+    borderRadius: 5,
+    marginVertical: 10,
+    height: 50,
+  },
+  submitButton: {
+    backgroundColor: "#312fbf",
+    paddingVertical: 15,
+    borderRadius: 5,
+    alignItems: "center",
+    marginTop: 20,
+  },
+  submitButtonText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  error: {
+    color: "red",
+    fontSize: 12,
+    marginBottom: 10,
+    marginTop: -8,
+    paddingLeft: 10,
+  },
+  datePicker: {
+    backgroundColor: "#F3F4F6",
     borderRadius: 5,
   },
-  inputContainer: {
-    marginBottom: 10,
-  },
+
   error: {
     color: "red",
     padding: 0,

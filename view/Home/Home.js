@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import { View, Text, FlatList, TouchableOpacity, ScrollView, Alert, Image, Modal, Pressable, Button, InteractionManager } from "react-native";
 import moment from "moment";
 import "moment/locale/pt-br"; // Importa o locale em português
+import { StatusBar } from "expo-status-bar";
 import NovoAgendamento from "./NovoAgendamento";
 import { useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -255,19 +256,13 @@ const Home = () => {
     setAgendamentos(result.data);
   }
 
-
   useEffect(() => {
     initialize();
     obter();
   }, []);
 
   const filterAgendamentos = (agendamento) => {
-    if(agendamento){
-
-      return agendamento.filter((agendamento) => agendamento.Data === selectedDate.fullDate);
-    }else{
-      return [];
-    }
+    return agendamento.filter((agendamento) => agendamento.Data === selectedDate.fullDate);
   };
 
   const scrollToDay = (item) => {
@@ -301,9 +296,10 @@ const Home = () => {
 
   // const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
 
-
   return (
     <>
+      <StatusBar style="light" />
+
       <View style={[styles.container]}>
         <TouchableOpacity
           style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }}
@@ -349,11 +345,7 @@ const Home = () => {
             justifyContent: "center",
             alignItems: "center",
           }}>
-          <Pressable style={{ width: "90%" }}>
-            {agendamentoSelecionado && (
-             <Atendimento agendamentoSelecionado={agendamentoSelecionado} formatarData={formatarData} setmodalCompleteAgendamento={setmodalCompleteAgendamento}/>
-            )}
-          </Pressable>
+          <Pressable style={{ width: "90%" }}>{agendamentoSelecionado && <Atendimento agendamentoSelecionado={agendamentoSelecionado} formatarData={formatarData} setmodalCompleteAgendamento={setmodalCompleteAgendamento} />}</Pressable>
         </Pressable>
       </Modal>
     </>
@@ -364,10 +356,12 @@ const Main = () => {
   const Stack = createStackNavigator();
 
   return (
-    <Stack.Navigator initialRouteName="Main">
-      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-      <Stack.Screen name="NovoAgendamento" component={NovoAgendamento} options={{ headerTitle: "Novo Agendamento", headerTitleAlign: "center" }} />
-    </Stack.Navigator>
+    <>
+      <Stack.Navigator initialRouteName="Main">
+        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+        <Stack.Screen name="NovoAgendamento" component={NovoAgendamento} options={{ headerTitle: "Novo Agendamento", headerTitleAlign: "center" }} />
+      </Stack.Navigator>
+    </>
   );
 
   /*  <View style={{height:"100%", justifyContent:"center"}}>
