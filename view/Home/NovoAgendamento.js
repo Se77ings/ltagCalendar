@@ -60,8 +60,12 @@ async function criarAgendamento(navigation, nome, telefone, data, hora, Colabora
     console.log(agendamento);
 
     var res = await adicionarAgendamento(agendamento);
+    console.log("retorno do adicionar agendamento")
+    console.log(res)
 
-    navigation.navigate("Home");
+    if(res.success) {
+      navigation.navigate("Home");    
+    }
   } catch (error) {
     console.error("Erro ao inserir o agendamento:", error);
   }
