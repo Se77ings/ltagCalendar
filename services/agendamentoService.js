@@ -25,9 +25,9 @@ export default async function adicionarAgendamento(agendamento) {
       VincularAgendamentoServicos(agendamentoid, servico.id);
     });
 
-    agendamento.Colaboradores.forEach((colaborador) => {
-      DesvincularAtendimentoColaboradores(agendamentoid, colaborador.id);
-      VincularAtendimentoColaboradores(agendamentoid, colaborador.id);
+    agendamento.Colaboradores.forEach(colaborador => {
+      DesvincularAtendimentoColaboradores(agendamento.Id, colaborador.Id);
+      VincularAtendimentoColaboradores(agendamento.Id, colaborador.Id)
     });
 
     console.log("Agendamento criado com sucesso.");

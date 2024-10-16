@@ -69,7 +69,8 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento, handleUp
     errors: {},
   });
   useEffect(()=>{
-    // handleUpdate(); 
+    console.log(handleUpdate)
+    handleUpdate();
   },[])
   
   useEffect(() => {
