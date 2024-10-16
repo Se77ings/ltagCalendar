@@ -30,7 +30,7 @@ export default async function adicionarServico(servico) {
   }
 
   export async function AtualizarServicoAsync(servico) {
-    console.log(servico)
+    console.log("entrei no atualizar")
     try {
       validarServico(servico);
       
@@ -116,7 +116,6 @@ export async function DesabilitarServicoAsync(id) {
 
   export async function ObterTodosServicosAsync() {
     try {
-      console.log('Entrei no obter todos servicos');
       var allRows = await ObterServicosPorFavorito();
       return {
         success: true,
@@ -149,4 +148,22 @@ export async function DesabilitarServicoAsync(id) {
         error: error
       }
     }
+}
+
+export async function ExisteServicoComColaboradorAsync(colaboradorId) {
+  try {
+    var result = await ExisteServicoComColaborador(colaboradorId);
+
+    return {
+      success: true,
+      data: result,
+      error: null
+    }; 
+  } catch (error) {
+    return {
+      success: false,
+      data: null,
+      error: error
+    }
+  }
 }
