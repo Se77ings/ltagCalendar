@@ -162,6 +162,8 @@ const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, setmodalComple
   };
 
   const finalizarAgendamento = (item) => {
+    console.log("CLiquei...");
+    console.log(item);
     setAgendamentoSelecionado(item);
     setmodalCompleteAgendamento(true);
   };
@@ -238,6 +240,13 @@ const Home = () => {
   /*Mudar para um componente*/
   const [selectedItems, setSelectedItems] = useState([]);
   const navigation = useNavigation();
+  const [update, setUpdate] = useState(false);
+
+  function handleUpdate() {
+    console.log("exists")
+    setUpdate(!update);
+  }
+
 
   const onSelectedItemsChange = useCallback((items) => {
     setSelectedItems(items);
@@ -262,6 +271,8 @@ const Home = () => {
   }, []);
 
   const filterAgendamentos = (agendamento) => {
+    console.log(agendamento);
+
     return agendamento.filter((agendamento) => agendamento.Data === selectedDate.fullDate);
   };
 
@@ -332,7 +343,7 @@ const Home = () => {
           }}
           style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
           <Pressable>
-            <NovoAgendamento fecharModal={() => fecharModal()} EditAgendamento={agendamentoSelecionado} />
+            <NovoAgendamento fecharModal={() => fecharModal()} EditAgendamento={agendamentoSelecionado} handleUpdate={() => handleUpdate()} />
           </Pressable>
         </Pressable>
       </Modal>

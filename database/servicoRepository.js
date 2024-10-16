@@ -39,9 +39,9 @@ export async function ExisteAtendimentoComServico(servicoId) {
     return result.total > 0;
 }
 
-export async function RemoverServico(id) { //TODO: no ServicoService preciso validar se tem algum atendimento com esse serviço
+export async function DesabilitarServico(id) { //TODO: no ServicoService preciso validar se tem algum atendimento com esse serviço
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
-    await db.runAsync('DELETE FROM servico WHERE id = ?;', id);
+    await db.runAsync('UPDATE servico SET Desabilitado = 1 WHERE id = ?;', id);
 }
 
 export async function AtualizarServico(servico) { //TODO: no ServicoService preciso validar se tem algum atendimento com esse serviço
@@ -54,4 +54,10 @@ export async function VincularServicoColaborador(request) {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
     await db.runAsync('INSERT INTO ServicosPorColaborador (ServicoId, ColaboradorId, Afinidade) VALUES (?, ?, ?);',
         request.servicoId, request.colaboradorId, request.afinidade);
+}
+
+export async function DesvincularServicoColaborador(request) {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true });
+    await db.runAsync('DELETE FROM ServicosPorColaborador WHERE ServicoId = ? AND ColaboradorId = ?;', 
+        [request.servicoId, request.colaboradorId]);
 }

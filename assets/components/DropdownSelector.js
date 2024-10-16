@@ -58,8 +58,6 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
   }, [itensSelecionados]);
 
   useEffect(() => {
-    console.log("Nesse caso, o selectedItems é:");
-    console.log(selectedItems);
     if (selectedItems.length > 0) {
       console.log("Passei selectedItem!");
       console.log(selectedItems);

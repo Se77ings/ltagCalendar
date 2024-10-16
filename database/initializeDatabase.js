@@ -43,6 +43,7 @@ export default async function initializaDatabase() {
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       Nome TEXT NOT NULL,
       Descricao TEXT NOT NULL,
+      Desabilitado INTEGER NOT NULL CHECK (Desabilitado IN (0, 1)),
       Favorito INTEGER NOT NULL CHECK (Favorito IN (0, 1))
     );
 

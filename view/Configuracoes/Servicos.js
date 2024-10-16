@@ -195,8 +195,8 @@ const Servicos = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: "space-between",
+    flexGrow: 1,
+    justifyContent: "flex-start",
     paddingTop: 0,
   },
   switchContainer: {

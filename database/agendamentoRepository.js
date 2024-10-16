@@ -16,11 +16,11 @@ export default async function CriarAgendamento(agendamento) { //TODO: no serviç
         request.colaboradorId, request.agendamentoId);
   }
 
-export async function VincularAtendimentoColaboradores(request) { 
+export async function VincularAtendimentoColaboradores(agendamentoId, colaboradorId) { 
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );
          
     await db.runAsync('INSERT INTO AgendamentoColaborador (AgendamentoId, ColaboradorId) VALUES (?, ?);',
-      request.agendamentoId, request.colaboradorId);
+      agendamentoId, colaboradorId);
   }
 
   export async function DesvincularAtendimentoColaboradores(agendamentoId, colaboradorId) {
@@ -37,11 +37,11 @@ export async function DesvincularAgendamentoServicos(agendamentoId, servicoId) {
     [agendamentoId, servicoId]);
 }
 
-  export async function VincularAgendamentoServicos(request) { 
+  export async function VincularAgendamentoServicos(agendamentoId, servicoId) { 
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );
          
     await db.runAsync('INSERT INTO AgendamentoServicos (AgendamentoId, ServicoId) VALUES (?, ?);',
-      request.agendamentoId, request.servicoId);
+      agendamentoId, servicoId);
   }
 
 export async function ObterAgendamentos() {

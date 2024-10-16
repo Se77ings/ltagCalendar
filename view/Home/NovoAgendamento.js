@@ -45,57 +45,22 @@ async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, Co
   }
 }
 
-//acho que o problema vai ser em alguma letra maiuscula o minuscula, pq aparentemente, o back recebe os dados daqui
-async function criarAgendamento(navigation, nome, telefone, data, hora, Colaboradores, servico) {
-  console.log("Dados que vou enviar ")
-  try {
-    const agendamento = {
-      nome,
-      telefone,
-      data,
-      hora,
-      servico,
-      Colaboradores,
-    };
-    console.log(agendamento);
 
-    var res = await adicionarAgendamento(agendamento);
-    console.log("retorno do adicionar agendamento")
-    console.log(res)
-
-    navigation.navigate("Home");
-  } catch (error) {
-    console.error("Erro ao inserir o agendamento:", error);
-  }
-}
-
-export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
+export default function NovoAgendamento({ fecharModal, EditAgendamento, handleUpdate }) {
   const navigation = useNavigation();
-
-  useEffect(() => {
-    // Verifica se EditAgendamento não está vazio
-    if (EditAgendamento) {
-      // Lógica a ser executada quando EditAgendamento tem valor
-      setDate(new Date(EditAgendamento.Data)); // Definindo o estado da data
-      setTime(new Date(`1970-01-01T${EditAgendamento.Hora}:00`)); // Definindo o estado da hora
-      setDateString(EditAgendamento.Data); // Atualiza a string da data
-      setTimeString(EditAgendamento.Hora); // Atualiza a string da hora
-    } else {
-      // Lógica a ser executada quando EditAgendamento está vazio
-
-      setDate(new Date()); // Reseta para a data atual
-      setTime(new Date()); // Reseta para a hora atual
-      setDateString(new Date().toISOString().split("T")[0]); // Define a string da data atual
-      setTimeString(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })); // Define a string da hora atual
-    }
-  }, [EditAgendamento]);
-
+  const formatTime = (date) => {
+    return date.toLocaleTimeString("pt-BR", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false, // Desativa o formato de 12 horas
+    });
+  };
   const [date, setDate] = useState(new Date());
   const [show, setShow] = useState(false);
   const [DateString, setDateString] = useState(date.toISOString().split("T")[0]);
   const [time, setTime] = useState(new Date());
   const [showtime, setShowtime] = useState(false);
-  const [timeString, setTimeString] = useState(time);
+  const [timeString, setTimeString] = useState(formatTime(time));
   const [data, setData] = useState({
     prestadores: [],
     servicos: [],
@@ -103,9 +68,60 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
     selectedServico: "",
     errors: {},
   });
-
+  useEffect(()=>{
+    // handleUpdate(); 
+  },[])
+  
+  useEffect(() => {
+    setTimeString(formatTime(time));
+  }, [time]);
+  
+  useEffect(() => {
+    // Verifica se EditAgendamento não está vazio
+    if (EditAgendamento) {
+      setDate(new Date(EditAgendamento.Data)); // Definindo o estado da data
+      setTime(new Date(`1970-01-01T${EditAgendamento.Hora}:00`)); // Definindo o estado da hora
+      setDateString(EditAgendamento.Data); // Atualiza a string da data
+      setTimeString(EditAgendamento.Hora); // Atualiza a string da hora
+    } else {
+      // Lógica a ser executada quando EditAgendamento está vazio
+      setDate(new Date()); // Reseta para a data atual
+      setTime(new Date()); // Reseta para a hora atual
+      setDateString(new Date().toISOString().split("T")[0]); // Define a string da data atual
+      console.log("eh pra setar ioss:", new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }));
+      setTimeString(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })); // Define a string da hora atual
+    }
+  }, [EditAgendamento]);
+  
+  //acho que o problema vai ser em alguma letra maiuscula o minuscula, pq aparentemente, o back recebe os dados daqui
+  async function criarAgendamento(navigation, nome, telefone, data, hora, Colaboradores, servico, setUpdate) {
+    console.log("Dados que vou enviar ");
+    try {
+      const agendamento = {
+        nome,
+        telefone,
+        data,
+        hora,
+        servico,
+        Colaboradores,
+      };
+      console.log(agendamento);
+  
+      var res = await adicionarAgendamento(agendamento);
+      console.log("retorno do adicionar agendamento");
+      console.log(res);
+  
+      navigation.navigate("Home");
+      console.log("Cheguei aqui")
+      
+    } catch (error) {
+      console.error("Erro ao inserir o agendamento:", error);
+    }
+  }
   const fetchColaboradores = async () => {
     ObterColaboradores().then((result) => {
+      console.log("Certeza!!!")
+      console.log(result)
       setData((prevData) => ({ ...prevData, prestadores: result }));
     });
   };
@@ -258,7 +274,7 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento }) {
                 onPress={() => {
                   setShowtime(true);
                 }}>
-                <TextInput style={[styles.input, { color: "black" }]} editable={false} value={timeString} />
+                <TextInput style={[styles.input, { color: "black" }]} editable={false} value={formatTime(time)} />
                 <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="time" size={24} color="#312fbf" onPress={() => setShowtime(true)} />
               </Pressable>
               {/* 

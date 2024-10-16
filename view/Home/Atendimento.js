@@ -1,61 +1,21 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { View, Text, FlatList, TouchableOpacity, ScrollView, Alert, Image, Modal, Pressable, Button, InteractionManager } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { createStackNavigator } from "@react-navigation/stack";
-import initializaDatabase from "../../database/initializeDatabase";
-import adicionarAgendamento, { obterAgendamentos, RemoverAgendamentoAsync } from "../../services/agendamentoService";
-import { ObterServicosPorColaboradorAsync, ObterTodosServicosAsync } from "../../services/servicoService";
-import SectionedMultiSelect from "react-native-sectioned-multi-select";
-
 import styles from "../../assets/styles/styles";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import DropdownSelector from "../../assets/components/DropdownSelector";
+import { ObterServicosPorFavorito } from "../../database/servicoRepository";
 
 const Atendimento = ({ agendamentoSelecionado, formatarData, setmodalCompleteAgendamento }) => {
   const [todosServicos, setTodosServicos] = useState([]);
+  const [todosColaboradores, setTodosColaboradores] = useState([]);
   const [servicosSelecionados, setServicosSelecionados] = useState([]);
   const [colaboradoresSelecionados, setColaboradoresSelecionados] = useState([]);
-  const fakeData = [
-    {
-      name: "Favoritos",
-      id: 0,
-      children: [
-        { name: "Colaborador A", id: 20 },
-        { name: "Colaborador B", id: 21 },
-      ],
-    },
-    {
-      name: "Outros",
-      id: 1,
-      children: [
-        { name: "Colaborador C", id: 22 },
-        { name: "Colaborador D", id: 23 },
-        { name: "Colaborador E", id: 24 },
-        { name: "Colaborador F", id: 25 },
-      ],
-    },
-  ];
-
-  async function obterServicos() {
-    const result = [
-      {
-        name: "Serviços",
-        id: 0,
-        children: [
-          { name: "Serviço A", id: 1 },
-          { name: "Serviço B", id: 2 },
-        ],
-      },
-    ];
-
-    setTodosServicos(result);
-  }
 
   useEffect(() => {
-    obterServicos();
+    ObterServicosPorFavorito().then((result) => {
+    });
   }, []);
 
- 
   return (
     <View
       style={{
@@ -105,8 +65,8 @@ const Atendimento = ({ agendamentoSelecionado, formatarData, setmodalCompleteAge
           </Text>
         </View>
         <Text style={styles.infoLabel}>Serviço(s):</Text>
-        <DropdownSelector lista={todosServicos} label="serviço(s)" icone={"briefcase-outline"} callbackSelecionados={setServicosSelecionados}/>
-        <DropdownSelector lista={fakeData} label={"colaborador(es)"} icone={"people-outline"}  callbackSelecionados={setColaboradoresSelecionados}/>
+        <DropdownSelector lista={todosServicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={setServicosSelecionados} selectedItems={servicosSelecionados} opt={"servico"} />
+        {/* <DropdownSelector lista={todosColaboradores} label={"Colaborador(es)"} icone={"person-outline"} callbackSelecionados={setColaboradoresSelecionados} selectedItems={colaboradoresSelecionados} opt={"colaborador"}/> */}
       </View>
 
       <TouchableOpacity
