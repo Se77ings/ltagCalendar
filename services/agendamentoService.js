@@ -13,9 +13,6 @@ import CriarAgendamento, {
 import { RemoverServico } from "../database/servicoRepository";
 
 export default async function adicionarAgendamento(agendamento) {
-  console.log("Dados que recebi:");
-  console.log(agendamento);
-  console.log("=====================================");
   try {
     validarAgendamento(agendamento);
 
@@ -26,8 +23,8 @@ export default async function adicionarAgendamento(agendamento) {
     });
 
     agendamento.Colaboradores.forEach(colaborador => {
-      DesvincularAtendimentoColaboradores(agendamento.Id, colaborador.Id);
-      VincularAtendimentoColaboradores(agendamento.Id, colaborador.Id)
+      DesvincularAtendimentoColaboradores(agendamentoid, colaborador.id);
+      VincularAtendimentoColaboradores(agendamentoid, colaborador.id)
     });
 
     console.log("Agendamento criado com sucesso.");
@@ -117,21 +114,20 @@ export async function VerificarDuplicadosAsync(data, hora) {
 }
 
 export async function AtualizarAgendamentoAsync(agendamento) {
-  console.log(agendamento);
   try {
     validarAgendamento(agendamento);
 
     await AtualizarAgendamento(agendamento);
 
-    agendamento.servicos.forEach((servico) => {
-      DesvincularAgendamentoServicos(agendamento.Id, servico.Id);
-      VincularAgendamentoServicos(agendamentoid, servico.Id);
+    agendamento.servico.forEach((servico) => {
+      DesvincularAgendamentoServicos(agendamento.id, servico.id);
+      VincularAgendamentoServicos(agendamento.id, servico.id);
     });
 
     agendamento.Colaboradores.forEach((colaborador) => {
-      DesvincularAtendimentoColaboradores(agendamento.Id, colaborador.Id);
-      VincularAtendimentoColaboradores(agendamento.Id, colaborador.Id);
-    });
+      DesvincularAtendimentoColaboradores(agendamento.id, colaborador.id);
+      VincularAtendimentoColaboradores(agendamento.i, colaborador.id);
+  i});
 
     return {
       success: true,

@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     height: 43,
     textAlign: "center",
     borderRadius: 50,
+    
   },
 
   header: {

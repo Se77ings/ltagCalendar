@@ -6,7 +6,7 @@ export default async function initializaDatabase() {
   await db.execAsync(`
     -- INSERT INTO servico (Nome, Descricao, Favorito) VALUES ('Corte de Cabelo', 'Corte de cabelo masculino e feminino', 1);
     -- INSERT INTO servico (Nome, Descricao, Favorito) VALUES ('Barba', 'Barba', 0);
-    --Descomentar caso queira zerar as tabelas (excluir antes de enviar para avaliação)
+    -- Descomentar caso queira zerar as tabelas (excluir antes de enviar para avaliação)
     -- Drop Table IF EXISTS agendamento;
     -- Drop Table IF EXISTS servico;
     -- Drop Table IF EXISTS colaborador;

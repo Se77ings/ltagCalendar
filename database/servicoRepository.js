@@ -3,9 +3,10 @@ import * as SQLite from 'expo-sqlite';
 
 export default async function CriarServico(servico) {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );
+    
          
-    await db.runAsync('INSERT INTO servico (Nome, Descricao, Favorito) VALUES (?, ?, ?);',
-        servico.nome, servico.descricao, servico.favorito);
+    await db.runAsync('INSERT INTO servico (Nome, Descricao, Favorito, Desabilitado) VALUES (?, ?, ?, ?);',
+        servico.nome, servico.descricao, servico.favorito, 0);
 }
 
 export async function ObterServicosPorFavorito() {
