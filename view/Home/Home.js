@@ -131,7 +131,7 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay })
   );
 };
 
-const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, setmodalCompleteAgendamento }) => {
+const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, setmodalCompleteAgendamento, obter }) => {
   const excluirAgendamento = (id) => {
     Alert.alert(
       "Confirmar Exclusão",
@@ -240,13 +240,6 @@ const Home = () => {
   /*Mudar para um componente*/
   const [selectedItems, setSelectedItems] = useState([]);
   const navigation = useNavigation();
-  const [update, setUpdate] = useState(false);
-
-  function handleUpdate() {
-    console.log("exists")
-    setUpdate(!update);
-  }
-
 
   const onSelectedItemsChange = useCallback((items) => {
     setSelectedItems(items);
@@ -306,6 +299,14 @@ const Home = () => {
   };
 
   // const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
+  const [update, setUpdate] = useState(false);
+
+  useEffect(() => {
+    if (update) {
+      obter();
+      setUpdate(false);
+    }
+  });
 
   return (
     <>
@@ -326,7 +327,7 @@ const Home = () => {
           </View>
           {filterAgendamentos(agendamentos).length != 0 ? (
             <>
-              <Cards data={filterAgendamentos(agendamentos)} setAgendamentoSelecionado={setAgendamentoSelecionado} setmodalCreate={setmodalCreate} setmodalCompleteAgendamento={setmodalCompleteAgendamento} />
+              <Cards data={filterAgendamentos(agendamentos)} setAgendamentoSelecionado={setAgendamentoSelecionado} setmodalCreate={setmodalCreate} setmodalCompleteAgendamento={setmodalCompleteAgendamento} obter={obter} />
             </>
           ) : (
             <View style={{ flex: 1, justifyContent: "center" }}>
@@ -343,7 +344,7 @@ const Home = () => {
           }}
           style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
           <Pressable>
-            <NovoAgendamento fecharModal={() => fecharModal()} EditAgendamento={agendamentoSelecionado} handleUpdate={() => handleUpdate()} />
+            <NovoAgendamento fecharModal={() => fecharModal()} EditAgendamento={agendamentoSelecionado} setUpdate={setUpdate} />
           </Pressable>
         </Pressable>
       </Modal>

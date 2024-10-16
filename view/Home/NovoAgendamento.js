@@ -45,8 +45,31 @@ async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, Co
   }
 }
 
+async function criarAgendamento(navigation, nome, telefone, data, hora, Colaboradores, servico) {
+  console.log("Dados que vou enviar ");
+  try {
+    const agendamento = {
+      nome,
+      telefone,
+      data,
+      hora,
+      servico,
+      Colaboradores,
+    };
+    console.log(agendamento);
 
-export default function NovoAgendamento({ fecharModal, EditAgendamento, handleUpdate }) {
+    var res = await adicionarAgendamento(agendamento);
+    console.log("retorno do adicionar agendamento");
+    console.log(res);
+
+    navigation.navigate("Home");
+    console.log("Cheguei aqui");
+  } catch (error) {
+    console.error("Erro ao inserir o agendamento:", error);
+  }
+}
+
+export default function NovoAgendamento({ fecharModal, EditAgendamento, setUpdate }) {
   const navigation = useNavigation();
   const formatTime = (date) => {
     return date.toLocaleTimeString("pt-BR", {
@@ -68,15 +91,16 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento, handleUp
     selectedServico: "",
     errors: {},
   });
-  useEffect(()=>{
-    console.log(handleUpdate)
-    handleUpdate();
-  },[])
-  
+
+  useEffect(() => {
+    if (setUpdate) {
+      setUpdate(true);
+    }
+  }, []);
   useEffect(() => {
     setTimeString(formatTime(time));
   }, [time]);
-  
+
   useEffect(() => {
     // Verifica se EditAgendamento não está vazio
     if (EditAgendamento) {
@@ -93,36 +117,13 @@ export default function NovoAgendamento({ fecharModal, EditAgendamento, handleUp
       setTimeString(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })); // Define a string da hora atual
     }
   }, [EditAgendamento]);
-  
+
   //acho que o problema vai ser em alguma letra maiuscula o minuscula, pq aparentemente, o back recebe os dados daqui
-  async function criarAgendamento(navigation, nome, telefone, data, hora, Colaboradores, servico, setUpdate) {
-    console.log("Dados que vou enviar ");
-    try {
-      const agendamento = {
-        nome,
-        telefone,
-        data,
-        hora,
-        servico,
-        Colaboradores,
-      };
-      console.log(agendamento);
-  
-      var res = await adicionarAgendamento(agendamento);
-      console.log("retorno do adicionar agendamento");
-      console.log(res);
-  
-      navigation.navigate("Home");
-      console.log("Cheguei aqui")
-      
-    } catch (error) {
-      console.error("Erro ao inserir o agendamento:", error);
-    }
-  }
+
   const fetchColaboradores = async () => {
     ObterColaboradores().then((result) => {
-      console.log("Certeza!!!")
-      console.log(result)
+      console.log("Certeza!!!");
+      console.log(result);
       setData((prevData) => ({ ...prevData, prestadores: result }));
     });
   };
