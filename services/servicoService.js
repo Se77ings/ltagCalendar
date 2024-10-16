@@ -1,4 +1,4 @@
-import CriarServico, { AtualizarServico, ExisteAtendimentoComServico, ObterServicosPorColaborador, ObterServicosPorFavorito, RemoverServico, VincularServicoColaborador } from "../database/servicoRepository";
+import CriarServico, { AtualizarServico, ExisteAtendimentoComServico, ExisteServicoComColaborador, ObterServicosPorColaborador, ObterServicosPorFavorito, RemoverServico, VincularServicoColaborador } from "../database/servicoRepository";
 
 export default async function adicionarServico(servico) {
     try {
@@ -30,7 +30,7 @@ export default async function adicionarServico(servico) {
   }
 
   export async function AtualizarServicoAsync(servico) {
-    console.log(servico)
+    console.log("entrei no atualizar")
     try {
       validarServico(servico);
       
@@ -54,7 +54,8 @@ export default async function adicionarServico(servico) {
 
   
 export async function RemoverServicoAsync(id) {
-    try {
+  console.log("entrei no excluir");
+  try {
         await RemoverServico(id);
         console.log('Serviço removido com sucesso.');
         
@@ -116,7 +117,6 @@ export async function RemoverServicoAsync(id) {
 
   export async function ObterTodosServicosAsync() {
     try {
-      console.log('Entrei no obter todos servicos');
       var allRows = await ObterServicosPorFavorito();
       return {
         success: true,
@@ -149,4 +149,22 @@ export async function RemoverServicoAsync(id) {
         error: error
       }
     }
+}
+
+export async function ExisteServicoComColaboradorAsync(colaboradorId) {
+  try {
+    var result = await ExisteServicoComColaborador(colaboradorId);
+
+    return {
+      success: true,
+      data: result,
+      error: null
+    }; 
+  } catch (error) {
+    return {
+      success: false,
+      data: null,
+      error: error
+    }
+  }
 }

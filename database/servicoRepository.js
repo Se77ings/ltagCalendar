@@ -39,6 +39,13 @@ export async function ExisteAtendimentoComServico(servicoId) {
     return result.total > 0;
 }
 
+export async function ExisteServicoComColaborador(colaboradorId) {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
+    const result = await db.getAsync('SELECT COUNT(*) as total FROM ServicosPorColaborador WHERE ColaboradorId = ?;', [colaboradorId]);
+
+    return result.total > 0;
+}
+
 export async function RemoverServico(id) { //TODO: no ServicoService preciso validar se tem algum atendimento com esse serviço
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
     await db.runAsync('DELETE FROM servico WHERE id = ?;', id);
