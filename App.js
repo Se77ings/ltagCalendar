@@ -8,43 +8,42 @@ import Config from "./view/Configuracoes/Config";
 import Header from "./assets/components/Header";
 
 export default function App() {
-
   const Tab = createBottomTabNavigator();
   return (
-    <NavigationContainer>
-      <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d" } }}>
-        <Tab.Screen
-          name="Main"
-          component={Main}
-          options={{
-            headerShown: false,
-            // headerShown: true,
-            // headerTitle: () => <Header />,
-            tabBarLabel: "Início",
-            tabBarLabelStyle: { fontSize: 12, color: "white" },
-            tabBarIcon: () => (
-              <View style={styles.iconDiv}>
-                <Ionicons name="home" color={"white"} size={22} />
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Configurações"
-          component={Config}
-          options={{
-            headerShown: false,
-            tabBarLabel: "Configurações",
-            tabBarLabelStyle: { fontSize: 12, color: "white" },
-            tabBarIcon: () => (
-              <View style={styles.iconDiv}>
-                <Ionicons name="settings" color={"white"} size={22} />
-              </View>
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+      <NavigationContainer>
+        <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d" } }}>
+          <Tab.Screen
+            name="Main"
+            component={Main}
+            options={{
+              headerShown: false,
+              // headerShown: true,
+              // headerTitle: () => <Header />,
+              tabBarLabel: "Início",
+              tabBarLabelStyle: { fontSize: 12, color: "white" },
+              tabBarIcon: () => (
+                <View style={styles.iconDiv}>
+                  <Ionicons name="home" color={"white"} size={22} />
+                </View>
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Configurações"
+            component={Config}
+            options={{
+              headerShown: false,
+              tabBarLabel: "Configurações",
+              tabBarLabelStyle: { fontSize: 12, color: "white" },
+              tabBarIcon: () => (
+                <View style={styles.iconDiv}>
+                  <Ionicons name="settings" color={"white"} size={22} />
+                </View>
+              ),
+            }}
+          />
+        </Tab.Navigator>
+      </NavigationContainer>
   );
 }
 
