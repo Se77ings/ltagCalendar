@@ -2,7 +2,6 @@ import * as SQLite from "expo-sqlite";
 
 export default async function CriarColaborador(colaborador) {
 	const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
-	console.log("Log no CriarColaborador!!");
 	let insertedId = await db.runAsync("INSERT INTO colaborador (Nome) VALUES (?);", colaborador.nome);
 	return insertedId.lastInsertRowId;
 }

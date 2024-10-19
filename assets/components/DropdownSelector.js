@@ -10,8 +10,7 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
   // selectedItems = [{"Afinidade": 1, "Descricao": "Corte de cabelo feminino", "Favorito": 0, "Nome": "Serviço B", "id": 2}, {"Afinidade": 1, "Descricao": "Corte de cabelo masculino", "Favorito": 1, "Nome": "Serviço A", "id": 1}]
   useEffect(() => {
     if (opt == "servico") {
-      console.log("serviço:");
-      console.log(lista);
+
       const favoritos = lista.filter((item) => item.Favorito === 1);
       const outros = lista.filter((item) => item.Favorito === 0);
 
@@ -35,8 +34,6 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
       ];
       setDadosFormatados(dadosAgrupados);
     } else if (opt == "colaborador") {
-      console.log("Colaborador");
-      console.log(lista);
       const dadosAgrupados = [
         {
           name: "Colaboradores",
@@ -52,15 +49,11 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
   }, [lista]);
 
   useEffect(() => {
-    console.log("Item selecionado:");
-    console.log(itensSelecionados);
     callbackSelecionados(itensSelecionados);
   }, [itensSelecionados]);
 
   useEffect(() => {
     if (selectedItems.length > 0) {
-      console.log("Passei selectedItem!");
-      console.log(selectedItems);
       selectedItems.forEach((item) => {
         itensSelecionados.push(item.id);
       });
@@ -71,6 +64,7 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
       hideSearch={true}
       items={dadosFormatados}
       uniqueKey="id"
+      confirmText="Selecionar"
       subKey="children"
       selectText={label}
       showDropDowns={false}
