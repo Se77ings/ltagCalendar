@@ -74,3 +74,10 @@ export async function ExisteServicoComColaborador(colaboradorId) {
     const result = await db.getAsync('SELECT COUNT(*) as total FROM ServicosPorColaborador WHERE ColaboradorId = ?;', [colaboradorId]);
     return result.total > 0;
 }
+
+export async function ExisteServicoComColaborador(colaboradorId) {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
+    const result = await db.getAsync('SELECT COUNT(*) as total FROM ServicosPorColaborador WHERE ColaboradorId = ?;', [colaboradorId]);
+
+    return result.total > 0;
+}
