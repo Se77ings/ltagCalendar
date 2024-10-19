@@ -56,14 +56,14 @@ export default async function adicionarServico(servico) {
 export async function DesabilitarServicoAsync(id) {
   
   try {
-    await DesabilitarServico(id);
-        console.log('Serviço removido com sucesso.');
-        
-        return {
-            success: true,
-            data: null,
-            error: null
-        }; 
+      await DesabilitarServico(id);
+      console.log('Serviço removido com sucesso.');
+      
+      return {
+          success: true,
+          data: null,
+          error: null
+      }; 
     } catch (error) {
       return {
         success: false,
@@ -151,9 +151,9 @@ export async function DesabilitarServicoAsync(id) {
     }
 }
 
-export async function ExisteServicoComColaboradorAsync(colaboradorId) {
+export async function ExisteServicoComColaboradorAsync(servicoId) {
   try {
-    var result = await ExisteServicoComColaborador(colaboradorId);
+    var result = await ExisteServicoComColaborador(servicoId);
 
     return {
       success: true,

@@ -141,9 +141,9 @@ const Servicos = () => {
 
   const handleDelete = async (serviceId) => {
     var res = await ExisteServicoComColaboradorAsync(serviceId);
-    console.log("O serviço vinculado esta retornando vinculado?: " + res.success);
+    console.log("O serviço vinculado esta retornando vinculado?: " + res.success + res.error);
 
-    if(res.success == false){
+    if(res.data == false){
       Alert.alert(
         "Confirmação",
         "Você tem certeza que deseja excluir este serviço?",
@@ -153,7 +153,7 @@ const Servicos = () => {
             text: "Excluir", 
             onPress: async () => {
               var res2 = await DesabilitarServicoAsync(serviceId);
-              console.log("Serviço foi excluido?: " + res2.success);
+              console.log("Serviço foi excluido?: " + res2.error);
               if(res2.success == true){
                 setId("");
                 setNome("");
