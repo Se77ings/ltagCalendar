@@ -53,7 +53,7 @@ const Colaboradores = () => {
         duration: 300,
         useNativeDriver: false,
       }).start();
-    } else {
+    } else {  
       Animated.timing(formAnimation, {
         toValue: 0,
         duration: 300,

@@ -218,7 +218,7 @@ const Servicos = () => {
 
           <Text style={styles.gridTitle}>Servicos Cadastrados:</Text>
           {servicos && servicos.length > 0 ? (
-            <FlatList scrollEnabled={false} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15 }} />
+            <FlatList scrollEnabled={true} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", height:'100%', backgroundColor: "#a3a3c2", borderRadius: 12, flex: 1}} />
           ) : (
             <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flex: 1, justifyContent: "center" }}>
             <Text style={{ textAlign: "center" }}>Nenhum Servico cadastrado</Text>
