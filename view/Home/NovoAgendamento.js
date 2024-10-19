@@ -5,12 +5,12 @@ import { Picker } from "@react-native-picker/picker";
 import { StatusBar } from "expo-status-bar";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
-import {AsyncStorage} from 'react-native';
+import { AsyncStorage } from "react-native";
 
 import { StyleSheet, Text, View, ScrollView, TextInput, Alert, TouchableOpacity, Pressable } from "react-native";
 import * as Yup from "yup";
 import { Formik } from "formik";
-import adicionarAgendamento, { AtualizarAgendamentoAsync } from "../../services/agendamentoService";
+import adicionarAgendamento, { AtualizarAgendamentoAsync, obterServicosColaboradoresPorAgendamentoAsync } from "../../services/agendamentoService";
 import { VerificarDuplicados } from "../../database/agendamentoRepository";
 import { ObterColaboradores } from "../../database/colaboradorRepository";
 import { ObterServicosPorFavorito } from "../../database/servicoRepository";
@@ -59,9 +59,8 @@ async function criarAgendamento(navigation, nome, telefone, data, hora, Colabora
     };
 
     var res = await adicionarAgendamento(agendamento);
-	
-	
-    navigation.navigate("Home",{"update" : true});
+
+    navigation.navigate("Home", { update: true });
   } catch (error) {
     console.error("Erro ao inserir o agendamento:", error);
   }
@@ -90,16 +89,45 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
     errors: {},
   });
 
-
   useEffect(() => {
     setTimeString(formatTime(time));
   }, [time]);
 
   useEffect(() => {
-    console.log("Entrei no useEffect de AgendamentoSelecionado")
+    // console.log("=====================================");
+    // console.log(data);
+    // console.log("=====================================");
+  }, [data]);
+
+  useEffect(() => {
+    console.log("Entrei no useEffect de AgendamentoSelecionado");
     // Verifica se AgendamentoSelecionado não está vazio
     if (AgendamentoSelecionado) {
-      console.log(AgendamentoSelecionado)
+      obterServicosColaboradoresPorAgendamentoAsync(AgendamentoSelecionado.id).then((result) => {
+        if (result.error) {
+          Alert.alert("Erro", "Erro ao obter os dados do agendamento " + result.error);
+          return;
+        }
+
+        console.log(result.data.servicos)
+        result.data.servicos.forEach((servico) => {
+          // data.selectedServico.push(servico.ServicoId);
+          setData((prevData) => ({
+            ...prevData,
+            selectedServico: [...prevData.selectedServico, {id: servico.ServicoId, Nome: servico.Nome}],
+          }));
+        });
+
+        result.data.colaboradores.forEach((colaborador) => {
+          // data.selectedPrestador.push(colaborador.ColaboradorId);
+
+          setData((prevData) => ({
+            ...prevData,
+            selectedPrestador: [...prevData.selectedPrestador, {id: colaborador.ColaboradorId, Nome: colaborador.Nome}],
+          }));
+        });
+      });
+
       setDate(new Date(AgendamentoSelecionado.Data)); // Definindo o estado da data
       setTime(new Date(`1970-01-01T${AgendamentoSelecionado.Hora}:00`)); // Definindo o estado da hora
       setDateString(AgendamentoSelecionado.Data); // Atualiza a string da data
@@ -210,7 +238,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
                     if (AgendamentoSelecionado) {
                       await editarAgendamento(fecharModal, AgendamentoSelecionado.id, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico);
                     } else {
-                      await criarAgendamento(navigation, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico					  );
+                      await criarAgendamento(navigation, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico);
                     }
                   },
                 },
@@ -229,7 +257,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
         {({ handleChange, handleSubmit, errors, touched, values }) => (
           <ScrollView contentContainerStyle={[!AgendamentoSelecionado ? styles.main : { backgroundColor: "rgba(0,0,0,0.5)", height: "100%", justifyContent: "center", padding: 20, elevation: 5 }]}>
             <View style={styles.formContainer}>
-              <Text style={styles.formTitle}>{option ? option +" Agendamento" : "Novo Agendamento"}</Text>
+              <Text style={styles.formTitle}>{option ? option + " Agendamento" : "Novo Agendamento"}</Text>
               {AgendamentoSelecionado && (
                 <TouchableOpacity
                   style={{ position: "absolute", top: 10, right: 10, zIndex: 1, backgroundColor: "#312fbf", borderRadius: 15, padding: 0 }}

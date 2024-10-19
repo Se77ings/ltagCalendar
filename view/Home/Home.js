@@ -222,8 +222,8 @@ const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, obter, setOpti
       </View>
       <View style={styles.botoes}>
         <TouchableOpacity style={[styles.botao, {}]} onPress={() => editarAgendamento(item)}>
-          <Ionicons name="create-outline" color={"#0045a0"} size={22} />
-          {/* <Text>Editar</Text> */}
+          {/* <Ionicons name="create-outline" color={"#0045a0"} size={22} /> */}
+          <Text>Editar</Text>
         </TouchableOpacity>
         <TouchableOpacity style={[styles.botao, {}]} onPress={() => excluirAgendamento(item.id)}>
           <Ionicons name="trash" color={"#f44336"} size={22} />

@@ -53,6 +53,7 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
   }, [itensSelecionados]);
 
   useEffect(() => {
+    // console.log("selectedItems", selectedItems);
     if (selectedItems.length > 0) {
       selectedItems.forEach((item) => {
         itensSelecionados.push(item.id);

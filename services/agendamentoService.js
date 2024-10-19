@@ -4,6 +4,7 @@ import CriarAgendamento, {
   DesvincularAtendimentoColaboradores,
   ObterAgendamentos,
   ObterAgendamentosPaginado,
+  obterServicosColaboradoresPorAgendamento,
   RealizarAtendimento,
   RemoverAgendamento,
   VerificarDuplicados,
@@ -22,9 +23,9 @@ export default async function adicionarAgendamento(agendamento) {
       VincularAgendamentoServicos(agendamentoid, servico.id);
     });
 
-    agendamento.Colaboradores.forEach(colaborador => {
+    agendamento.Colaboradores.forEach((colaborador) => {
       DesvincularAtendimentoColaboradores(agendamentoid, colaborador.id);
-      VincularAtendimentoColaboradores(agendamentoid, colaborador.id)
+      VincularAtendimentoColaboradores(agendamentoid, colaborador.id);
     });
 
     console.log("Agendamento criado com sucesso.");
@@ -127,7 +128,8 @@ export async function AtualizarAgendamentoAsync(agendamento) {
     agendamento.Colaboradores.forEach((colaborador) => {
       DesvincularAtendimentoColaboradores(agendamento.id, colaborador.id);
       VincularAtendimentoColaboradores(agendamento.i, colaborador.id);
-  i});
+      i;
+    });
 
     return {
       success: true,
@@ -151,6 +153,24 @@ export async function obterAgendamentos() {
     return {
       success: true,
       data: allRows,
+      error: null,
+    };
+  } catch (error) {
+    console.error("Erro ao obter agendamento:", error);
+    return {
+      success: false,
+      data: null,
+      error: "Erro ao obter agendamentos",
+    };
+  }
+}
+
+export async function obterServicosColaboradoresPorAgendamentoAsync(id) {
+  try {
+    results = await obterServicosColaboradoresPorAgendamento(id);
+    return {
+      success: true,
+      data: results,
       error: null,
     };
   } catch (error) {
