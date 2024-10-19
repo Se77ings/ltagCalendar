@@ -11,7 +11,7 @@ export default function App() {
   const Tab = createBottomTabNavigator();
   return (
       <NavigationContainer>
-        <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d" } }}>
+        <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d", padding:2, height:60, borderTopEndRadius:50, borderTopLeftRadius:50}}}>
           <Tab.Screen
             name="Main"
             component={Main}
@@ -23,7 +23,7 @@ export default function App() {
               tabBarLabelStyle: { fontSize: 12, color: "white" },
               tabBarIcon: () => (
                 <View style={styles.iconDiv}>
-                  <Ionicons name="home" color={"white"} size={22} />
+                  <Ionicons name="home" color={"white"} size={22}/>
                 </View>
               ),
             }}

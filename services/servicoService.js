@@ -1,4 +1,4 @@
-import CriarServico, { AtualizarServico, DesabilitarServico, ExisteAtendimentoComServico, ObterServicosPorColaborador, ObterServicosPorFavorito, VincularServicoColaborador } from "../database/servicoRepository";
+import CriarServico, { AtualizarServico, DesabilitarServico, ExisteAtendimentoComServico, ExisteServicoComColaborador, ObterServicosPorColaborador, ObterServicosPorFavorito, VincularServicoColaborador } from "../database/servicoRepository";
 
 export default async function adicionarServico(servico) {
     try {
@@ -54,8 +54,9 @@ export default async function adicionarServico(servico) {
 
   
 export async function DesabilitarServicoAsync(id) {
-    try {
-        await DesabilitarServico(id);
+  
+  try {
+    await DesabilitarServico(id);
         console.log('Serviço removido com sucesso.');
         
         return {

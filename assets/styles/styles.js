@@ -1,6 +1,7 @@
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
+
   cardStyle: {
     flexDirection: "col",
     width: "50%",
@@ -47,8 +48,8 @@ const styles = StyleSheet.create({
   },
   headerContainer: {
     backgroundColor: "#13213c",
-    borderBottomLeftRadius: 15, // Bordas arredondadas inferiores
-    borderBottomRightRadius: 15, // Bordas arredondadas inferiores
+    borderBottomLeftRadius: 40, // Bordas arredondadas inferiores
+    borderBottomRightRadius: 40, // Bordas arredondadas inferiores
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.3,
