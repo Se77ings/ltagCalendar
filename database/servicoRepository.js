@@ -62,3 +62,9 @@ export async function DesvincularServicoColaborador(request) {
     await db.runAsync('DELETE FROM ServicosPorColaborador WHERE ServicoId = ? AND ColaboradorId = ?;', 
         [request.servicoId, request.colaboradorId]);
 }
+
+export async function DesvincularTodosServicosColaborador(request){
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true });
+    await db.runAsync('DELETE FROM ServicosPorColaborador WHERE ColaboradorId = ?;', 
+        [request.colaboradorId]);
+}
