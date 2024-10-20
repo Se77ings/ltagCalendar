@@ -22,10 +22,6 @@ const Validation = Yup.object().shape({
   Telefone: Yup.string()
     .matches(/^\d{10,11}$/, "O telefone deve ter 10 ou 11 dígitos e conter apenas números")
     .required("Obrigatório"),
-
-  // Prestador: Yup.string().min(3, "Minimo de 3 caracteres!").max(50, "Máximo de 50 caracteres!"),
-
-  // Servico: Yup.string().min(3, "Minimo de 3 caracteres!").max(50, "Máximo de 50 caracteres!").required("Obrigatorio"),
 });
 
 async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, Colaboradores, servico) {
@@ -81,12 +77,12 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
   const [time, setTime] = useState(new Date());
   const [showtime, setShowtime] = useState(false);
   const [timeString, setTimeString] = useState(formatTime(time));
+  const [loading, setLoading] = useState(false);
   const [data, setData] = useState({
     prestadores: [],
     servicos: [],
     selectedPrestador: "",
     selectedServico: "",
-    errors: {},
   });
 
   useEffect(() => {
@@ -99,22 +95,35 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
     // console.log("=====================================");
   }, [data]);
 
+
+
+
+
+// A solução do loading me salvou.. 
+// agora é so olhar no colaboradores, e ver como que vou passar os outros dados para o DropdownSelector
+
+
+
+
+
+
+
+
   useEffect(() => {
     console.log("Entrei no useEffect de AgendamentoSelecionado");
-    // Verifica se AgendamentoSelecionado não está vazio
     if (AgendamentoSelecionado) {
+      setLoading(true);
       obterServicosColaboradoresPorAgendamentoAsync(AgendamentoSelecionado.id).then((result) => {
         if (result.error) {
           Alert.alert("Erro", "Erro ao obter os dados do agendamento " + result.error);
           return;
         }
 
-        console.log(result.data.servicos)
         result.data.servicos.forEach((servico) => {
           // data.selectedServico.push(servico.ServicoId);
           setData((prevData) => ({
             ...prevData,
-            selectedServico: [...prevData.selectedServico, {id: servico.ServicoId, Nome: servico.Nome}],
+            selectedServico: [{ id: servico.id, Nome: servico.Nome }],
           }));
         });
 
@@ -123,7 +132,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 
           setData((prevData) => ({
             ...prevData,
-            selectedPrestador: [...prevData.selectedPrestador, {id: colaborador.ColaboradorId, Nome: colaborador.Nome}],
+            selectedPrestador: [{ id: colaborador.id, Nome: colaborador.Nome }],
           }));
         });
       });
@@ -132,6 +141,10 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
       setTime(new Date(`1970-01-01T${AgendamentoSelecionado.Hora}:00`)); // Definindo o estado da hora
       setDateString(AgendamentoSelecionado.Data); // Atualiza a string da data
       setTimeString(AgendamentoSelecionado.Hora); // Atualiza a string da hora
+      setTimeout(() => {
+        //ideal era usar o await...
+        setLoading(false);
+      }, 500);
     } else {
       // Lógica a ser executada quando AgendamentoSelecionado está vazio
       setDate(new Date()); // Reseta para a data atual
@@ -162,21 +175,17 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 
   const handlePrestadorChange = (itemValue) => {
     const selectedPrestador = data.prestadores.filter((prestador) => itemValue.includes(prestador.id));
-
     setData((prevData) => ({
       ...prevData,
-      selectedPrestador: selectedPrestador,
+      selectedPrestador: selectedPrestador.map((p) => p.id),
     }));
   };
 
   const handleServicoChange = (itemValue) => {
-    // Filtro que retorna os serviços correspondentes aos IDs selecionados
     const selectedServicos = data.servicos.filter((servico) => itemValue.includes(servico.id));
-
-    // Atualizar o estado com os serviços selecionados
     setData((prevData) => ({
       ...prevData,
-      selectedServico: selectedServicos,
+      selectedServico: selectedServicos.map((s) => s.id),
     }));
   };
 
@@ -290,7 +299,6 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
                 <TextInput editable={false} style={[styles.input, { color: "black" }]} value={DateString} />
                 <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="calendar" size={24} color="#312fbf" onPress={() => setShow(true)} />
               </Pressable>
-
               {showtime && <DateTimePicker value={time} mode="time" is24Hour={true} display="clock" onChange={onChangeTime} style={styles.input} />}
               <Pressable
                 style={styles.inputContainer}
@@ -300,9 +308,9 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
                 <TextInput style={[styles.input, { color: "black" }]} editable={false} value={formatTime(time)} />
                 <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="time" size={24} color="#312fbf" onPress={() => setShowtime(true)} />
               </Pressable>
-              <DropdownSelector lista={data.servicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={handleServicoChange} selectedItems={data.selectedServico} opt={"servico"} />
+              {!loading && <DropdownSelector lista={data.servicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={handleServicoChange} selectedItems={data.selectedServico} opt={"servico"} />}
               {errors.Servico && touched.Servico ? <Text style={styles.error}>{errors.Servico}</Text> : null}
-              <DropdownSelector lista={data.prestadores} label={"Colaborador(es)"} icone={"person-outline"} callbackSelecionados={handlePrestadorChange} selectedItems={data.selectedPrestador} opt={"colaborador"} />
+              {!loading && <DropdownSelector lista={data.prestadores} label={"Colaborador(es)"} icone={"person-outline"} callbackSelecionados={handlePrestadorChange} selectedItems={data.selectedPrestador} opt={"colaborador"} />}
               {errors.Prestador && touched.Prestador ? <Text style={styles.error}>{errors.Prestador}</Text> : null}
               <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                 <Text style={styles.submitButtonText}>{option ? option : "Cadastrar"}</Text>
