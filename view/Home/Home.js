@@ -308,7 +308,7 @@ const Home = ({ route }) => {
           style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }}
           onPress={() => navigation.navigate("NovoAgendamento")} // NovoAgendamento
         >
-          <Text style={styles.newAppointmentText}>+</Text>
+          <Ionicons name="add-circle" size={50} color="#0045a0" />
         </TouchableOpacity>
         <ScrollView contentContainerStyle={{}}>
           <Header title={"Menu Inicial"} />
