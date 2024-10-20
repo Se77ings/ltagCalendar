@@ -68,3 +68,10 @@ export async function DesvincularTodosServicosColaborador(request){
     await db.runAsync('DELETE FROM ServicosPorColaborador WHERE ColaboradorId = ?;', 
         [request.colaboradorId]);
 }
+
+export async function ExisteServicoComColaborador(servicoId) {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );        
+    const result = await db.getFirstAsync('SELECT COUNT(*) as total FROM ServicosPorColaborador WHERE ServicoId = ?;', servicoId);
+    
+    return result.total > 0;
+}

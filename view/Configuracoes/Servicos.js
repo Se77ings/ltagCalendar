@@ -2,9 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Switch, TouchableOpacity, TextInput, Pressable, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons"; 
-import adicionarServico, { AtualizarServicoAsync, ExisteAtendimentoComServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, RemoverServicoAsync } from "../../services/servicoService";
+import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, RemoverServicoAsync } from "../../services/servicoService";
 import { StatusBar } from "expo-status-bar";
-import { ExisteAtendimentoComServico } from "../../database/servicoRepository";
 
 
 const Servicos = () => {
@@ -18,9 +17,9 @@ const Servicos = () => {
   const [showForm, setShowForm] = useState(false);
   const [errors, setErrors] = useState({ nome: "", descricao: "" });
   const [editingServicos, setEditingServicos] = useState(null);
-  const formAnimation = useRef(new Animated.Value(0)).current; 
-
-  const [objeto, setObjeto] = useState(null);
+  // const formAnimation = useRef(new Animated.Value(0)).current; 
+  const [formHeight, setFormHeight] = useState(0);
+  const [formAnimation] = useState(new Animated.Value(0));
 
 
   const validateFields = () => {
@@ -61,21 +60,6 @@ const Servicos = () => {
     EscodeForm();
   };
 
-  const EscodeForm = () => {
-    setId('');
-    setNome('');
-    setDescricao('');
-    Animated.timing(formAnimation, {
-      toValue: 0,
-      duration: 300,
-      useNativeDriver: false,
-    }).start(() => {
-      setShowForm(false);
-      setEditingServicos(null);
-    });
-
-  };
-
   const fetchServicos = async () => {
     try {
       let response = await ObterTodosServicosAsync();
@@ -93,17 +77,9 @@ const Servicos = () => {
     fetchServicos();
   }, []);
 
-  // const handleEdit = (Servicos) => {
-  //   setNome(Servicos.nome);
-  //   setDescricao(Servicos.descricao);
-  //   setEditingServicos(Servicos);
-  //   if (!showForm) {
-  //     toggleForm();
-  //   }
-  // };
-
   const renderServicos = ({ item }) => (
     <Pressable
+        style={styles.ServicosCard}  
         onPress={async () => {
           abrirFormulario();
           setId(item.id)
@@ -113,7 +89,7 @@ const Servicos = () => {
           setEditingServicos(true);
 
         }}>
-      <View style={styles.ServicosCard} >
+      <View >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View>
             <Text style={styles.ServicosNome}>{item.Nome}</Text>
@@ -129,6 +105,9 @@ const Servicos = () => {
   );
 
   abrirFormulario = () => {
+    if(editingServicos){
+      return;
+    }
     setShowForm(true);
       // Animação para mostrar o formulário
       Animated.timing(formAnimation, {
@@ -137,6 +116,20 @@ const Servicos = () => {
         useNativeDriver: false,
       }).start();
   }
+  const EscodeForm = () => {
+    setId('');
+    setNome('');
+    setDescricao('');
+    Animated.timing(formAnimation, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start(() => {
+      setShowForm(false);
+      setEditingServicos(null);
+    });
+
+  };
 
   const toggleForm = () => {
     if (!showForm) {
@@ -148,9 +141,9 @@ const Servicos = () => {
 
   const handleDelete = async (serviceId) => {
     var res = await ExisteServicoComColaboradorAsync(serviceId);
-    console.log(res);
+    console.log("O serviço vinculado esta retornando vinculado?: " + res.success + res.error);
 
-    if(res.success == false){
+    if(res.data == false){
       Alert.alert(
         "Confirmação",
         "Você tem certeza que deseja excluir este serviço?",
@@ -159,13 +152,18 @@ const Servicos = () => {
           { 
             text: "Excluir", 
             onPress: async () => {
-              await RemoverServicoAsync(serviceId);
-              fetchServicos();
-              setId("");
-              setNome("");
-              setDescricao("");
-              toggleForm();
-              Alert.alert("Sucesso", "Serviço excluído com sucesso!");
+              var res2 = await DesabilitarServicoAsync(serviceId);
+              console.log("Serviço foi excluido?: " + res2.error);
+              if(res2.success == true){
+                setId("");
+                setNome("");
+                setDescricao("");
+                toggleForm();
+                Alert.alert("Sucesso", "Serviço excluído com sucesso!");
+                fetchServicos();
+
+              }else
+                Alert.alert("Erro", "Não foi possível excluir o serviço!");
             } 
           }
         ]
@@ -175,22 +173,42 @@ const Servicos = () => {
     }
   };
 
-  const formHeight = formAnimation.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0, 300],
-  });
+  // const formHeight = formAnimation.interpolate({
+  //   inputRange: [0, 1],
+  //   outputRange: [0, 300],
+  // });
+
+  const handleLayout = (event) => {
+    const { height } = event.nativeEvent.layout;
+    setFormHeight(height);
+  };
+  useEffect(() => {
+    if (showForm) {
+      Animated.timing(formAnimation, {
+        toValue: formHeight,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    } else {
+      Animated.timing(formAnimation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false,
+      }).start();
+    }
+  }, [showForm, formHeight]);
 
   const toggleSwitch = () => setFavorito((previousState) => !previousState);
 
   return (
     <>
       <StatusBar style="dark" />
-      <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
-          <Animated.View style={{ width: "90%", height: formHeight, overflow: "hidden" }}>
+      <ScrollView contentContainerStyle={styles.container}>
+        <View style={styles.scrollContainer}>
+          <Animated.View style={{ width: "90%", height: formAnimation, overflow: "hidden" }}>
             {showForm && (
-              <View style={{ borderColor: "#666699", borderRadius: 20, padding: 20, backgroundColor: "#c2c2d6" }}>
-                <TouchableOpacity style={styles.closeButton} onPress={EscodeForm}>
+              <View onLayout={handleLayout} style={{minHeight:220, borderWidth: 0, borderColor: "#666699", borderRadius: 20, padding: 20, backgroundColor: "#c2c2d6", marginBottom: 15 }}>
+                <TouchableOpacity style={styles.closeButton} onPress={toggleForm}>
                   <Ionicons name="close" size={24} color="#fff" />
                 </TouchableOpacity>
                 <Text style={styles.label}>Nome do Serviço:</Text>
@@ -218,15 +236,15 @@ const Servicos = () => {
 
           <Text style={styles.gridTitle}>Servicos Cadastrados:</Text>
           {servicos && servicos.length > 0 ? (
-            <FlatList scrollEnabled={true} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", height:'100%', backgroundColor: "#a3a3c2", borderRadius: 12, flex: 1}} />
+            <FlatList scrollEnabled={false} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", height:'100%', backgroundColor: "#a3a3c2", borderRadius: 12, flex: 1}} />
           ) : (
             <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flex: 1, justifyContent: "center" }}>
             <Text style={{ textAlign: "center" }}>Nenhum Servico cadastrado</Text>
             {!showForm && <Text style={{ textAlign: "center" }}>Clique no botão abaixo para Cadastrar</Text>}
           </View>
           )}
-        
-        </ScrollView>
+        </View>
+      </ScrollView>
         
         <View style={{ margin: "auto", marginBottom: 10, width: "84%" }}>
           <TouchableOpacity
@@ -240,16 +258,16 @@ const Servicos = () => {
             <Text style={{ color: "white" }}>{editingServicos ? "Editar" : "Criar Serviço"}</Text>
           </TouchableOpacity>
         </View>
-      </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flexGrow: 1,
-    justifyContent: "flex-start",
-    paddingTop: 0,
+   // flex: 1,
+   justifyContent: "flex-start",
+   paddingTop: 0,
+   backgroundColor: "#f8f9fa", // Nova cor de fundo
   },
   switchContainer: {
     flexDirection: "row",
@@ -278,7 +296,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     marginBottom: 8,
-    color: "#666699",
+    color: "#312fbf", // Nova cor
   },
   input: {
     height: 50,
@@ -311,20 +329,27 @@ const styles = StyleSheet.create({
   },
   ServicosCard: {
     padding: 15,
-    marginTop: 10,
-    marginBottom: 10,
-    borderColor: "#666699",
+    borderWidth: 1,
+    marginTop: 15,
+    borderColor: "#312fbf",
     borderRadius: 10,
     padding: 20,
     width: "100%",
-    backgroundColor: "#e0e0eb",
+    backgroundColor: "#F3F4F6",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
   },
   ServicosNome: {
-    fontWeight: "bold",
+    ffontWeight: "bold",
     fontSize: 16,
+    color: "#14213b",
   },
   ServicosDescricao: {
-    color: "#555",
+    color: "#777",
+    fontSize: 14,
   },
 });
 

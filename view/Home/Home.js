@@ -15,7 +15,6 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
 import Atendimento from "./Atendimento";
 import { AsyncStorage } from "react-native";
-import AgendamentoProvider from "../Context/AgendamentoContext";
 
 // parei na parte onde tento fazer o scrollTo para o dia atual
 const formatarData = (data) => {
@@ -304,7 +303,6 @@ const Home = ({ route }) => {
   return (
     <>
       <StatusBar style="light" />
-
       <View style={[styles.container]}>
         <TouchableOpacity
           style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }}
@@ -350,12 +348,10 @@ const Main = () => {
   const Stack = createStackNavigator();
 
   return (
-    <AgendamentoProvider>
       <Stack.Navigator initialRouteName="Main">
         <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Stack.Screen name="NovoAgendamento" component={NovoAgendamento} options={{ headerTitle: "Novo Agendamento", headerTitleAlign: "center" }} />
       </Stack.Navigator>
-    </AgendamentoProvider>
   );
 
   /*  <View style={{height:"100%", justifyContent:"center"}}>
