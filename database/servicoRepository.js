@@ -15,7 +15,13 @@ export async function ObterServicosPorFavorito() {
 
     return allRows;
 }
-    
+
+export async function ObterServicosFavoritosAtivos() {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true });
+    const allRows = await db.getAllAsync('SELECT * FROM servico WHERE Desabilitado = 0 ORDER BY Favorito DESC;');
+
+    return allRows;
+}
   
 
 export async function ObterServicosPorColaborador(colaboradorId) {

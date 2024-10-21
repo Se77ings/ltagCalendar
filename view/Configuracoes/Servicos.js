@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Switch, TouchableOpacity, TextInput, Pressable, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons"; 
-import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, RemoverServicoAsync } from "../../services/servicoService";
+import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, ObterTodosServicosAtivosAsync, RemoverServicoAsync } from "../../services/servicoService";
 import { StatusBar } from "expo-status-bar";
 
 
@@ -17,7 +17,6 @@ const Servicos = () => {
   const [showForm, setShowForm] = useState(false);
   const [errors, setErrors] = useState({ nome: "", descricao: "" });
   const [editingServicos, setEditingServicos] = useState(null);
-  // const formAnimation = useRef(new Animated.Value(0)).current; 
   const [formHeight, setFormHeight] = useState(0);
   const [formAnimation] = useState(new Animated.Value(0));
 
@@ -49,11 +48,12 @@ const Servicos = () => {
       AtualizarServicoAsync({id,nome,descricao,favorito});
       fetchServicos();
       setEditingServicos(null);
+      Alert.alert("Sucesso", "Serviço Editado com sucesso!"); //trocar por um popup
     } else {
       let NovoServico = { nome, descricao, favorito };
       adicionarServico(NovoServico);
+      Alert.alert("Sucesso", "Serviço cadastrado com sucesso!"); //trocar por um popup
     }
-    Alert.alert("Sucesso", "Serviço cadastrado com sucesso!"); //trocar por um popup
     fetchServicos();
     setNome("");
     setDescricao("");
@@ -62,7 +62,7 @@ const Servicos = () => {
 
   const fetchServicos = async () => {
     try {
-      let response = await ObterTodosServicosAsync();
+      let response = await ObterTodosServicosAtivosAsync();
       if (response.success) {
         setServicos(response.data);
       } else {
@@ -141,42 +141,59 @@ const Servicos = () => {
 
   const handleDelete = async (serviceId) => {
     var res = await ExisteServicoComColaboradorAsync(serviceId);
-    console.log("O serviço vinculado esta retornando vinculado?: " + res.success + res.error);
+    console.log("O serviço vinculado esta retornando vinculado?: " + res.success + " " + res.error);
 
     if(res.data == false){
       Alert.alert(
         "Confirmação",
-        "Você tem certeza que deseja excluir este serviço?",
+        "Você tem certeza que deseja desativar este serviço?",
         [
           { text: "Cancelar", style: "cancel" },
           { 
             text: "Excluir", 
             onPress: async () => {
               var res2 = await DesabilitarServicoAsync(serviceId);
-              console.log("Serviço foi excluido?: " + res2.error);
               if(res2.success == true){
                 setId("");
                 setNome("");
                 setDescricao("");
                 toggleForm();
-                Alert.alert("Sucesso", "Serviço excluído com sucesso!");
+                Alert.alert("Sucesso", "Serviço desativado com sucesso!");
                 fetchServicos();
 
               }else
-                Alert.alert("Erro", "Não foi possível excluir o serviço!");
+                Alert.alert("Erro", "Não foi possível desativar o serviço!");
             } 
           }
         ]
       );
-    }else if(res.error != null){
+    }else if(res.error == null){
       Alert.alert("Atenção", "Não foi possivel excluir o serviço pois ele esta vinculado a um Colaborador!");
+    }
+    else{
+      Alert.alert("Erro interno, procure um Administrador");
+      console.log("Erro interno: " + res.error); //podemos criar um arquivo de log para salvar esses erros
     }
   };
 
-  // const formHeight = formAnimation.interpolate({
-  //   inputRange: [0, 1],
-  //   outputRange: [0, 300],
-  // });
+  const [mostrarDesabilitados, setMostrarDesabilitados] = useState(false);
+  const handleMostraServicoDesabilitado = async () => {
+    const desabilitado = mostrarDesabilitados ? "true" : "false";
+
+    if (desabilitado === "true") {
+        let response = await ObterTodosServicosAsync();
+        if (response.success) {
+            setServicos(response.data);
+        } else {
+            console.error("Erro ao obter serviços:", response.error);
+        }
+    } else {
+        fetchServicos();
+    }
+
+    // Alterna o valor de mostrarDesabilitados
+    setMostrarDesabilitados(!mostrarDesabilitados);
+};
 
   const handleLayout = (event) => {
     const { height } = event.nativeEvent.layout;
@@ -243,6 +260,10 @@ const Servicos = () => {
             {!showForm && <Text style={{ textAlign: "center" }}>Clique no botão abaixo para Cadastrar</Text>}
           </View>
           )}
+
+          <TouchableOpacity onPress={() => handleMostraServicoDesabilitado()} style={{marginTop:2}}>
+                  <Ionicons name="albums-outline" size={15} color="black"><Text style={{ textAlign: "center", fontSize:20}}>{mostrarDesabilitados ? "Mostrar Apenas Habilitados" : "Mostrar Todos"}</Text></Ionicons>  
+          </TouchableOpacity>
         </View>
       </ScrollView>
         
@@ -268,6 +289,7 @@ const styles = StyleSheet.create({
    justifyContent: "flex-start",
    paddingTop: 0,
    backgroundColor: "#f8f9fa", // Nova cor de fundo
+   height: "100%",
   },
   switchContainer: {
     flexDirection: "row",

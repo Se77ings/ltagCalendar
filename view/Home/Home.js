@@ -374,7 +374,7 @@ const Home = ({ route, navigation }) => {
 	};
 	return (
 		<>
-			<StatusBar style="light" />
+			<StatusBar style="light"/>
 			<View style={[styles.container]}>
 				<TouchableOpacity
 					style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }}

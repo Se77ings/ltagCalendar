@@ -10,7 +10,7 @@ import Header from "./assets/components/Header";
 export default function App() {
   const Tab = createBottomTabNavigator();
   return (
-      <NavigationContainer>
+      <NavigationContainer >
         <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d", padding:2, height:60, borderTopEndRadius:50, borderTopLeftRadius:50}}}>
           <Tab.Screen
             name="Main"

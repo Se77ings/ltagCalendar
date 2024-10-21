@@ -1,4 +1,4 @@
-import CriarServico, { AtualizarServico, DesabilitarServico, ExisteAtendimentoComServico, ExisteServicoComColaborador, ObterServicosPorColaborador, ObterServicosPorFavorito, VincularServicoColaborador } from "../database/servicoRepository";
+import CriarServico, { AtualizarServico, DesabilitarServico, ExisteAtendimentoComServico, ExisteServicoComColaborador, ObterServicosFavoritosAtivos, ObterServicosPorColaborador, ObterServicosPorFavorito, VincularServicoColaborador } from "../database/servicoRepository";
 
 export default async function adicionarServico(servico) {
     try {
@@ -55,9 +55,7 @@ export default async function adicionarServico(servico) {
 export async function DesabilitarServicoAsync(id) {
   
   try {
-      await DesabilitarServico(id);
-      console.log('Serviço removido com sucesso.');
-      
+      await DesabilitarServico(id);      
       return {
           success: true,
           data: null,
@@ -131,6 +129,22 @@ export async function DesabilitarServicoAsync(id) {
     }
   }
 
+  export async function ObterTodosServicosAtivosAsync() {
+    try {
+      var allRows = await ObterServicosFavoritosAtivos();
+      return {
+        success: true,
+        data: allRows,
+        error: null
+      }; 
+    } catch (error) {
+      return {
+        success: false,
+        data: null,
+        error: 'Erro ao obter: ' + error
+      };
+    }
+  }
   //Usem essa função antes de chamar Remover e Atualizar, pois precisa de confirmação caso for verdadeiro
   export async function ExisteAtendimentoComServicoAsync(servicoId) {
     try {
