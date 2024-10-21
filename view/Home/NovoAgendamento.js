@@ -50,8 +50,16 @@ async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, Co
       servico,
     };
     var res = await AtualizarAgendamentoAsync(agendamento);
+    if(res.error){
+      console.log("Erro ao atualizar o agendamento:", res.error);
+      return;
+    }else{
+      Alert.alert("Agendamento atualizado com sucesso!");
+      console.log("Agendamento atualizado com sucesso!");
+      // fecharModal();
+    }
 
-    AgendamentoSelecionado && fecharModal();
+    // AgendamentoSelecionado && fecharModal();
   } catch (error) {
     console.error("Erro ao Editar o agendamento:", error);
   }
@@ -114,10 +122,13 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 
   // agora é so olhar no colaboradores, e ver como que vou passar os outros dados para o DropdownSelector
 
-  useEffect(() => {
+  async function zeraPrestadorServico (){
+    setData((prevData) => ({ ...prevData, selectedPrestador: [], selectedServico: [] }));
+  }
+
+  useEffect(async() => {
     if (AgendamentoSelecionado) {
       setLoading(true);
-      setData((prevData) => ({ ...prevData, selectedPrestador: [], selectedServico: [] }));
       obterServicosColaboradoresPorAgendamentoAsync(AgendamentoSelecionado.id).then((result) => {
         if (result.error) {
           Alert.alert("Erro", "Erro ao obter os dados do agendamento " + result.error);
@@ -127,7 +138,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
         console.log("No primeiro useeffect:");
         console.log(result.data.servicos);
         console.log(result.data.colaboradores);
-        return;
+        // return;
 
 
         result.data.servicos.forEach((servico) => {
@@ -135,14 +146,14 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
           // data.selectedServico.push(servico.ServicoId);
           setData((prevData) => ({
             ...prevData,
-            selectedServico: [...prevData.servicos, { id: servico.id, Nome: servico.Nome }],
+            selectedServico: [ { id: servico.id, Nome: servico.Nome }],
           }));
         });
         
         result.data.colaboradores.forEach((colaborador) => {
           setData((prevData) => ({
             ...prevData,
-            selectedPrestador: [...prevData.selectedPrestador, { id: colaborador.ColaboradorId, Nome: colaborador.Nome }],
+            selectedPrestador: [{ id: colaborador.ColaboradorId, Nome: colaborador.Nome }],
           }));
         });
 
@@ -186,6 +197,10 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
   useEffect(() => {
     fetchColaboradores();
     fetchServicos();
+
+    console.log("O que é a função fecharMOdal?")
+    console.log(fecharModal)
+    console.log(typeof(fecharModal))
   }, []);
 
   const handlePrestadorChange = (itemValue) => {
@@ -290,6 +305,8 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
                 <TouchableOpacity
                   style={{ position: "absolute", top: 10, right: 10, zIndex: 1, backgroundColor: "#312fbf", borderRadius: 15, padding: 0 }}
                   onPress={() => {
+                    console.log(fecharModal)
+
                     fecharModal();
                   }}>
                   <Ionicons name="close" size={24} color="#fff" />

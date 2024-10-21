@@ -250,14 +250,14 @@ const Home = ({ route, navigation }) => {
     var result = await obterAgendamentos();
     setAgendamentos(result.data);
   }
-  useFocusEffect(
-    React.useCallback(() => {
-      //Home focada, obter novamente..
-      setTimeout(() => {
-        obter();
-      }, 100);
-    }, [])
-  );
+  // useFocusEffect(
+  //   React.useCallback(() => {
+  //     //Home focada, obter novamente..
+  //     setTimeout(() => {
+  //       obter();
+  //     }, 100);
+  //   }, [])
+  // );
 
   useEffect(() => {
     initialize();
@@ -291,8 +291,7 @@ const Home = ({ route, navigation }) => {
     setmodalCreate(false);
     setOption("");
     obter();
-  };
-
+  }
   // const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
 
   //
