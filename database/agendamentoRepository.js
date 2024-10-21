@@ -39,7 +39,7 @@ export async function VincularAgendamentoServicos(agendamentoId, servicoId) {
 
 export async function ObterAgendamentos() {
   const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
-  const allRows = await db.getAllAsync("SELECT * FROM agendamento order by Data desc;");
+  const allRows = await db.getAllAsync("SELECT * FROM agendamento ORDER BY Data DESC, Hora ASC;");
   return allRows;
 }
 

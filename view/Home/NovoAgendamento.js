@@ -111,9 +111,6 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 	});
 
 	useEffect(() => {
-		console.log("=================== Use Effect ===================");
-		console.log(data.selectedServico);
-		console.log("=====================================================");
 	}, [data.selectedServico]);
 
 	useEffect(() => {
@@ -137,9 +134,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 					Alert.alert("Erro", "Erro ao obter os dados do agendamento " + result.error);
 					return;
 				}
-				result.data.servicos.forEach((servico) => {
-					console.log(`Obtive o svc: tal: { id: ${servico.id}, Nome: ${servico.Nome} }`);
-					
+				result.data.servicos.forEach((servico) => {					
 					setData((prevData) => ({
 						...prevData,
 						selectedServico: [...prevData.selectedServico, { id: servico.id, Nome: servico.Nome }],
@@ -161,7 +156,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 			setTimeout(() => {
 				//ideal era usar o await...
 				setLoading(false);
-			}, 1000);
+			}, 800);
 		} else {
 			setDate(new Date());
 			setTime(new Date());
@@ -197,9 +192,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 	};
 
 	const handleServicoChange = (itemValue) => {
-		console.log("HandleServico")
 		const selectedServico = data.servicos.filter((servico) => itemValue.includes(servico.id));
-		console.log(selectedServico);
 
 		setData((prevData) => ({
 			...prevData,

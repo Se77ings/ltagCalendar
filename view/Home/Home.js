@@ -13,7 +13,6 @@ import styles from "../../assets/styles/styles";
 import Header from "../../assets/components/Header";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { Picker } from "@react-native-picker/picker";
-import Atendimento from "./Atendimento";
 import { AsyncStorage } from "react-native";
 
 const formatarData = (data) => {
