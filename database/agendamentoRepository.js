@@ -11,13 +11,11 @@ export default async function CriarAgendamento(agendamento) {
 
 export async function RealizarAtendimento(request) {
   const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
-
-  await db.runAsync("UPDATE agendamento SET Finalizado = 1 WHERE id = ?;", request.colaboradorId, request.agendamentoId);
+  await db.runAsync("UPDATE agendamento SET Finalizado = 1 WHERE id = ?;", request.id);
 }
 
 export async function VincularAtendimentoColaboradores(agendamentoId, colaboradorId) {
   const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
-  console.log(`INSERT INTO AgendamentoColaborador (AgendamentoId, ColaboradorId) VALUES (${agendamentoId}, ${colaboradorId});`);
   await db.runAsync("INSERT INTO AgendamentoColaborador (AgendamentoId, ColaboradorId) VALUES (?, ?);", agendamentoId, colaboradorId);
 }
 
@@ -35,7 +33,6 @@ export async function DesvincularAgendamentoServicos(agendamentoId) {
 
 export async function VincularAgendamentoServicos(agendamentoId, servicoId) {
   const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
-  console.log(`INSERT INTO AgendamentoServicos (AgendamentoId, ServicoId) VALUES (${agendamentoId}, ${servicoId});`);
 
   await db.runAsync("INSERT INTO AgendamentoServicos (AgendamentoId, ServicoId) VALUES (?, ?);", agendamentoId, servicoId);
 }
@@ -43,7 +40,6 @@ export async function VincularAgendamentoServicos(agendamentoId, servicoId) {
 export async function ObterAgendamentos() {
   const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
   const allRows = await db.getAllAsync("SELECT * FROM agendamento order by Data desc;");
-  console.log(await db.getAllAsync("SELECT * FROM AgendamentoColaborador ;"));
   return allRows;
 }
 
@@ -51,13 +47,6 @@ export async function obterServicosColaboradoresPorAgendamento(agendamentoId) {
   const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
   const servicos = await db.getAllAsync(`SELECT s.id, s.Nome, s.Descricao FROM AgendamentoServicos agServ LEFT JOIN servico s ON agServ.ServicoId = s.id WHERE agServ.AgendamentoId = ?;`, agendamentoId);
   const colaboradores = await db.getAllAsync(`SELECT agColab.ColaboradorId, c.Nome FROM AgendamentoColaborador agColab LEFT JOIN colaborador c ON agColab.ColaboradorId = c.id WHERE agColab.AgendamentoId = ?;`, agendamentoId);
-  console.log("=================== AgendamentoRepository ==================================");
-  console.log(servicos);
-  console.log(colaboradores);
-  console.log(" --- meus consoles.log ----")
-  console.log(await db.getAllAsync("SELECT * FROM AgendamentoColaborador WHERE AgendamentoId = ? ;", agendamentoId));
-  console.log(await db.getAllAsync("SELECT * FROM AgendamentoServicos WHERE AgendamentoId = ? ;", agendamentoId));
-  console.log("=====================================================");
   return { servicos: servicos, colaboradores: colaboradores };
 }
 
@@ -68,7 +57,7 @@ export async function RemoverAgendamento(id) {
 
 export async function AtualizarAgendamento(agendamento) {
   const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
-  await db.runAsync("UPDATE agendamento SET Nome = ?, Telefone = ?, data = ?, hora = ? WHERE id = ?;", agendamento.nome, agendamento.telefone, agendamento.data, agendamento.hora, agendamento.servico, agendamento.prestador, agendamento.id);
+  await db.runAsync("UPDATE agendamento SET Nome = ?, Telefone = ?, data = ?, hora = ? WHERE id = ?;", agendamento.nome, agendamento.telefone, agendamento.data, agendamento.hora, agendamento.id);
 }
 
 export async function ObterAgendamentosPaginado(pagina = 1, limite = 2) {

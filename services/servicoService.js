@@ -30,7 +30,6 @@ export default async function adicionarServico(servico) {
   }
 
   export async function AtualizarServicoAsync(servico) {
-    console.log("entrei no atualizar")
     try {
       validarServico(servico);
       

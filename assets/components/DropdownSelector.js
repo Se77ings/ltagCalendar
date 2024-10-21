@@ -7,19 +7,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedItems = null, opt }) => {
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [dadosFormatados, setDadosFormatados] = useState([]);
-  // selectedItems = [{"Afinidade": 1, "Descricao": "Corte de cabelo feminino", "Favorito": 0, "Nome": "Serviço B", "id": 2}, {"Afinidade": 1, "Descricao": "Corte de cabelo masculino", "Favorito": 1, "Nome": "Serviço A", "id": 1}]
-
-  useEffect(()=>{
-    console.log("DropdownSelector, itens recebidos :D ->")
-    console.log(lista)
-    console.log(label)
-    console.log(icone)
-    console.log(callbackSelecionados)
-    console.log(selectedItems)
-    console.log(opt)
-    console.log("========´[==============================s===================")
-  },[])
-
+  
   useEffect(() => {
     if (opt == "servico") {
       const favoritos = lista.filter((item) => item.Favorito === 1);
@@ -70,12 +58,8 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
     }
   }, []);
 
-  useEffect(() => {
-    console.log("Itens selecionados atualizados:", itensSelecionados);
-  }, [itensSelecionados]);
 
   const handleSelectedItemsChange = (selectedItems) => {
-    console.log("Selecionados:", selectedItems);
     setItensSelecionados(selectedItems);
   };
 
