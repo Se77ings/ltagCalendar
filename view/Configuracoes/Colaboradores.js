@@ -14,25 +14,20 @@ const Colaboradores = () => {
   const [servicosSelecionados, setServicosSelecionados] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [update, setUpdate] = useState(false);
-  // const formAnimation = useRef(new Animated.Value(0)).current; // Inicializa o valor da animação
   const [editing, setEditing] = useState(false);
   const [formHeight, setFormHeight] = useState(0);
-const [animatedHeight] = useState(new Animated.Value(0));
-
+  const [animatedHeight] = useState(new Animated.Value(0));
 
   const handleSubmit = async () => {
     let id = colaboradorSelecionado ? colaboradorSelecionado.id : "";
     if (editing) {
-      // Atualiza o colaborador existente
       await AtualizarColaboradorAsync({ id, nome, servicos: servicosSelecionados });
     } else {
-      // Adiciona um novo colaborador
       await adicionarColaborador({ nome: nome, servicos: servicosSelecionados }).then((result) => {
         id = result;
       });
     }
 
-    // Reinicializa os campos
     setNome("");
     setServicosSelecionados([]);
     setEditing(false);
@@ -52,39 +47,18 @@ const [animatedHeight] = useState(new Animated.Value(0));
     ObterServicosPorFavorito().then((result) => {
       setTodosServicos(result);
     });
-    // ObterColaboradores().then((result) => {
-    //   setColaboradores(result);
-    //   console.log("Tudo em colaboradores")
-    //   console.log(result);
-    //   console.log("==-=-=-==-=-=-")
-    // });
+
     setUpdate(false);
   }, [update]);
   const [colaboradorSelecionado, setColaboradorSelecionado] = useState(null);
 
-  // useEffect(() => {
-  //   if (showForm) {
-  //     Animated.timing(formAnimation, {
-  //       toValue: 1,
-  //       duration: 300,
-  //       useNativeDriver: false,
-  //     }).start();
-  //   } else {
-  //     Animated.timing(formAnimation, {
-  //       toValue: 0,
-  //       duration: 300,
-  //       useNativeDriver: false,
-  //     }).start();
-  //   }
-  // }, [showForm]);
-
-  // LOG  {"Nome": "Novo", "id": 1, "servicos": [{"Afinidade": 1, "Descricao": "Corte de cabelo masculino e feminino", "Favorito": 1, "Nome": "Corte de Cabelo", "id": 1}]}
   //resumo: Acredito que não funcionou, pela forma que o DropdownSelector renderiza os serviços selecionados.. provavelmente tem algo a fazer aqui, para ja passar a lista de forma correta, e o componente sempre renderizar inicialmente o valor que receber.
   const renderColaborador = ({ item }) => {
     return (
       <Pressable
         style={styles.colaboradorCard}
         onPress={() => {
+          console.log(item.servicos);
           if (editing) {
             setEditing(false);
             setServicosSelecionados([]);
@@ -98,7 +72,6 @@ const [animatedHeight] = useState(new Animated.Value(0));
           } else {
             setColaboradorSelecionado(item);
             setNome(item.Nome);
-            // Passa a lista de serviços diretamente
             setServicosSelecionados(item.servicos || []);
             setShowForm(true);
             setEditing(true);
@@ -178,7 +151,7 @@ const [animatedHeight] = useState(new Animated.Value(0));
         <View style={styles.scrollContainer}>
           <Animated.View style={{ width: "90%", height: animatedHeight, overflow: "hidden" }}>
             {showForm && (
-              <View onLayout={handleLayout} style={{minHeight:220, borderWidth: 0, borderColor: "#666699", borderRadius: 20, padding: 20, backgroundColor: "#c2c2d6", marginBottom: 15 }}>
+              <View onLayout={handleLayout} style={{ minHeight: 220, borderWidth: 0, borderColor: "#666699", borderRadius: 20, padding: 20, backgroundColor: "#c2c2d6", marginBottom: 15 }}>
                 <TouchableOpacity style={styles.closeButton} onPress={() => toggleForm("close")}>
                   <Ionicons name="close" size={24} color="#fff" />
                 </TouchableOpacity>
@@ -202,7 +175,6 @@ const [animatedHeight] = useState(new Animated.Value(0));
                             text: "Confirmar",
                             onPress: () => {
                               RemoverColaboradorAsync(colaboradorSelecionado.id).then((result) => {
-                                console.log(result);
                                 if (result.success) {
                                 } else {
                                   Alert.alert("Erro", result.error);
@@ -226,9 +198,9 @@ const [animatedHeight] = useState(new Animated.Value(0));
 
           <Text style={styles.gridTitle}>Colaboradores Cadastrados:</Text>
           {colaboradores && colaboradores.length > 0 ? (
-            <FlatList scrollEnabled={false} data={colaboradores} renderItem={renderColaborador} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, paddingBottom:15 }} />
+            <FlatList scrollEnabled={false} data={colaboradores} renderItem={renderColaborador} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, paddingBottom: 15 }} />
           ) : (
-            <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flex: 1, justifyContent: "center" }}>
+            <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flexGrow: 1, justifyContent: "center" }}>
               <Text style={{ textAlign: "center" }}>Nenhum colaborador cadastrado</Text>
               {!showForm && <Text style={{ textAlign: "center" }}>Clique no botão abaixo para Cadastrar</Text>}
             </View>
@@ -253,7 +225,7 @@ const [animatedHeight] = useState(new Animated.Value(0));
 
 const styles = StyleSheet.create({
   container: {
-    // flex: 1,
+    flexGrow: 1,
     justifyContent: "flex-start",
     paddingTop: 0,
     backgroundColor: "#f8f9fa", // Nova cor de fundo
@@ -275,7 +247,6 @@ const styles = StyleSheet.create({
     color: "#312fbf", // Nova cor
   },
   labelStyle: {
-    backgroundColor: "#f8f9fa",
     paddingHorizontal: 10,
     borderRadius: 15,
     marginLeft: 5,

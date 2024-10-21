@@ -116,19 +116,21 @@ export async function VerificarDuplicadosAsync(data, hora) {
 
 export async function AtualizarAgendamentoAsync(agendamento) {
   try {
-    validarAgendamento(agendamento);
+    validarAgendamento(agendamento); // ver se vai passar na validação.
 
     await AtualizarAgendamento(agendamento);
 
-    agendamento.servico.forEach((servico) => {
-      DesvincularAgendamentoServicos(agendamento.id, servico.id);
+    DesvincularAtendimentoColaboradores(agendamento.id);
+    DesvincularAgendamentoServicos(agendamento.id);
+    agendamento.servico.forEach(async (servico) => {
+      console.log(`Vinculando o servico : ${servico.id} do agendamento ${agendamento.id}`);
       VincularAgendamentoServicos(agendamento.id, servico.id);
     });
 
-    agendamento.Colaboradores.forEach((colaborador) => {
-      DesvincularAtendimentoColaboradores(agendamento.id, colaborador.id);
-      VincularAtendimentoColaboradores(agendamento.i, colaborador.id);
-      i;
+    agendamento.Colaboradores.forEach(async (colaborador) => {
+      console.log(`Vinculando o colaborador : ${colaborador.id} do agendamento ${agendamento.id}`);
+
+      VincularAtendimentoColaboradores(agendamento.id, colaborador.id);
     });
 
     return {
@@ -168,6 +170,9 @@ export async function obterAgendamentos() {
 export async function obterServicosColaboradoresPorAgendamentoAsync(id) {
   try {
     results = await obterServicosColaboradoresPorAgendamento(id);
+    console.log(" = ======= AgendamentoService =========== = ");
+    console.log(results);
+    console.log("============================================");
     return {
       success: true,
       data: results,

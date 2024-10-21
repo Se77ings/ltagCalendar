@@ -4,7 +4,7 @@ import moment from "moment";
 import "moment/locale/pt-br"; // Importa o locale em português
 import { StatusBar } from "expo-status-bar";
 import NovoAgendamento from "./NovoAgendamento";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import initializaDatabase from "../../database/initializeDatabase";
 import adicionarAgendamento, { obterAgendamentos, RemoverAgendamentoAsync } from "../../services/agendamentoService";
@@ -221,8 +221,8 @@ const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, obter, setOpti
       </View>
       <View style={styles.botoes}>
         <TouchableOpacity style={[styles.botao, {}]} onPress={() => editarAgendamento(item)}>
-          {/* <Ionicons name="create-outline" color={"#0045a0"} size={22} /> */}
-          <Text>Editar</Text>
+          <Ionicons name="create-outline" color={"#0045a0"} size={22} />
+          {/* <Text>Editar</Text> */}
         </TouchableOpacity>
         <TouchableOpacity style={[styles.botao, {}]} onPress={() => excluirAgendamento(item.id)}>
           <Ionicons name="trash" color={"#f44336"} size={22} />
@@ -236,16 +236,8 @@ const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, obter, setOpti
   return <FlatList data={data} renderItem={renderAgendamento} keyExtractor={(item) => item.id} contentContainerStyle={styles.lista} scrollEnabled={false} />;
 };
 
-const Home = ({ route }) => {
-  const update = route?.params?.update ?? false; // Verifica se route e params existem, caso contrário, define update como false
-  const [selectedItems, setSelectedItems] = useState([]);
-  const navigation = useNavigation();
+const Home = ({ route, navigation }) => {
   const [option, setOption] = useState("");
-
-  const onSelectedItemsChange = useCallback((items) => {
-    setSelectedItems(items);
-  }, []);
-
   moment.locale("pt-br");
   const [selectedDate, setSelectedDate] = useState("");
   const [agendamentoSelecionado, setAgendamentoSelecionado] = useState();
@@ -258,6 +250,14 @@ const Home = ({ route }) => {
     var result = await obterAgendamentos();
     setAgendamentos(result.data);
   }
+  useFocusEffect(
+    React.useCallback(() => {
+      //Home focada, obter novamente..
+      setTimeout(() => {
+        obter();
+      }, 100);
+    }, [])
+  );
 
   useEffect(() => {
     initialize();
@@ -294,11 +294,8 @@ const Home = ({ route }) => {
   };
 
   // const agendamentosFiltrados = agendamentos.filter((agendamento) => agendamento.Data === selectedDate);
-  useEffect(() => {
-    setTimeout(() => {
-      obter();
-    }, 100);
-  }, [update]);
+
+  //
 
   return (
     <>
@@ -348,10 +345,10 @@ const Main = () => {
   const Stack = createStackNavigator();
 
   return (
-      <Stack.Navigator initialRouteName="Main">
-        <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
-        <Stack.Screen name="NovoAgendamento" component={NovoAgendamento} options={{ headerTitle: "Novo Agendamento", headerTitleAlign: "center" }} />
-      </Stack.Navigator>
+    <Stack.Navigator initialRouteName="Main">
+      <Stack.Screen name="Home" component={Home} options={{ headerShown: false }} />
+      <Stack.Screen name="NovoAgendamento" component={NovoAgendamento} options={{ headerTitle: "Novo Agendamento", headerTitleAlign: "center" }} />
+    </Stack.Navigator>
   );
 
   /*  <View style={{height:"100%", justifyContent:"center"}}>

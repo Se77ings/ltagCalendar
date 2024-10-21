@@ -24,7 +24,21 @@ const Validation = Yup.object().shape({
     .required("Obrigatório"),
 });
 
-async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, Colaboradores, servico) {
+async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, Colaboradores, servico, AgendamentoSelecionado) {
+  console.log("Ao editar, esses são os dados que recebo:");
+  console.log("id", id);
+  console.log("nome", nome);
+  console.log("telefone", telefone);
+  console.log("data", data);
+  console.log("hora", hora);
+  console.log("Colaboradores:");
+  console.log(Colaboradores);
+  console.log("Servicos:");
+  console.log(servico);
+
+  //ta.. Começou a dar um monte de problema, mas basicamente:
+  //eu recebo aqui, um array de id's [1,2,3] e preciso transformar isso em um array de objetos [{id: 1, Nome: "Nome1"}, {id: 2, Nome: "Nome2"}, {id: 3, Nome: "Nome3"}]
+
   try {
     const agendamento = {
       id,
@@ -39,11 +53,14 @@ async function editarAgendamento(fecharModal, id, nome, telefone, data, hora, Co
 
     AgendamentoSelecionado && fecharModal();
   } catch (error) {
-    console.error("Erro ao inserir o agendamento:", error);
+    console.error("Erro ao Editar o agendamento:", error);
   }
 }
 
 async function criarAgendamento(navigation, nome, telefone, data, hora, Colaboradores, servico) {
+  console.log("Na hora de criar agendamentos, recebo:");
+  console.log(servico);
+  console.log(Colaboradores);
   try {
     const agendamento = {
       nome,
@@ -55,8 +72,8 @@ async function criarAgendamento(navigation, nome, telefone, data, hora, Colabora
     };
 
     var res = await adicionarAgendamento(agendamento);
-
-    navigation.navigate("Home", { update: true });
+    console.log("To passando com update true.");
+    navigation.navigate("Home");
   } catch (error) {
     console.error("Erro ao inserir o agendamento:", error);
   }
@@ -95,46 +112,45 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
     // console.log("=====================================");
   }, [data]);
 
-
-
-
-
-// A solução do loading me salvou.. 
-// agora é so olhar no colaboradores, e ver como que vou passar os outros dados para o DropdownSelector
-
-
-
-
-
-
-
+  // agora é so olhar no colaboradores, e ver como que vou passar os outros dados para o DropdownSelector
 
   useEffect(() => {
-    console.log("Entrei no useEffect de AgendamentoSelecionado");
     if (AgendamentoSelecionado) {
       setLoading(true);
+      setData((prevData) => ({ ...prevData, selectedPrestador: [], selectedServico: [] }));
       obterServicosColaboradoresPorAgendamentoAsync(AgendamentoSelecionado.id).then((result) => {
         if (result.error) {
           Alert.alert("Erro", "Erro ao obter os dados do agendamento " + result.error);
           return;
         }
+        console.log("=====================================================");
+        console.log("No primeiro useeffect:");
+        console.log(result.data.servicos);
+        console.log(result.data.colaboradores);
+        return;
+
 
         result.data.servicos.forEach((servico) => {
+          console.log("Estou setando o servico", servico);
           // data.selectedServico.push(servico.ServicoId);
           setData((prevData) => ({
             ...prevData,
-            selectedServico: [{ id: servico.id, Nome: servico.Nome }],
+            selectedServico: [...prevData.servicos, { id: servico.id, Nome: servico.Nome }],
           }));
         });
-
+        
         result.data.colaboradores.forEach((colaborador) => {
-          // data.selectedPrestador.push(colaborador.ColaboradorId);
-
           setData((prevData) => ({
             ...prevData,
-            selectedPrestador: [{ id: colaborador.id, Nome: colaborador.Nome }],
+            selectedPrestador: [...prevData.selectedPrestador, { id: colaborador.ColaboradorId, Nome: colaborador.Nome }],
           }));
         });
+
+        console.log("Selected Servico: ")
+        console.log(data.selectedServico)
+        console.log("Selected Prestador: ")
+        console.log(data.selectedPrestador)
+        console.log("-===========================");
       });
 
       setDate(new Date(AgendamentoSelecionado.Data)); // Definindo o estado da data
@@ -144,11 +160,10 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
       setTimeout(() => {
         //ideal era usar o await...
         setLoading(false);
-      }, 500);
+      }, 1000);
     } else {
-      // Lógica a ser executada quando AgendamentoSelecionado está vazio
-      setDate(new Date()); // Reseta para a data atual
-      setTime(new Date()); // Reseta para a hora atual
+      setDate(new Date());
+      setTime(new Date());
       setDateString(new Date().toISOString().split("T")[0]); // Define a string da data atual
       setTimeString(new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })); // Define a string da hora atual
     }
@@ -174,18 +189,24 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
   }, []);
 
   const handlePrestadorChange = (itemValue) => {
+    // Filtra os prestadores com base nos IDs recebidos em itemValue
     const selectedPrestador = data.prestadores.filter((prestador) => itemValue.includes(prestador.id));
+
+    // Atualiza o estado com os objetos dos prestadores selecionados
     setData((prevData) => ({
       ...prevData,
-      selectedPrestador: selectedPrestador.map((p) => p.id),
+      selectedPrestador: selectedPrestador, // Agora contém os objetos dos prestadores em vez dos IDs
     }));
   };
 
   const handleServicoChange = (itemValue) => {
-    const selectedServicos = data.servicos.filter((servico) => itemValue.includes(servico.id));
+    // Filtra os serviços com base nos IDs recebidos em itemValue
+    const selectedServico = data.servicos.filter((servico) => itemValue.includes(servico.id));
+
+    // Atualiza o estado com os objetos dos serviços selecionados
     setData((prevData) => ({
       ...prevData,
-      selectedServico: selectedServicos.map((s) => s.id),
+      selectedServico: selectedServico, // Agora contém os objetos dos serviços em vez dos IDs
     }));
   };
 
@@ -243,11 +264,10 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
                 {
                   text: "Sim",
                   onPress: async () => {
-                    // Se o usuário optar por continuar, execute a lógica de criação ou edição do agendamento
                     if (AgendamentoSelecionado) {
                       await editarAgendamento(fecharModal, AgendamentoSelecionado.id, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico);
                     } else {
-                      await criarAgendamento(navigation, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico);
+                      await criarAgendamento(navigation, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico, AgendamentoSelecionado);
                     }
                   },
                 },
@@ -255,9 +275,8 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
               { cancelable: false } // impede que o usuário saia sem tomar uma decisão
             );
           } else {
-            // Se não for duplicado, execute diretamente a lógica de criação ou edição do agendamento
             if (AgendamentoSelecionado) {
-              await editarAgendamento(fecharModal, AgendamentoSelecionado.id, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico);
+              await editarAgendamento(fecharModal, AgendamentoSelecionado.id, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico, AgendamentoSelecionado);
             } else {
               await criarAgendamento(navigation, values.Nome, values.Telefone, DateString, timeString, data.selectedPrestador, data.selectedServico);
             }
@@ -281,17 +300,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
               <FloatingLabelInput labelStyles={styles.labelStyle} containerStyles={styles.input} onChangeText={handleChange("Telefone")} value={values.Telefone} label="Telefone" keyboardType="numeric" />
               {errors.Telefone && touched.Telefone ? <Text style={styles.error}>{errors.Telefone}</Text> : null}
               {show && <DateTimePicker testID="dateTimePicker" value={date} mode="date" is24Hour={true} display="calendar" onChange={onChange} style={styles.datePicker} />}
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode="date" // Modo de data
-                  is24Hour={true}
-                  display="calendar"
-                  onChange={onChange}
-                  style={styles.input}
-                />
-              )}
+              {show && <DateTimePicker testID="dateTimePicker" value={date} mode="date" is24Hour={true} display="calendar" onChange={onChange} style={styles.input} />}
               <Pressable
                 onPress={() => {
                   setShow(true);
@@ -310,7 +319,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
               </Pressable>
               {!loading && <DropdownSelector lista={data.servicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={handleServicoChange} selectedItems={data.selectedServico} opt={"servico"} />}
               {errors.Servico && touched.Servico ? <Text style={styles.error}>{errors.Servico}</Text> : null}
-              {!loading && <DropdownSelector lista={data.prestadores} label={"Colaborador(es)"} icone={"person-outline"} callbackSelecionados={handlePrestadorChange} selectedItems={data.selectedPrestador} opt={"colaborador"} />}
+              {!loading && <DropdownSelector lista={data.prestadores} label={"Colaborador(es)"} icone={"people-outline"} callbackSelecionados={handlePrestadorChange} selectedItems={data.selectedPrestador} opt={"colaborador"} />}
               {errors.Prestador && touched.Prestador ? <Text style={styles.error}>{errors.Prestador}</Text> : null}
               <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                 <Text style={styles.submitButtonText}>{option ? option : "Cadastrar"}</Text>

@@ -8,9 +8,20 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [dadosFormatados, setDadosFormatados] = useState([]);
   // selectedItems = [{"Afinidade": 1, "Descricao": "Corte de cabelo feminino", "Favorito": 0, "Nome": "Serviço B", "id": 2}, {"Afinidade": 1, "Descricao": "Corte de cabelo masculino", "Favorito": 1, "Nome": "Serviço A", "id": 1}]
+
+  useEffect(()=>{
+    console.log("DropdownSelector, itens recebidos :D ->")
+    console.log(lista)
+    console.log(label)
+    console.log(icone)
+    console.log(callbackSelecionados)
+    console.log(selectedItems)
+    console.log(opt)
+    console.log("========´[==============================s===================")
+  },[])
+
   useEffect(() => {
     if (opt == "servico") {
-
       const favoritos = lista.filter((item) => item.Favorito === 1);
       const outros = lista.filter((item) => item.Favorito === 0);
 
@@ -53,14 +64,21 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
   }, [itensSelecionados]);
 
   useEffect(() => {
-    console.log("selectedItems", selectedItems);
-    if (selectedItems.length > 0) {
-      selectedItems.forEach((item) => {
-        console.log(item.id)
-        itensSelecionados.push(item.id);
-      });
+    if (selectedItems && selectedItems.length > 0) {
+      const idsSelecionados = selectedItems.map((item) => item.id);
+      setItensSelecionados(idsSelecionados);
     }
   }, []);
+
+  useEffect(() => {
+    console.log("Itens selecionados atualizados:", itensSelecionados);
+  }, [itensSelecionados]);
+
+  const handleSelectedItemsChange = (selectedItems) => {
+    console.log("Selecionados:", selectedItems);
+    setItensSelecionados(selectedItems);
+  };
+
   return (
     <SectionedMultiSelect
       hideSearch={true}
@@ -71,7 +89,7 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
       selectText={label}
       showDropDowns={false}
       readOnlyHeadings={true}
-      onSelectedItemsChange={setItensSelecionados}
+      onSelectedItemsChange={handleSelectedItemsChange}
       selectedItems={itensSelecionados}
       IconRenderer={Ionicons}
       selectToggleIconComponent={<Ionicons name="arrow-down" size={20} color="#312fbf" />}

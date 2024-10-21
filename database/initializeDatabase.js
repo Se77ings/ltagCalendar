@@ -4,15 +4,13 @@ export default async function initializaDatabase() {
   const db = await SQLite.openDatabaseAsync('ltagDatabase');
 
   await db.execAsync(`
-    -- INSERT INTO servico (Nome, Descricao, Favorito, Desabilitado) VALUES ('Corte de Cabelo', 'Corte de cabelo masculino e feminino', 1, 0);
-    -- INSERT INTO servico (Nome, Descricao, Favorito, Desabilitado) VALUES ('Barba', 'Barba', 0, 0);
     -- Descomentar caso queira zerar as tabelas (excluir antes de enviar para avaliação)
-    -- Drop Table IF EXISTS agendamento;
-    -- Drop Table IF EXISTS servico;
-    -- Drop Table IF EXISTS colaborador;
-    -- Drop Table IF EXISTS ServicosPorColaborador;
-    -- Drop Table IF EXISTS AgendamentoColaborador;
-    -- Drop Table IF EXISTS AgendamentoServicos; 
+   -- Drop Table IF EXISTS agendamento;
+   -- Drop Table IF EXISTS servico;
+   -- Drop Table IF EXISTS colaborador;
+   -- Drop Table IF EXISTS ServicosPorColaborador;
+   -- Drop Table IF EXISTS AgendamentoColaborador;
+   -- Drop Table IF EXISTS AgendamentoServicos; 
 
     CREATE TABLE IF NOT EXISTS agendamento (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
