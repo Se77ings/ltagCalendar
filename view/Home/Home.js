@@ -42,7 +42,7 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay, s
 					setSelectedDate(days[0]);
 				}
 			}
-		}, 100);
+		}, 300);
 
 		return () => clearTimeout(timeoutId);
 	}, [days]);
@@ -80,9 +80,9 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay, s
 	const renderDay = ({ item }) => (
 		<TouchableOpacity
 			style={styles.dayContainer}
-			onPress={() => {
-				setShowAtendidos(false);
-				// scrollToDay(item);
+			onPress={async () => {
+				await setShowAtendidos(false);
+				
 				onDayPress(item);
 			}}>
 			<Text style={[styles.dayName, item.fullDate === selectedDate.fullDate && styles.selectedDay]}>{item.dayName}</Text>

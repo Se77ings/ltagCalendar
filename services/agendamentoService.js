@@ -34,8 +34,8 @@ export default async function adicionarAgendamento(agendamento) {
 export async function RealizarAtendimentoAsync(agendamento) {
 	try {
 		await RealizarAtendimento(agendamento);
-		DesvincularAtendimentoColaboradores(agendamento.id);
-		DesvincularAgendamentoServicos(agendamento.id);
+		await DesvincularAtendimentoColaboradores(agendamento.id);
+		await DesvincularAgendamentoServicos(agendamento.id);
 		agendamento.servico.forEach(async (servico) => {
 			VincularAgendamentoServicos(agendamento.id, servico.id);
 		});

@@ -10,8 +10,9 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
   
   useEffect(() => {
     if (opt == "servico") {
-      const favoritos = lista.filter((item) => item.Favorito === 1);
-      const outros = lista.filter((item) => item.Favorito === 0);
+      console.log(lista);
+      const favoritos = lista.filter((item) => item.Favorito === 1 && item.Desabilitado === 0);
+      const outros = lista.filter((item) => item.Favorito === 0 && item.Desabilitado === 0);
 
       const dadosAgrupados = [
         {
