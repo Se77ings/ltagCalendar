@@ -398,24 +398,23 @@ const Home = ({ route, navigation }) => {
 						/>
 						<Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
 					</View>
-          {filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (
-
-					<Pressable
-						style={{ flex: 1, flexDirection: "row", alignSelf: "center", justifyContent: "space-around", alignItems: "center" }}
-						onPress={toggleAtendidos}>
-						<Ionicons
-							name={showAtendidos ? "arrow-up" : "arrow-down"}
-							size={20}
-							color="#312fbf"
-						/>
-						<Text style={{ marginHorizontal: 40, marginVertical: 15 }}>Agendamentos atendidos</Text>
-						<Ionicons
-							name={showAtendidos ? "arrow-up" : "arrow-down"}
-							size={20}
-							color="#312fbf"
-						/>
-					</Pressable>
-          )}
+					{filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (
+						<Pressable
+							style={{ flex: 1, flexDirection: "row", alignSelf: "center", justifyContent: "space-around", alignItems: "center" }}
+							onPress={toggleAtendidos}>
+							<Ionicons
+								name={showAtendidos ? "arrow-up" : "arrow-down"}
+								size={20}
+								color="#312fbf"
+							/>
+							<Text style={{ marginHorizontal: 40, marginVertical: 15 }}>Agendamentos atendidos</Text>
+							<Ionicons
+								name={showAtendidos ? "arrow-up" : "arrow-down"}
+								size={20}
+								color="#312fbf"
+							/>
+						</Pressable>
+					)}
 					<Animated.View style={{ width: "100%", flex: 1, height: animatedHeight, overflow: "hidden" }}>
 						<View style={{ minHeight: 100, borderWidth: 0, borderRadius: 20, marginBottom: 0 }}>
 							{showAtendidos && (

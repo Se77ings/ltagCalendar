@@ -34,7 +34,10 @@ async function editarCompletarAgendamento(fecharModal, id, nome, telefone, data,
 		Colaboradores,
 		servico,
 	};
-
+	if (servico.length == 0) {
+		Alert.alert("Atenção", "Selecione ao menos um serviço");
+		return;
+	}
 	if (option == "Finalizar") {
 		RealizarAtendimentoAsync(agendamento).then((result) => {
 			if (result.error) {
@@ -72,6 +75,11 @@ async function criarAgendamento(navigation, nome, telefone, data, hora, Colabora
 			Colaboradores,
 		};
 
+		if (servico.length == 0) {
+			Alert.alert("Atenção", "Selecione ao menos um serviço");
+			return;
+		}
+
 		await adicionarAgendamento(agendamento);
 		navigation.navigate("Home");
 	} catch (error) {
@@ -103,6 +111,12 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 	});
 
 	useEffect(() => {
+		console.log("=================== Use Effect ===================");
+		console.log(data.selectedServico);
+		console.log("=====================================================");
+	}, [data.selectedServico]);
+
+	useEffect(() => {
 		setTimeString(formatTime(time));
 	}, [time]);
 
@@ -110,7 +124,12 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 		setData((prevData) => ({ ...prevData, selectedPrestador: [], selectedServico: [] }));
 	}
 
+	let removerDuplicados = (array) => {
+		return array.filter((a, b) => array.indexOf(a) === b);
+	};
+
 	useEffect(() => {
+		zeraPrestadorServico();
 		if (AgendamentoSelecionado) {
 			setLoading(true);
 			obterServicosColaboradoresPorAgendamentoAsync(AgendamentoSelecionado.id).then((result) => {
@@ -118,18 +137,19 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 					Alert.alert("Erro", "Erro ao obter os dados do agendamento " + result.error);
 					return;
 				}
-
 				result.data.servicos.forEach((servico) => {
+					console.log(`Obtive o svc: tal: { id: ${servico.id}, Nome: ${servico.Nome} }`);
+					
 					setData((prevData) => ({
 						...prevData,
-						selectedServico: [{ id: servico.id, Nome: servico.Nome }],
+						selectedServico: [...prevData.selectedServico, { id: servico.id, Nome: servico.Nome }],
 					}));
 				});
 
 				result.data.colaboradores.forEach((colaborador) => {
 					setData((prevData) => ({
 						...prevData,
-						selectedPrestador: [{ id: colaborador.ColaboradorId, Nome: colaborador.Nome }],
+						selectedPrestador: [...prevData.selectedPrestador, { id: colaborador.ColaboradorId, Nome: colaborador.Nome }],
 					}));
 				});
 			});
@@ -177,7 +197,9 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 	};
 
 	const handleServicoChange = (itemValue) => {
+		console.log("HandleServico")
 		const selectedServico = data.servicos.filter((servico) => itemValue.includes(servico.id));
+		console.log(selectedServico);
 
 		setData((prevData) => ({
 			...prevData,

@@ -123,6 +123,7 @@ const Colaboradores = () => {
 		const { height } = event.nativeEvent.layout;
 		setFormHeight(height);
 	};
+
 	useEffect(() => {
 		if (showForm) {
 			Animated.timing(animatedHeight, {
@@ -139,6 +140,36 @@ const Colaboradores = () => {
 		}
 	}, [showForm, formHeight]);
 
+	const handleDelete = (id) => {
+		
+		Alert.alert(
+			"Excluir Colaborador",
+			"Tem certeza que deseja excluir este colaborador?\n os serviços vinculados a ele ficarão sem vínculo",
+			[
+				{
+					text: "Cancelar",
+					onPress: () => {},
+					style: "cancel",
+				},
+				{
+					text: "Confirmar",
+					onPress: () => {
+						RemoverColaboradorAsync(id).then((result) => {
+							if (result.success) {
+							} else {
+								Alert.alert("Erro", result.error);
+							}
+							setShowForm(false);
+							setNome("");
+							setServicosSelecionados([]);
+							setUpdate(true);
+						});
+					},
+				},
+			],
+			{ cancelable: false }
+		);
+	};
 	return (
 		<>
 			<StatusBar style="dark" />
@@ -180,31 +211,7 @@ const Colaboradores = () => {
 								{editing && (
 									<TouchableOpacity
 										onPress={() => {
-											Alert.alert(
-												"Excluir Colaborador",
-												"Tem certeza que deseja excluir este colaborador?",
-												[
-													{
-														text: "Cancelar",
-														onPress: () => {},
-														style: "cancel",
-													},
-													{
-														text: "Confirmar",
-														onPress: () => {
-															RemoverColaboradorAsync(colaboradorSelecionado.id).then((result) => {
-																if (result.success) {
-																} else {
-																	Alert.alert("Erro", result.error);
-																}
-
-																setUpdate(true);
-															});
-														},
-													},
-												],
-												{ cancelable: false }
-											);
+											handleDelete(colaboradorSelecionado.id);
 										}}>
 										<Ionicons
 											name="trash-outline"
