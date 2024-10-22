@@ -79,25 +79,25 @@ const Servicos = () => {
 
   const renderServicos = ({ item }) => (
     <Pressable
-        style={styles.ServicosCard}  
+        style={item.Desabilitado ? styles.ServicosCardDesabilitado : styles.ServicosCard}  
         onPress={async () => {
+          setFavorito(item.Favorito);
           abrirFormulario();
           setId(item.id)
           setNome(item.Nome);
           setDescricao(item.Descricao);
-          setFavorito(item.Favorito);
           setEditingServicos(true);
 
         }}>
       <View >
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View>
-            <Text style={styles.ServicosNome}>{item.Nome}</Text>
+            <Text style={item.Desabilitado == false? styles.ServicosNome : styles.ServicosNomeDesabilitado}>{item.Nome}</Text>
             <Text style={styles.ServicosDescricao}>{item.Descricao}</Text>
           </View>
           <Ionicons name="star" size={24} color={item.Favorito ? "#666699" : "gray"} style={{ alignSelf: "flex-start" }} />
         </View>
-        <View style={{ alignItems: "center" }}>
+        <View style={{alignItems:'center'}}>
           <Text style={{ fontSize: 12, color: "#276000" }}>Clique para editar ou excluir</Text>
         </View>
       </View>
@@ -176,7 +176,7 @@ const Servicos = () => {
     }
   };
 
-  const [mostrarDesabilitados, setMostrarDesabilitados] = useState(false);
+  const [mostrarDesabilitados, setMostrarDesabilitados] = useState(true);
   const handleMostraServicoDesabilitado = async () => {
     const desabilitado = mostrarDesabilitados ? "true" : "false";
 
@@ -262,7 +262,7 @@ const Servicos = () => {
           )}
 
           <TouchableOpacity onPress={() => handleMostraServicoDesabilitado()} style={{marginTop:2}}>
-                  <Ionicons name="albums-outline" size={15} color="black"><Text style={{ textAlign: "center", fontSize:20}}>{mostrarDesabilitados ? "Mostrar Apenas Habilitados" : "Mostrar Todos"}</Text></Ionicons>  
+                  <Ionicons name="albums-outline" size={15} color="black"><Text style={{ textAlign: "center", fontSize:20}}>{mostrarDesabilitados ? "Mostrar Todos":"Mostrar Apenas Habilitados"}</Text></Ionicons>  
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -364,10 +364,30 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  ServicosCardDesabilitado: {
+    padding: 15,
+    borderWidth: 1,
+    marginTop: 15,
+    borderColor: "#312fbf",
+    borderRadius: 10,
+    padding: 20,
+    width: "100%",
+    backgroundColor: "#F3F4F6",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 3,
+  },
   ServicosNome: {
     ffontWeight: "bold",
     fontSize: 16,
     color: "#14213b",
+  },
+  ServicosNomeDesabilitado:{
+    ffontWeight: "bold",
+    fontSize: 16,
+    color: "red",
   },
   ServicosDescricao: {
     color: "#777",
