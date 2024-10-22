@@ -45,7 +45,7 @@ export async function ObterAgendamentos() {
 
 export async function obterServicosColaboradoresPorAgendamento(agendamentoId) {
   const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
-  const servicos = await db.getAllAsync(`SELECT s.id, s.Nome, s.Descricao FROM AgendamentoServicos agServ LEFT JOIN servico s ON agServ.ServicoId = s.id WHERE agServ.AgendamentoId = ?;`, agendamentoId);
+  const servicos = await db.getAllAsync(`SELECT s.id, s.Nome, s.Descricao FROM AgendamentoServicos agServ LEFT JOIN servico s ON agServ.ServicoId = s.id WHERE agServ.AgendamentoId = ? AND s.Desabilitado = 0;`, agendamentoId);
   const colaboradores = await db.getAllAsync(`SELECT agColab.ColaboradorId, c.Nome FROM AgendamentoColaborador agColab LEFT JOIN colaborador c ON agColab.ColaboradorId = c.id WHERE agColab.AgendamentoId = ?;`, agendamentoId);
   return { servicos: servicos, colaboradores: colaboradores };
 }
