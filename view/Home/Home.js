@@ -7,13 +7,12 @@ import NovoAgendamento from "./NovoAgendamento";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import initializaDatabase from "../../database/initializeDatabase";
-import adicionarAgendamento, { obterAgendamentos, RemoverAgendamentoAsync } from "../../services/agendamentoService";
-import { ObterServicosPorColaboradorAsync, ObterTodosServicosAsync } from "../../services/servicoService";
+import { obterAgendamentos, RemoverAgendamentoAsync } from "../../services/agendamentoService";
 import styles from "../../assets/styles/styles";
 import Header from "../../assets/components/Header";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Picker } from "@react-native-picker/picker";
-import { AsyncStorage } from "react-native";
+import agendamentoCompleted from "../../assets/icon/agendamentoCompleted.png";
+import calendario from "../../assets/icon/calendario.png";
 
 const formatarData = (data) => {
 	const partes = data.split("-");
@@ -82,7 +81,7 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay, s
 			style={styles.dayContainer}
 			onPress={async () => {
 				await setShowAtendidos(false);
-				
+
 				onDayPress(item);
 			}}>
 			<Text style={[styles.dayName, item.fullDate === selectedDate.fullDate && styles.selectedDay]}>{item.dayName}</Text>
@@ -138,7 +137,7 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay, s
 	);
 };
 
-const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, obter, setOption }) => {
+const Cards = ({ img, data, setAgendamentoSelecionado, setmodalCreate, obter, setOption }) => {
 	const excluirAgendamento = (id) => {
 		Alert.alert(
 			"Confirmar Exclusão",
@@ -222,7 +221,7 @@ const Cards = ({ data, setAgendamentoSelecionado, setmodalCreate, obter, setOpti
 	const renderAgendamento = ({ item }) => (
 		<View style={[styles.agendamento, item.Finalizado ? styles.agendamentoFinalizado : isPast(formatarData(item.Data), item.Hora) ? styles.agendamentoAtrasado : null]}>
 			<Image
-				source={{ uri: "https://encurtador.com.br/3Bh7L" }}
+				source={img}
 				style={styles.imagemServico}
 			/>
 			<View style={styles.info}>
@@ -374,7 +373,7 @@ const Home = ({ route, navigation }) => {
 	};
 	return (
 		<>
-			<StatusBar style="light"/>
+			<StatusBar style="light" />
 			<View style={[styles.container]}>
 				<TouchableOpacity
 					style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }}
@@ -419,6 +418,7 @@ const Home = ({ route, navigation }) => {
 							{showAtendidos && (
 								<>
 									<Cards
+										img={agendamentoCompleted}
 										data={filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1))}
 										setAgendamentoSelecionado={setAgendamentoSelecionado}
 										setOption={setOption}
@@ -434,6 +434,7 @@ const Home = ({ route, navigation }) => {
 					{filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 0)).length != 0 ? (
 						<>
 							<Cards
+								img={calendario}
 								data={filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 0))}
 								setAgendamentoSelecionado={setAgendamentoSelecionado}
 								setOption={setOption}
@@ -490,12 +491,6 @@ const Main = () => {
 			/>
 		</Stack.Navigator>
 	);
-
-	/*  <View style={{height:"100%", justifyContent:"center"}}>
-      <Formik>>
-        .....
-      </Formik>
-    </View>*/
 };
 
 export default Main;
