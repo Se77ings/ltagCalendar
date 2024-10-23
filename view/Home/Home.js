@@ -381,7 +381,7 @@ const Home = ({ route, navigation }) => {
 					<Ionicons
 						name="add-circle"
 						size={50}
-						color="#0045a0"
+						color="#001a66"
 					/>
 				</TouchableOpacity>
 				<ScrollView contentContainerStyle={{}}>

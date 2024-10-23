@@ -40,10 +40,10 @@ export async function ObterServicosPorColaborador(colaboradorId) {
 }
 
 export async function ExisteAtendimentoComServico(servicoId) {
-    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
-    const result = await db.getAsync('SELECT COUNT(*) as total FROM AtendimentoServicos WHERE ServicoId = ?;', [servicoId]);
 
-    return result.total > 0;
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );         
+    const result = await db.getAllAsync('SELECT COUNT(*) as total FROM AgendamentoServicos WHERE ServicoId = ?;', [servicoId]);
+    return result;
 }
 
 export async function DesabilitarServico(id) { //TODO: no ServicoService preciso validar se tem algum atendimento com esse serviço

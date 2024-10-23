@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Switch, TouchableOpacity, TextInput, Pressable, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons"; 
-import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, ObterTodosServicosAtivosAsync, RemoverServicoAsync } from "../../services/servicoService";
+import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteAtendimentoComServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, ObterTodosServicosAtivosAsync, RemoverServicoAsync } from "../../services/servicoService";
 import { StatusBar } from "expo-status-bar";
 
 
@@ -81,9 +81,8 @@ const Servicos = () => {
     <Pressable
         style={item.Desabilitado ? styles.ServicosCardDesabilitado : styles.ServicosCard}  
         onPress={async () => {
-          setFavorito(item.Favorito);
           abrirFormulario();
-          setId(item.id)
+          setId(item.id);
           setNome(item.Nome);
           setDescricao(item.Descricao);
           setEditingServicos(true);
@@ -95,7 +94,7 @@ const Servicos = () => {
             <Text style={item.Desabilitado == false? styles.ServicosNome : styles.ServicosNomeDesabilitado}>{item.Nome}</Text>
             <Text style={styles.ServicosDescricao}>{item.Descricao}</Text>
           </View>
-          <Ionicons name="star" size={24} color={item.Favorito ? "#666699" : "gray"} style={{ alignSelf: "flex-start" }} />
+          <Ionicons name="star" size={24} color={item.Favorito ? "#666699": "gray"} style={{ alignSelf: "flex-start" }} />
         </View>
         <View style={{alignItems:'center'}}>
           <Text style={{ fontSize: 12, color: "#276000" }}>Clique para editar ou excluir</Text>
@@ -105,6 +104,7 @@ const Servicos = () => {
   );
 
   abrirFormulario = () => {
+    setFavorito(true);
     if(editingServicos){
       return;
     }
@@ -120,6 +120,7 @@ const Servicos = () => {
     setId('');
     setNome('');
     setDescricao('');
+    setFavorito(false);
     Animated.timing(formAnimation, {
       toValue: 0,
       duration: 300,
@@ -141,7 +142,10 @@ const Servicos = () => {
 
   const handleDelete = async (serviceId) => {
     var res = await ExisteServicoComColaboradorAsync(serviceId);
-    console.log("O serviço vinculado esta retornando vinculado?: " + res.success + " " + res.error);
+    var res2 = await ExisteAtendimentoComServicoAsync(serviceId);
+    if(res2.data){
+      return Alert.alert("Atenção!!!", "O serviço esta vinculado a um agendamento, não é possivel excluir!")
+    }
 
     if(res.data == false){
       Alert.alert(
@@ -222,7 +226,7 @@ const Servicos = () => {
       <StatusBar style="dark" />
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.scrollContainer}>
-          <Animated.View style={{ width: "90%", height: formAnimation, overflow: "hidden" }}>
+          <Animated.View style={{ width: "100%", height: formAnimation, overflow: "hidden" }}>
             {showForm && (
               <View onLayout={handleLayout} style={{minHeight:220, borderWidth: 0, borderColor: "#666699", borderRadius: 20, padding: 20, backgroundColor: "#c2c2d6", marginBottom: 15 }}>
                 <TouchableOpacity style={styles.closeButton} onPress={toggleForm}>
@@ -251,9 +255,22 @@ const Servicos = () => {
             )}
           </Animated.View>
 
+          <View style={{ margin: "auto", marginVertical: 10, width: "84%" }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#3d3d5c",
+              borderRadius: 10,
+              padding: 10,
+              alignItems: "center",
+            }}
+            onPress={showForm ? handleSubmit : toggleForm}>
+            <Text style={{ color: "white" }}>{editingServicos ? "Editar" : "Criar Serviço"}</Text>
+          </TouchableOpacity>
+        </View>
+
           <Text style={styles.gridTitle}>Servicos Cadastrados:</Text>
           {servicos && servicos.length > 0 ? (
-            <FlatList scrollEnabled={false} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", height:'100%', backgroundColor: "#a3a3c2", borderRadius: 12, flex: 1}} />
+            <FlatList scrollEnabled={false} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%",  backgroundColor: "#a3a3c2", borderRadius: 12}} />
           ) : (
             <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flex: 1, justifyContent: "center" }}>
             <Text style={{ textAlign: "center" }}>Nenhum Servico cadastrado</Text>
@@ -267,29 +284,16 @@ const Servicos = () => {
         </View>
       </ScrollView>
         
-        <View style={{ margin: "auto", marginBottom: 10, width: "84%" }}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#3d3d5c",
-              borderRadius: 10,
-              padding: 10,
-              alignItems: "center",
-            }}
-            onPress={showForm ? handleSubmit : toggleForm}>
-            <Text style={{ color: "white" }}>{editingServicos ? "Editar" : "Criar Serviço"}</Text>
-          </TouchableOpacity>
-        </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-   // flex: 1,
+  //  flexGrow: 1,
    justifyContent: "flex-start",
    paddingTop: 0,
-   backgroundColor: "#f8f9fa", // Nova cor de fundo
-   height: "100%",
+   backgroundColor: "white", // Nova cor de fundo
   },
   switchContainer: {
     flexDirection: "row",
@@ -352,7 +356,7 @@ const styles = StyleSheet.create({
   ServicosCard: {
     padding: 15,
     borderWidth: 1,
-    marginTop: 15,
+    marginVertical: 7,
     borderColor: "#312fbf",
     borderRadius: 10,
     padding: 20,
@@ -367,7 +371,7 @@ const styles = StyleSheet.create({
   ServicosCardDesabilitado: {
     padding: 15,
     borderWidth: 1,
-    marginTop: 15,
+    marginVertical: 15,
     borderColor: "#312fbf",
     borderRadius: 10,
     padding: 20,

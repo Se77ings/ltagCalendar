@@ -141,14 +141,14 @@ const Colaboradores = () => {
 	}, [showForm, formHeight]);
 
 	const handleDelete = (id) => {
-		
+
 		Alert.alert(
 			"Excluir Colaborador",
 			"Tem certeza que deseja excluir este colaborador?\n os serviços vinculados a ele ficarão sem vínculo",
 			[
 				{
 					text: "Cancelar",
-					onPress: () => {},
+					onPress: () => { },
 					style: "cancel",
 				},
 				{
@@ -171,11 +171,11 @@ const Colaboradores = () => {
 		);
 	};
 	return (
-		<>
+		<View style={{ backgroundColor: "white" }}>
 			<StatusBar style="dark" />
 			<ScrollView contentContainerStyle={styles.container}>
 				<View style={styles.scrollContainer}>
-					<Animated.View style={{ width: "90%", height: animatedHeight, overflow: "hidden" }}>
+					<Animated.View style={{ width: "100%", height: animatedHeight, overflow: "hidden" }}>
 						{showForm && (
 							<View
 								onLayout={handleLayout}
@@ -225,6 +225,20 @@ const Colaboradores = () => {
 						)}
 					</Animated.View>
 
+					<View style={{ margin: "auto", marginBottom: 10, width: "84%" }}>
+						<TouchableOpacity
+							style={{
+								backgroundColor: "#3d3d5c",
+								borderRadius: 10,
+								padding: 10,
+								alignItems: "center",
+								marginTop: 10
+							}}
+							onPress={toggleForm}>
+							<Text style={{ color: "white" }}>{showForm ? "Salvar" : "Cadastrar Novo"}</Text>
+						</TouchableOpacity>
+					</View>
+
 					<Text style={styles.gridTitle}>Colaboradores Cadastrados:</Text>
 					{colaboradores && colaboradores.length > 0 ? (
 						<FlatList
@@ -233,7 +247,7 @@ const Colaboradores = () => {
 							renderItem={renderColaborador}
 							keyExtractor={(item) => item.id.toString()}
 							contentContainerStyle={styles.gridContainer}
-							style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, paddingBottom: 15 }}
+							style={{ width: "100%", backgroundColor: "#a3a3c2", borderRadius: 15, paddingBottom: 15 }}
 						/>
 					) : (
 						<View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flexGrow: 1, justifyContent: "center" }}>
@@ -243,19 +257,7 @@ const Colaboradores = () => {
 					)}
 				</View>
 			</ScrollView>
-			<View style={{ margin: "auto", marginBottom: 10, width: "84%" }}>
-				<TouchableOpacity
-					style={{
-						backgroundColor: "#3d3d5c",
-						borderRadius: 10,
-						padding: 10,
-						alignItems: "center",
-					}}
-					onPress={toggleForm}>
-					<Text style={{ color: "white" }}>{showForm ? "Salvar" : "Cadastrar Novo"}</Text>
-				</TouchableOpacity>
-			</View>
-		</>
+		</View>
 	);
 };
 
@@ -264,7 +266,7 @@ const styles = StyleSheet.create({
 		flexGrow: 1,
 		justifyContent: "flex-start",
 		paddingTop: 0,
-		backgroundColor: "#f8f9fa",
+		backgroundColor: "white",
 	},
 
 	Header: {
@@ -350,12 +352,12 @@ const styles = StyleSheet.create({
 	},
 	closeButton: {
 		position: "absolute",
-		top: 10,
-		right: 10,
+		top: 10, // Distância do topo
+		right: 10, // Distância da direita
 		zIndex: 1,
-		backgroundColor: "#312fbf",
+		backgroundColor: "#666699",
 		borderRadius: 15,
-		padding: 5,
+		padding: 0,
 	},
 	submitButton: {
 		backgroundColor: "#312fbf",

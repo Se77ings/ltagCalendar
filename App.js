@@ -5,13 +5,12 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import Main from "./view/Home/Home";
 import Config from "./view/Configuracoes/Config";
-import Header from "./assets/components/Header";
 
 export default function App() {
   const Tab = createBottomTabNavigator();
   return (
       <NavigationContainer >
-        <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#14213d", padding:2, height:60, borderTopEndRadius:50, borderTopLeftRadius:50}}}>
+        <Tab.Navigator initialRouteName="Main"  screenOptions={{tabBarStyle: {backgroundColor: "#001a66", padding:2, height:60, borderTopEndRadius:50, borderTopLeftRadius:50}}}>
           <Tab.Screen
             name="Main"
             component={Main}
@@ -42,6 +41,7 @@ export default function App() {
               ),
             }}
           />
+          
         </Tab.Navigator>
       </NavigationContainer>
   );

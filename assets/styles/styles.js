@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { shadow } from "react-native-paper";
 
 const styles = StyleSheet.create({
 	cardStyle: {
@@ -7,10 +8,9 @@ const styles = StyleSheet.create({
 		height: 100,
 		justifyContent: "center",
 		alignItems: "center",
-		borderWidth: 1,
 		borderRadius: 12,
 		marginBottom: 20,
-		backgroundColor: "#14213d",
+		backgroundColor: "#0055c6",
 		color: "white",
 	},
 	agendamentoAtrasado: {
@@ -43,7 +43,6 @@ const styles = StyleSheet.create({
 
 	container: {
 		backgroundColor: "#fff",
-
 		height: "100%",
 		borderColor: "red",
 	},

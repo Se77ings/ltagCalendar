@@ -149,13 +149,15 @@ export async function DesabilitarServicoAsync(id) {
   export async function ExisteAtendimentoComServicoAsync(servicoId) {
     try {
       var result = await ExisteAtendimentoComServico(servicoId);
+      console.log("ServiceService---->" , result);
   
       return {
         success: true,
-        data: result,
+        data: result[0].total ? true : false,
         error: null
       }; 
     } catch (error) {
+      console.log(error)
       return {
         success: false,
         data: null,
