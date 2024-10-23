@@ -191,6 +191,7 @@ export async function ObterAgendamentosPaginadoAsync(limit, offset) {
 export async function RemoverAgendamentoAsync(id) {
 	try {
 		await RemoverAgendamento(id);
+		await DesvincularAgendamentoServicos(id);
 		console.log("Agendamento removido com sucesso.");
 
 		return {

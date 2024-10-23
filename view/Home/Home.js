@@ -13,6 +13,7 @@ import Header from "../../assets/components/Header";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import agendamentoCompleted from "../../assets/icon/agendamentoCompleted.png";
 import calendario from "../../assets/icon/calendario.png";
+import { DesvincularAgendamentoServicos } from "../../database/agendamentoRepository";
 
 const formatarData = (data) => {
 	const partes = data.split("-");
