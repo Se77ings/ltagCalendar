@@ -18,3 +18,13 @@
 	 Deve ter uma listagem de serviços para selecionar e uma listagem de colaboradores.
 
 options={{ headerShown: true , title: "Recuperar Senha", headerStyle: { backgroundColor: "#3291ed" }, headerTintColor: "#fff", headerTitleStyle: { fontWeight: "bold" }}}
+
+
+
+    -- Descomentar caso queira zerar as tabelas (excluir antes de enviar para avaliação)
+   -- Drop Table IF EXISTS agendamento;
+   -- Drop Table IF EXISTS servico;
+   -- Drop Table IF EXISTS colaborador;
+   -- Drop Table IF EXISTS ServicosPorColaborador;
+   -- Drop Table IF EXISTS AgendamentoColaborador;
+   -- Drop Table IF EXISTS AgendamentoServicos; 

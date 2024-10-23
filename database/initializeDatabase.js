@@ -1,17 +1,9 @@
-import * as SQLite from 'expo-sqlite';
+import * as SQLite from "expo-sqlite";
 
 export default async function initializaDatabase() {
-  const db = await SQLite.openDatabaseAsync('ltagDatabase');
+  const db = await SQLite.openDatabaseAsync("ltagDatabase");
 
   await db.execAsync(`
-    -- Descomentar caso queira zerar as tabelas (excluir antes de enviar para avaliação)
-   -- Drop Table IF EXISTS agendamento;
-   -- Drop Table IF EXISTS servico;
-   -- Drop Table IF EXISTS colaborador;
-   -- Drop Table IF EXISTS ServicosPorColaborador;
-   -- Drop Table IF EXISTS AgendamentoColaborador;
-   -- Drop Table IF EXISTS AgendamentoServicos; 
-
     CREATE TABLE IF NOT EXISTS agendamento (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       Nome TEXT NOT NULL,
@@ -61,4 +53,3 @@ export default async function initializaDatabase() {
     );
   `);
 }
-
