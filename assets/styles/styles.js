@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
 		justifyContent: "flex-start",
 		alignSelf: "center",
 		marginBottom: 10,
-		marginTop: 30, //não é o ideal!
 		paddingLeft: 20,
 		width: "100%",
 	},

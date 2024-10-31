@@ -14,6 +14,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import agendamentoCompleted from "../../assets/icon/agendamentoCompleted.png";
 import calendario from "../../assets/icon/calendario.png";
 import { DesvincularAgendamentoServicos } from "../../database/agendamentoRepository";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const formatarData = (data) => {
 	const partes = data.split("-");
@@ -374,7 +375,8 @@ const Home = ({ route, navigation }) => {
 	};
 	return (
 		<>
-			<StatusBar style="light" />
+			<StatusBar style="inverted" backgroundColor={"black"}/>
+			<SafeAreaView>
 			<View style={[styles.container]}>
 				<TouchableOpacity
 					style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }}
@@ -385,72 +387,74 @@ const Home = ({ route, navigation }) => {
 						color="#001a66"
 					/>
 				</TouchableOpacity>
-				<ScrollView contentContainerStyle={{}}>
-					<Header title={"Menu Inicial"} />
-					<View style={{ paddingTop: 20 }}>
-						<SliderData
-							flatListRef={flatListRef}
-							selectedDate={selectedDate}
-							setSelectedDate={setSelectedDate}
-							scrollToDay={scrollToDay}
-							setShowAtendidos={setShowAtendidos}
-						/>
-						<Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
-					</View>
-					{filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (
-						<Pressable
-							style={{ flex: 1, flexDirection: "row", alignSelf: "center", justifyContent: "space-around", alignItems: "center" }}
-							onPress={toggleAtendidos}>
-							<Ionicons
-								name={showAtendidos ? "arrow-up" : "arrow-down"}
-								size={20}
-								color="#312fbf"
+				<ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{}}>
+					<Header title={"Menu Inicial"} />	
+						<View style={{ backgroundColor: 'white', paddingBottom: 10}}>
+							<SliderData
+								flatListRef={flatListRef}
+								selectedDate={selectedDate}
+								setSelectedDate={setSelectedDate}
+								scrollToDay={scrollToDay}
+								setShowAtendidos={setShowAtendidos}
 							/>
-							<Text style={{ marginHorizontal: 40, marginVertical: 15 }}>Agendamentos atendidos</Text>
-							<Ionicons
-								name={showAtendidos ? "arrow-up" : "arrow-down"}
-								size={20}
-								color="#312fbf"
-							/>
-						</Pressable>
-					)}
-					<Animated.View style={{ width: "100%", flex: 1, height: animatedHeight, overflow: "hidden" }}>
-						<View style={{ minHeight: 100, borderWidth: 0, borderRadius: 20, marginBottom: 0 }}>
-							{showAtendidos && (
-								<>
-									<Cards
-										img={agendamentoCompleted}
-										data={filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1))}
-										setAgendamentoSelecionado={setAgendamentoSelecionado}
-										setOption={setOption}
-										setmodalCreate={setmodalCreate}
-										obter={obter}
-									/>
+							<Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
+						</View>
+						{filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (
+							<Pressable
+								style={{ flex: 1, flexDirection: "row", alignSelf: "center", justifyContent: "space-around", alignItems: "center" }}
+								onPress={toggleAtendidos}>
+								<Ionicons
+									name={showAtendidos ? "arrow-up" : "arrow-down"}
+									size={20}
+									color="#312fbf"
+								/>
+								<Text style={{ marginHorizontal: 40, marginVertical: 15 }}>Agendamentos atendidos</Text>
+								<Ionicons
+									name={showAtendidos ? "arrow-up" : "arrow-down"}
+									size={20}
+									color="#312fbf"
+								/>
+							</Pressable>
+						)}
+						<Animated.View style={{ width: "100%", flex: 1, height: animatedHeight, overflow: "hidden" }}>
+							<View style={{ minHeight: 100, borderWidth: 0, borderRadius: 20, marginBottom: 0 }}>
+								{showAtendidos && (
+									<>
+										<Cards
+											img={agendamentoCompleted}
+											data={filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1))}
+											setAgendamentoSelecionado={setAgendamentoSelecionado}
+											setOption={setOption}
+											setmodalCreate={setmodalCreate}
+											obter={obter}
+										/>
 
-									<View style={{ width: "80%", borderWidth: 0.5, alignSelf: "center" }} />
-								</>
-							)}
-						</View>
-					</Animated.View>
-					{filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 0)).length != 0 ? (
-						<>
-							<Cards
-								img={calendario}
-								data={filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 0))}
-								setAgendamentoSelecionado={setAgendamentoSelecionado}
-								setOption={setOption}
-								setmodalCreate={setmodalCreate}
-								obter={obter}
-							/>
-						</>
-					) : (
-						<View style={{ flex: 1, justifyContent: "center" }}>
-							<Text style={{ textAlign: "center", marginTop: 20 }}>Nnão há agendamentos para este dia</Text>
-							<Text style={{ textAlign: "center", marginTop: 0 }}>Utilize o item abaixo para adicionar um agendamento</Text>
-						</View>
-					)}
+										<View style={{ width: "80%", borderWidth: 0.5, alignSelf: "center" }} />
+									</>
+								)}
+							</View>
+						</Animated.View>
+						{filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 0)).length != 0 ? (
+							<>
+								<Cards
+									img={calendario}
+									data={filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 0))}
+									setAgendamentoSelecionado={setAgendamentoSelecionado}
+									setOption={setOption}
+									setmodalCreate={setmodalCreate}
+									obter={obter}
+								/>
+							</>
+						) : (
+							<View style={{ flex: 1, justifyContent: "center" }}>
+								<Text style={{ textAlign: "center", marginTop: 20 }}>Não há agendamentos para este dia</Text>
+								<Text style={{ textAlign: "center", marginTop: 0 }}>Utilize o item abaixo para adicionar um agendamento.</Text>
+							</View>
+						)}
 				</ScrollView>
 			</View>
+
+			</SafeAreaView>
 			<Modal
 				visible={modalCreate}
 				transparent={true}

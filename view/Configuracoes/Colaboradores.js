@@ -173,7 +173,7 @@ const Colaboradores = () => {
 	return (
 		<View style={{ backgroundColor: "white" }}>
 			<StatusBar style="dark" />
-			<ScrollView contentContainerStyle={styles.container}>
+			<View contentContainerStyle={styles.container}>
 				<View style={styles.scrollContainer}>
 					<Animated.View style={{ width: "100%", height: animatedHeight, overflow: "hidden" }}>
 						{showForm && (
@@ -242,7 +242,7 @@ const Colaboradores = () => {
 					<Text style={styles.gridTitle}>Colaboradores Cadastrados:</Text>
 					{colaboradores && colaboradores.length > 0 ? (
 						<FlatList
-							scrollEnabled={false}
+							scrollEnabled={true}
 							data={colaboradores}
 							renderItem={renderColaborador}
 							keyExtractor={(item) => item.id.toString()}
@@ -256,7 +256,7 @@ const Colaboradores = () => {
 						</View>
 					)}
 				</View>
-			</ScrollView>
+			</View>
 		</View>
 	);
 };

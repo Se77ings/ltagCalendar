@@ -1,11 +1,13 @@
 import React from "react";
 import { View, Text, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { createStackNavigator } from "@react-navigation/stack";
 import styles from "../../assets/styles/styles";
 import Header from "../../assets/components/Header";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colaboradores from "./Colaboradores";
 import Servicos from "./Servicos";
+import { StatusBar } from "expo-status-bar";
 
 const Stack = createStackNavigator();
 
@@ -20,13 +22,18 @@ const ConfigScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <Header title={"Configurações"} />
-      <View style={{ flex: 1, alignItems: "center", height: "100%", justifyContent: "center" }}>
-        <Card title={"Serviços"} icon={"construct-outline"} screen="Servicos" />
-        <Card title={"Colaboradores"} icon={"people-outline"} screen="Colaboradores" />
+    <>
+    <StatusBar style="inverted" backgroundColor={"black"}/>
+    <SafeAreaView>
+      <View style={styles.container}>
+        <Header title={"Configurações"} />
+        <View style={{ flex: 1, alignItems: "center", height: "100%", justifyContent: "center" }}>
+          <Card title={"Serviços"} icon={"construct-outline"} screen="Servicos" />
+          <Card title={"Colaboradores"} icon={"people-outline"} screen="Colaboradores" />
+        </View>
       </View>
-    </View>
+    </SafeAreaView>
+    </>
   );
 };
 

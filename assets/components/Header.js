@@ -8,7 +8,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 const Header = ({ title }) => {
   return (
     <View>
-      <LinearGradient colors={["#000000", "#0055c6"]} start={{ x: 0.3, y: 0.2 }} style={styles.headerContainer}>
+      <LinearGradient colors={["#000000", "#0055c6"]} start={{ x: 0.5, y: 0.2 }} style={styles.headerContainer}>
         <View style={styles.logoContainer}>
           <Image source={icon} style={styles.logo} />
           <View style={{flex:1,flexDirection:"row", justifyContent:"space-around"}}>

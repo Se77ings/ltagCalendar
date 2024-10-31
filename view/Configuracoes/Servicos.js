@@ -81,11 +81,12 @@ const Servicos = () => {
     <Pressable
         style={item.Desabilitado ? styles.ServicosCardDesabilitado : styles.ServicosCard}  
         onPress={async () => {
-          abrirFormulario();
           setId(item.id);
           setNome(item.Nome);
           setDescricao(item.Descricao);
+          setFavorito(item.Favorito);
           setEditingServicos(true);
+          abrirFormulario();
 
         }}>
       <View >
@@ -94,7 +95,7 @@ const Servicos = () => {
             <Text style={item.Desabilitado == false? styles.ServicosNome : styles.ServicosNomeDesabilitado}>{item.Nome}</Text>
             <Text style={styles.ServicosDescricao}>{item.Descricao}</Text>
           </View>
-          <Ionicons name="star" size={24} color={item.Favorito ? "#666699": "gray"} style={{ alignSelf: "flex-start" }} />
+          <Ionicons name="star" size={24} color={item.Favorito ? "#ffcc00": "gray"} style={{ alignSelf: "flex-start" }} />
         </View>
         <View style={{alignItems:'center'}}>
           <Text style={{ fontSize: 12, color: "#276000" }}>Clique para editar ou excluir</Text>
@@ -104,7 +105,6 @@ const Servicos = () => {
   );
 
   abrirFormulario = () => {
-    setFavorito(true);
     if(editingServicos){
       return;
     }
@@ -161,6 +161,7 @@ const Servicos = () => {
                 setId("");
                 setNome("");
                 setDescricao("");
+                setFavorito(false)
                 toggleForm();
                 Alert.alert("Sucesso", "Serviço desativado com sucesso!");
                 fetchServicos();
@@ -219,12 +220,13 @@ const Servicos = () => {
     }
   }, [showForm, formHeight]);
 
-  const toggleSwitch = () => setFavorito((previousState) => !previousState);
-
+  const toggleFavorito = () => {
+    setFavorito(prevFavorito => !prevFavorito);
+  };
   return (
     <>
       <StatusBar style="dark" />
-      <ScrollView contentContainerStyle={styles.container}>
+      <View contentContainerStyle={styles.container}>
         <View style={styles.scrollContainer}>
           <Animated.View style={{ width: "100%", height: formAnimation, overflow: "hidden" }}>
             {showForm && (
@@ -240,10 +242,10 @@ const Servicos = () => {
                 <TextInput style={styles.textArea} value={descricao} onChangeText={setDescricao} placeholder="Insira a descrição do serviço" multiline numberOfLines={4} />
                 {errors.descricao ? <Text style={styles.error}>{errors.descricao}</Text> : null}
 
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center",  paddingTop:5}}>
                   <View style={styles.switchContainer}> 
-                    <Text style={styles.label}>Favoritar?</Text>
-                    <Switch trackColor={{ false: "white", true: "white" }} thumbColor={favorito ? "#3d3d5c" : "#f4f3f4"} ios_backgroundColor="#3e3e3e" onValueChange={toggleSwitch} value={favorito} />
+                    <Text style={styles.label}>Favorito : </Text>
+                    <Ionicons onPress={toggleFavorito} name="star" size={24} color={favorito ? "#ffcc00": "gray"} style={{ alignSelf: "flex-start" }} />
                   </View>
                   
                   {/* Botão de excluir posicionado à direita */}
@@ -255,22 +257,21 @@ const Servicos = () => {
             )}
           </Animated.View>
 
-          <View style={{ margin: "auto", marginVertical: 10, width: "84%" }}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#3d3d5c",
-              borderRadius: 10,
-              padding: 10,
-              alignItems: "center",
-            }}
-            onPress={showForm ? handleSubmit : toggleForm}>
-            <Text style={{ color: "white" }}>{editingServicos ? "Editar" : "Criar Serviço"}</Text>
-          </TouchableOpacity>
-        </View>
-
+            <View style={{ margin: "auto", marginVertical: 10, width: "84%"}}>
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#3d3d5c",
+                borderRadius: 10,
+                padding: 10,
+                alignItems: "center",
+              }}
+              onPress={showForm ? handleSubmit : toggleForm}>
+              <Text style={{ color: "white" }}>{editingServicos ? "Editar" : "Criar Serviço"}</Text>
+            </TouchableOpacity>
+          </View>
           <Text style={styles.gridTitle}>Servicos Cadastrados:</Text>
           {servicos && servicos.length > 0 ? (
-            <FlatList scrollEnabled={false} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%",  backgroundColor: "#a3a3c2", borderRadius: 12}} />
+            <FlatList scrollEnabled={true} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%",  backgroundColor: "#a3a3c2", borderRadius: 12}} />
           ) : (
             <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flex: 1, justifyContent: "center" }}>
             <Text style={{ textAlign: "center" }}>Nenhum Servico cadastrado</Text>
@@ -282,7 +283,7 @@ const Servicos = () => {
                   <Ionicons name="albums-outline" size={15} color="black"><Text style={{ textAlign: "center", fontSize:20}}>{mostrarDesabilitados ? "Mostrar Todos":"Mostrar Apenas Habilitados"}</Text></Ionicons>  
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </View>
         
     </>
   );
@@ -290,7 +291,6 @@ const Servicos = () => {
 
 const styles = StyleSheet.create({
   container: {
-  //  flexGrow: 1,
    justifyContent: "flex-start",
    paddingTop: 0,
    backgroundColor: "white", // Nova cor de fundo
