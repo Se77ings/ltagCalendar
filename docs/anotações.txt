@@ -28,3 +28,12 @@ options={{ headerShown: true , title: "Recuperar Senha", headerStyle: { backgrou
    -- Drop Table IF EXISTS ServicosPorColaborador;
    -- Drop Table IF EXISTS AgendamentoColaborador;
    -- Drop Table IF EXISTS AgendamentoServicos; 
+
+
+   ** Ordenação por afinidade **
+    ** Trocar Scrollview por Flatlist **
+    ** Menu principal ao rolar permitir visualização da data **
+    Padronizar as notificações de erro no Colaboradores
+    **StatusBar nao muda de cor quando o componente de data é fixado**
+    Ao clicar em favorito no FLatlist, setar favorito ou não
+

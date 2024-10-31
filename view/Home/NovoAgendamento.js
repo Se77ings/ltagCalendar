@@ -102,7 +102,8 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
   const [time, setTime] = useState(new Date());
   const [showtime, setShowtime] = useState(false);
   const [timeString, setTimeString] = useState(formatTime(time));
-  const [loading, setLoading] = useState(false);
+  const [servicoLoading, setServicoLoading] = useState(false);
+  const [ colaboradorLoading, setColaboradorLoading] = useState(false);
   const [data, setData] = useState({
     prestadores: [],
     servicos: [],
@@ -125,18 +126,24 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
   };
 
   const populaDropdown = async (result) => {
+    if (result === "update") {
+      setTimeout(()=>{
+
+        setColaboradorLoading(false);
+      }, 1000)
+      return;
+    }
     await zeraPrestadorServico();
-  
     const novosServicos = result.data.servicos.map((servico) => ({
       id: servico.id,
       Nome: servico.Nome,
     }));
-  
+
     await setData((prevData) => ({
       ...prevData,
-      selectedServico: novosServicos, 
+      selectedServico: novosServicos,
     }));
-  
+
     const novosColaboradores = result.data.colaboradores.reduce((acumulador, colaborador) => {
       if (!acumulador.some((prestador) => prestador.id === colaborador.ColaboradorId)) {
         acumulador.push({ id: colaborador.ColaboradorId, Nome: colaborador.Nome });
@@ -145,19 +152,20 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
       }
       return acumulador;
     }, []);
-  
+
     await setData((prevData) => ({
       ...prevData,
       selectedPrestador: novosColaboradores,
     }));
-  
-    setLoading(false);
+
+    setServicoLoading(false);
+    setColaboradorLoading(false);
   };
-  
 
   useEffect(() => {
     if (AgendamentoSelecionado) {
-      setLoading(true);
+      setServicoLoading(true);
+      setColaboradorLoading(true);
       obterServicosColaboradoresPorAgendamentoAsync(AgendamentoSelecionado.id).then((result) => {
         if (result.error) {
           Alert.alert("Erro", "Erro ao obter os dados do agendamento " + result.error);
@@ -212,6 +220,8 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
       ...prevData,
       selectedServico: selectedServico,
     }));
+    setColaboradorLoading(true);
+    populaDropdown("update");
   };
 
   const onChange = (event, selectedDate) => {
@@ -320,9 +330,9 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
                 <TextInput style={[styles.input, { color: "black" }]} editable={false} value={formatTime(time)} />
                 <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="time" size={24} color="#312fbf" onPress={() => setShowtime(true)} />
               </Pressable>
-              {!loading && <DropdownSelector lista={data.servicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={handleServicoChange} selectedItems={data.selectedServico} opt={"servico"} />}
+              {!servicoLoading && <DropdownSelector lista={data.servicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={handleServicoChange} selectedItems={data.selectedServico} opt={"servico"} />}
               {errors.Servico && touched.Servico ? <Text style={styles.error}>{errors.Servico}</Text> : null}
-              {!loading && <DropdownSelector lista={data.prestadores} label={"Colaborador(es)"} icone={"people-outline"} callbackSelecionados={handlePrestadorChange} selectedItems={data.selectedPrestador} opt={"colaborador"} />}
+              {!colaboradorLoading && <DropdownSelector lista={data.prestadores} label={"Colaborador(es)"} icone={"people-outline"} callbackSelecionados={handlePrestadorChange} selectedItems={data.selectedPrestador} opt={"colaborador"} servicoSelecionado={data.selectedServico} />}
               {errors.Prestador && touched.Prestador ? <Text style={styles.error}>{errors.Prestador}</Text> : null}
               <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
                 <Text style={styles.submitButtonText}>{option ? option : "Cadastrar"}</Text>

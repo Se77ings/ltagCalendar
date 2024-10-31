@@ -1,0 +1,6 @@
+[
+  { "Afinidade": 1, "ColaboradorId": 1, "Nome": "Fulano", "ServicoId": 1, "id": 1 },
+  { "Afinidade": 1, "ColaboradorId": 2, "Nome": "Ciclano", "ServicoId": 2, "id": 2 },
+  { "Afinidade": 1, "ColaboradorId": 3, "Nome": "FullStack", "ServicoId": 1, "id": 3 },
+  { "Afinidade": 1, "ColaboradorId": 3, "Nome": "FullStack", "ServicoId": 2, "id": 4 }
+]

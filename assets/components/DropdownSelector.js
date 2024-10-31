@@ -4,10 +4,17 @@ import SectionedMultiSelect from "react-native-sectioned-multi-select";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 
-const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedItems = null, opt }) => {
+const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedItems = null, opt, servicoSelecionado = null }) => {
+  console.log("================== SYN Logger ==================");
+  console.log("Lista: ", lista);
+  console.log("Label: ", label);
+  console.log("SelectedItems: ", selectedItems);
+  console.log("Opt: ", opt);
+  console.log("ServicoSelecionado: ", servicoSelecionado);
+  console.log("================== FIN Logger ==================");
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [dadosFormatados, setDadosFormatados] = useState([]);
-  
+
   useEffect(() => {
     if (opt == "servico") {
       const favoritos = lista.filter((item) => item.Favorito === 1 && item.Desabilitado === 0);
@@ -33,16 +40,70 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
       ];
       setDadosFormatados(dadosAgrupados);
     } else if (opt == "colaborador") {
-      const dadosAgrupados = [
-        {
-          name: "Colaboradores",
-          id: "list0",
-          children: lista.map(({ Nome, id }) => ({
+      let dadosAgrupados = [];
+      console.log("Validando se: ", servicoSelecionado, "é igual a [], resultado ->", servicoSelecionado == []);
+      if (servicoSelecionado.length == 0) {
+        const colaboradorIds = new Set();
+
+        dadosAgrupados = [
+          {
+            name: "Todos os Colaboradores",
+            id: "list0",
+            children: lista
+              .filter(({ ColaboradorId }) => {
+                if (!colaboradorIds.has(ColaboradorId)) {
+                  colaboradorIds.add(ColaboradorId);
+                  return true;
+                }
+                return false;
+              })
+              .map(({ Nome, id }) => ({
+                name: Nome,
+                id,
+              })),
+          },
+        ];
+      } else {
+        const afinidadeIds = new Set();
+
+        // Lista de colaboradores com afinidade
+        const colaboradoresComAfinidade = lista
+          .filter((item) => {
+            const temAfinidade = servicoSelecionado.some((servico) => servico.id === item.ServicoId);
+            if (temAfinidade && !afinidadeIds.has(item.ColaboradorId)) {
+              afinidadeIds.add(item.ColaboradorId);
+              return true;
+            }
+            return false;
+          })
+          .map(({ Nome, id }) => ({
             name: Nome,
             id,
-          })),
-        },
-      ];
+          }));
+
+        // Lista de outros colaboradores, excluindo os que já estão na lista de afinidade
+        const outrosColaboradores = lista
+          .filter((item) => !afinidadeIds.has(item.ColaboradorId))
+          .map(({ Nome, id }) => ({
+            name: Nome,
+            id,
+          }));
+
+        // Estruturando o array final
+        dadosAgrupados = [
+          {
+            name: "Colaboradores com Afinidade",
+            id: "list1",
+            children: colaboradoresComAfinidade,
+          },
+          {
+            name: "Outros Colaboradores",
+            id: "list2",
+            children: outrosColaboradores,
+          },
+        ];
+      }
+
       setDadosFormatados(dadosAgrupados);
     }
   }, [lista]);
@@ -57,7 +118,6 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
       setItensSelecionados(idsSelecionados);
     }
   }, []);
-
 
   const handleSelectedItemsChange = (selectedItems) => {
     setItensSelecionados(selectedItems);
