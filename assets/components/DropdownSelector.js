@@ -5,13 +5,6 @@ import SectionedMultiSelect from "react-native-sectioned-multi-select";
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedItems = null, opt, servicoSelecionado = null }) => {
-  console.log("================== SYN Logger ==================");
-  console.log("Lista: ", lista);
-  console.log("Label: ", label);
-  console.log("SelectedItems: ", selectedItems);
-  console.log("Opt: ", opt);
-  console.log("ServicoSelecionado: ", servicoSelecionado);
-  console.log("================== FIN Logger ==================");
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [dadosFormatados, setDadosFormatados] = useState([]);
 

@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Switch, TouchableOpacity, TextInput, Pressable, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons"; 
+import { Ionicons } from "@expo/vector-icons";
 import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteAtendimentoComServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, ObterTodosServicosAtivosAsync, RemoverServicoAsync } from "../../services/servicoService";
-import { StatusBar } from "expo-status-bar";
-
 
 const Servicos = () => {
   const navigation = useNavigation();
@@ -12,14 +10,13 @@ const Servicos = () => {
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [favorito, setFavorito] = useState(false);
-  
+
   const [servicos, setServicos] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [errors, setErrors] = useState({ nome: "", descricao: "" });
   const [editingServicos, setEditingServicos] = useState(null);
   const [formHeight, setFormHeight] = useState(0);
   const [formAnimation] = useState(new Animated.Value(0));
-
 
   const validateFields = () => {
     let valid = true;
@@ -45,7 +42,7 @@ const Servicos = () => {
     }
 
     if (editingServicos == true) {
-      AtualizarServicoAsync({id,nome,descricao,favorito});
+      AtualizarServicoAsync({ id, nome, descricao, favorito });
       fetchServicos();
       setEditingServicos(null);
       Alert.alert("Sucesso", "Serviço Editado com sucesso!"); //trocar por um popup
@@ -79,25 +76,24 @@ const Servicos = () => {
 
   const renderServicos = ({ item }) => (
     <Pressable
-        style={item.Desabilitado ? styles.ServicosCardDesabilitado : styles.ServicosCard}  
-        onPress={async () => {
-          setId(item.id);
-          setNome(item.Nome);
-          setDescricao(item.Descricao);
-          setFavorito(item.Favorito);
-          setEditingServicos(true);
-          abrirFormulario();
-
-        }}>
-      <View >
+      style={item.Desabilitado ? styles.ServicosCardDesabilitado : styles.ServicosCard}
+      onPress={async () => {
+        setId(item.id);
+        setNome(item.Nome);
+        setDescricao(item.Descricao);
+        setFavorito(item.Favorito);
+        setEditingServicos(true);
+        abrirFormulario();
+      }}>
+      <View>
         <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
           <View>
-            <Text style={item.Desabilitado == false? styles.ServicosNome : styles.ServicosNomeDesabilitado}>{item.Nome}</Text>
+            <Text style={item.Desabilitado == false ? styles.ServicosNome : styles.ServicosNomeDesabilitado}>{item.Nome}</Text>
             <Text style={styles.ServicosDescricao}>{item.Descricao}</Text>
           </View>
-          <Ionicons name="star" size={24} color={item.Favorito ? "#ffcc00": "gray"} style={{ alignSelf: "flex-start" }} />
+          <Ionicons name="star" size={24} color={item.Favorito ? "#ffcc00" : "gray"} style={{ alignSelf: "flex-start" }} />
         </View>
-        <View style={{alignItems:'center'}}>
+        <View style={{ alignItems: "center" }}>
           <Text style={{ fontSize: 12, color: "#276000" }}>Clique para editar ou excluir</Text>
         </View>
       </View>
@@ -105,21 +101,21 @@ const Servicos = () => {
   );
 
   abrirFormulario = () => {
-    if(editingServicos){
+    if (editingServicos) {
       return;
     }
     setShowForm(true);
-      // Animação para mostrar o formulário
-      Animated.timing(formAnimation, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: false,
-      }).start();
-  }
+    // Animação para mostrar o formulário
+    Animated.timing(formAnimation, {
+      toValue: 1,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
   const EscodeForm = () => {
-    setId('');
-    setNome('');
-    setDescricao('');
+    setId("");
+    setNome("");
+    setDescricao("");
     setFavorito(false);
     Animated.timing(formAnimation, {
       toValue: 0,
@@ -129,7 +125,6 @@ const Servicos = () => {
       setShowForm(false);
       setEditingServicos(null);
     });
-
   };
 
   const toggleForm = () => {
@@ -143,39 +138,32 @@ const Servicos = () => {
   const handleDelete = async (serviceId) => {
     var res = await ExisteServicoComColaboradorAsync(serviceId);
     var res2 = await ExisteAtendimentoComServicoAsync(serviceId);
-    if(res2.data){
-      return Alert.alert("Atenção!!!", "O serviço esta vinculado a um agendamento, não é possivel excluir!")
+    if (res2.data) {
+      return Alert.alert("Atenção!!!", "O serviço esta vinculado a um agendamento, não é possivel excluir!");
     }
 
-    if(res.data == false){
-      Alert.alert(
-        "Confirmação",
-        "Você tem certeza que deseja desativar este serviço?",
-        [
-          { text: "Cancelar", style: "cancel" },
-          { 
-            text: "Excluir", 
-            onPress: async () => {
-              var res2 = await DesabilitarServicoAsync(serviceId);
-              if(res2.success == true){
-                setId("");
-                setNome("");
-                setDescricao("");
-                setFavorito(false)
-                toggleForm();
-                Alert.alert("Sucesso", "Serviço desativado com sucesso!");
-                fetchServicos();
-
-              }else
-                Alert.alert("Erro", "Não foi possível desativar o serviço!");
-            } 
-          }
-        ]
-      );
-    }else if(res.error == null){
+    if (res.data == false) {
+      Alert.alert("Confirmação", "Você tem certeza que deseja desativar este serviço?", [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Excluir",
+          onPress: async () => {
+            var res2 = await DesabilitarServicoAsync(serviceId);
+            if (res2.success == true) {
+              setId("");
+              setNome("");
+              setDescricao("");
+              setFavorito(false);
+              toggleForm();
+              Alert.alert("Sucesso", "Serviço desativado com sucesso!");
+              fetchServicos();
+            } else Alert.alert("Erro", "Não foi possível desativar o serviço!");
+          },
+        },
+      ]);
+    } else if (res.error == null) {
       Alert.alert("Atenção", "Não foi possivel excluir o serviço pois ele esta vinculado a um Colaborador!");
-    }
-    else{
+    } else {
       Alert.alert("Erro interno, procure um Administrador");
       console.log("Erro interno: " + res.error); //podemos criar um arquivo de log para salvar esses erros
     }
@@ -186,19 +174,19 @@ const Servicos = () => {
     const desabilitado = mostrarDesabilitados ? "true" : "false";
 
     if (desabilitado === "true") {
-        let response = await ObterTodosServicosAsync();
-        if (response.success) {
-            setServicos(response.data);
-        } else {
-            console.error("Erro ao obter serviços:", response.error);
-        }
+      let response = await ObterTodosServicosAsync();
+      if (response.success) {
+        setServicos(response.data);
+      } else {
+        console.error("Erro ao obter serviços:", response.error);
+      }
     } else {
-        fetchServicos();
+      fetchServicos();
     }
 
     // Alterna o valor de mostrarDesabilitados
     setMostrarDesabilitados(!mostrarDesabilitados);
-};
+  };
 
   const handleLayout = (event) => {
     const { height } = event.nativeEvent.layout;
@@ -221,16 +209,15 @@ const Servicos = () => {
   }, [showForm, formHeight]);
 
   const toggleFavorito = () => {
-    setFavorito(prevFavorito => !prevFavorito);
+    setFavorito((prevFavorito) => !prevFavorito);
   };
   return (
     <>
-      <StatusBar style="dark" />
       <View contentContainerStyle={styles.container}>
         <View style={styles.scrollContainer}>
           <Animated.View style={{ width: "100%", height: formAnimation, overflow: "hidden" }}>
             {showForm && (
-              <View onLayout={handleLayout} style={{minHeight:220, borderWidth: 0, borderColor: "#666699", borderRadius: 20, padding: 20, backgroundColor: "#c2c2d6", marginBottom: 15 }}>
+              <View onLayout={handleLayout} style={{ minHeight: 220, borderWidth: 0, borderColor: "#666699", borderRadius: 20, padding: 20, backgroundColor: "#c2c2d6", marginBottom: 15 }}>
                 <TouchableOpacity style={styles.closeButton} onPress={toggleForm}>
                   <Ionicons name="close" size={24} color="#fff" />
                 </TouchableOpacity>
@@ -242,12 +229,12 @@ const Servicos = () => {
                 <TextInput style={styles.textArea} value={descricao} onChangeText={setDescricao} placeholder="Insira a descrição do serviço" multiline numberOfLines={4} />
                 {errors.descricao ? <Text style={styles.error}>{errors.descricao}</Text> : null}
 
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center",  paddingTop:5}}>
-                  <View style={styles.switchContainer}> 
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingTop: 5 }}>
+                  <View style={styles.switchContainer}>
                     <Text style={styles.label}>Favorito : </Text>
-                    <Ionicons onPress={toggleFavorito} name="star" size={24} color={favorito ? "#ffcc00": "gray"} style={{ alignSelf: "flex-start" }} />
+                    <Ionicons onPress={toggleFavorito} name="star" size={24} color={favorito ? "#ffcc00" : "gray"} style={{ alignSelf: "flex-start" }} />
                   </View>
-                  
+
                   {/* Botão de excluir posicionado à direita */}
                   <TouchableOpacity onPress={() => handleDelete(id)} style={{ marginLeft: 10 }}>
                     <Ionicons name="trash" size={24} color="black" />
@@ -257,7 +244,7 @@ const Servicos = () => {
             )}
           </Animated.View>
 
-            <View style={{ margin: "auto", marginVertical: 10, width: "84%"}}>
+          <View style={{ margin: "auto", marginVertical: 10, width: "84%" }}>
             <TouchableOpacity
               style={{
                 backgroundColor: "#3d3d5c",
@@ -271,29 +258,30 @@ const Servicos = () => {
           </View>
           <Text style={styles.gridTitle}>Servicos Cadastrados:</Text>
           {servicos && servicos.length > 0 ? (
-            <FlatList scrollEnabled={true} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%",  backgroundColor: "#a3a3c2", borderRadius: 12}} />
+            <FlatList scrollEnabled={true} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", backgroundColor: "#a3a3c2", borderRadius: 12 }} />
           ) : (
             <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flex: 1, justifyContent: "center" }}>
-            <Text style={{ textAlign: "center" }}>Nenhum Servico cadastrado</Text>
-            {!showForm && <Text style={{ textAlign: "center" }}>Clique no botão abaixo para Cadastrar</Text>}
-          </View>
+              <Text style={{ textAlign: "center" }}>Nenhum Servico cadastrado</Text>
+              {!showForm && <Text style={{ textAlign: "center" }}>Clique no botão abaixo para Cadastrar</Text>}
+            </View>
           )}
 
-          <TouchableOpacity onPress={() => handleMostraServicoDesabilitado()} style={{marginTop:2}}>
-                  <Ionicons name="albums-outline" size={15} color="black"><Text style={{ textAlign: "center", fontSize:20}}>{mostrarDesabilitados ? "Mostrar Todos":"Mostrar Apenas Habilitados"}</Text></Ionicons>  
+          <TouchableOpacity onPress={() => handleMostraServicoDesabilitado()} style={{ marginTop: 2 }}>
+            <Ionicons name="albums-outline" size={15} color="black">
+              <Text style={{ textAlign: "center", fontSize: 20 }}>{mostrarDesabilitados ? "Mostrar Todos" : "Mostrar Apenas Habilitados"}</Text>
+            </Ionicons>
           </TouchableOpacity>
         </View>
       </View>
-        
     </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-   justifyContent: "flex-start",
-   paddingTop: 0,
-   backgroundColor: "white", // Nova cor de fundo
+    justifyContent: "flex-start",
+    paddingTop: 0,
+    backgroundColor: "white", // Nova cor de fundo
   },
   switchContainer: {
     flexDirection: "row",
@@ -388,7 +376,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#14213b",
   },
-  ServicosNomeDesabilitado:{
+  ServicosNomeDesabilitado: {
     ffontWeight: "bold",
     fontSize: 16,
     color: "red",

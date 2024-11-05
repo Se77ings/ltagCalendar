@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { FloatingLabelInput } from "react-native-floating-label-input";
 import { Picker } from "@react-native-picker/picker";
-import { StatusBar } from "expo-status-bar";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { AsyncStorage } from "react-native";
@@ -103,7 +102,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
   const [showtime, setShowtime] = useState(false);
   const [timeString, setTimeString] = useState(formatTime(time));
   const [servicoLoading, setServicoLoading] = useState(false);
-  const [ colaboradorLoading, setColaboradorLoading] = useState(false);
+  const [colaboradorLoading, setColaboradorLoading] = useState(false);
   const [data, setData] = useState({
     prestadores: [],
     servicos: [],
@@ -127,10 +126,9 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 
   const populaDropdown = async (result) => {
     if (result === "update") {
-      setTimeout(()=>{
-
+      setTimeout(() => {
         setColaboradorLoading(false);
-      }, 1000)
+      }, 1000);
       return;
     }
     await zeraPrestadorServico();
@@ -246,7 +244,6 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 
   return (
     <>
-      <StatusBar style="dark" />
       <Formik
         initialValues={initialValues}
         validationSchema={Validation}

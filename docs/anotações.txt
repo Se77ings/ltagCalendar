@@ -1,36 +1,78 @@
+- Incremento 3:
+    - Tabelas a serem criadas
+        Estabelecimento
+        - Nome*
+        - Telefone*
+        - Endereço (opcional)
+        - Logotipo (opcional)
+        - Ramo* (geral, escritório contábil, advocacia, salão de beleza, oficina mecânica, etc.)
+
+    - Ramo (pode ser um "enum, visto que não vai ser persistido, serve apenas para cadastro)
+        - Nome
+        - Descrição
+
+    - Serviços:
+        Criar script que popule serviços de acordo com o ramo de atividade. Basicamente, precisa ter alguns serviços cadastrados para cada ramo. Criar serviço que use isso também.
+        Além disso, precisa que esses serviços sejam exibidos normalmente na tela de serviços, e ter a opção do usuário importar os outros ramos de serviço a qualquer momento no aplicativo.
+
+    - Telas a serem desenvolvidas:
+
+        -Tela de Boas Vindas: (usuário pode pular, exceto os dados iniciais)
+            - Exibir mensagem amigável de boas vindas e explicar as funcionalidades do app.
+            - Solicitar dados iniciais do estabelecimento (nome*, telefone*, endereço, logotipo e ramo*)
+            Obs.: Fazer tela dados iniciais separado da de boas vindas para poder reaproveitá-la para edição. Caso não dê certo, deixe de forma a ser fácil a cópia para criar a de edição
+
+        -Tela para importar serviços base
+            - Nessa tela vai ter um combobox(ou algo que sirva para seleção), onde vai selecioanr o ramo de serviço e um botão importar. Ele vai chamar um método que vai, com base no ramo escolhido, fazer a importação dos serviços bases.
+            Obs.: validar se vai poder importar o mesmo mais de uma vez, pois pode acontecer do usuário excluir tudo e querer importar novamente. Se não puder, vai ter que ter uma tabela realmente para poder controlar se já foi importado.
+
+    - Telas a serem alteradas:
+
+    - Tela Inicial
+        - Exibir logotipo informado. Caso não tenha, logo do sistema
+        - Exibir nome informado do Estabelecimento 
+
+
+    - Configurações:
+        - Botão para acessar alteração de dados do estabelecimento. Pode se chamar "Geral".
+        - Dentro de geral, talvez, ou em algum outro lugar, deve ter opção de alterar o tema do aplicativo (SO, claro ou escuro).
+
+    - Serviços:
+        - Botão para abrir importação de serviços com base em ramo de serviços.
+
+- Incremento 2
+
 - Tela de listagem de serviços (iniciar listagem por favoritos).
 
- - Tela de Cadastro/Edição de Serviços 
-	- Nome, Descrição e marcar como favorito
+- Tela de Cadastro/Edição de Serviços 
+    - Nome, Descrição e marcar como favorito
 
- - Tela de Cadastro de Colaboradores 
-	- Nome Colaborador e Serviços que ele pode realizar
-	- Tabela Vinculo (poderá marcar se tem afinidade com o serviço.)
+- Tela de Cadastro de Colaboradores 
+    - Nome Colaborador e Serviços que ele pode realizar
+    - Tabela Vinculo (poderá marcar se tem afinidade com o serviço.)
 
- - Tela de Realizar/Visualizar Agendamentos 
-	- Vai pode remover e adicionar serviços (ao menos um deve ficar), além de poder adicionar colaboradores que realizaram o atendimento (listar os com afinidades primeiro)
-	- O atendimento pode ser alterado, além de excluído (precisa avisar com alert). Esse antedimento NÃO pode voltar para agendamento.
+- Tela de Realizar/Visualizar Agendamentos 
+    - Vai pode remover e adicionar serviços (ao menos um deve ficar), além de poder adicionar colaboradores que realizaram o atendimento (listar os com afinidades primeiro)
+    - O atendimento pode ser alterado, além de excluído (precisa avisar com alert). Esse antedimento NÃO pode voltar para agendamento.
 
- - Tela de listar Agendamentos 
-	- Adicionar botão de realizar atendimento, além de filtro para exibir atendimentos finalizados ou pode ser uma tela separada para ver esses finalizados.)
+- Tela de listar Agendamentos 
+    - Adicionar botão de realizar atendimento, além de filtro para exibir atendimentos finalizados ou pode ser uma tela separada para ver esses finalizados.)
 
- - Tela de Criar/Editar Agendamento -
-	 Deve ter uma listagem de serviços para selecionar e uma listagem de colaboradores.
-
-options={{ headerShown: true , title: "Recuperar Senha", headerStyle: { backgroundColor: "#3291ed" }, headerTintColor: "#fff", headerTitleStyle: { fontWeight: "bold" }}}
+- Tela de Criar/Editar Agendamento -
+    Deve ter uma listagem de serviços para selecionar e uma listagem de colaboradores.
 
 
 
     -- Descomentar caso queira zerar as tabelas (excluir antes de enviar para avaliação)
-   -- Drop Table IF EXISTS agendamento;
-   -- Drop Table IF EXISTS servico;
-   -- Drop Table IF EXISTS colaborador;
-   -- Drop Table IF EXISTS ServicosPorColaborador;
-   -- Drop Table IF EXISTS AgendamentoColaborador;
-   -- Drop Table IF EXISTS AgendamentoServicos; 
+-- Drop Table IF EXISTS agendamento;
+-- Drop Table IF EXISTS servico;
+-- Drop Table IF EXISTS colaborador;
+-- Drop Table IF EXISTS ServicosPorColaborador;
+-- Drop Table IF EXISTS AgendamentoColaborador;
+-- Drop Table IF EXISTS AgendamentoServicos; 
 
 
-   ** Ordenação por afinidade **
+** Ordenação por afinidade **
     ** Trocar Scrollview por Flatlist **
     ** Menu principal ao rolar permitir visualização da data **
     Padronizar as notificações de erro no Colaboradores
