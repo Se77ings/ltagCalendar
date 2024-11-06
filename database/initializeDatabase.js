@@ -59,5 +59,13 @@ export default async function initializaDatabase() {
       FOREIGN KEY (ServicoId) REFERENCES servico(id),
       FOREIGN KEY (ColaboradorId) REFERENCES colaborador(id)
     );
+
+    CREATE TABLE IF NOT EXISTS Estabelecimento (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      Nome TEXT NOT NULL,
+      Telefone TEXT NOT NULL,
+      Endereco TEXT,
+      Logo BLOB    
+    );
   `);
 }
