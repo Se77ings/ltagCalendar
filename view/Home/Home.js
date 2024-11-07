@@ -15,6 +15,7 @@ import calendario from "../../assets/icon/calendario.png";
 import { DesvincularAgendamentoServicos } from "../../database/agendamentoRepository";
 
 import { TourGuideProvider, TourGuideZone, TourGuideZoneByPosition, useTourGuideController } from "rn-tourguide";
+import EscolherRamo from "../ramos";
 
 const formatarData = (data) => {
   const partes = data.split("-");
@@ -366,6 +367,12 @@ const Home = ({ navigation }) => {
                 start();
               }}
             />
+            <Button
+              title="Testar Ramo"
+              onPress={() => {
+                EscolherRamo();
+              }}
+            />
             <Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
           </View>
           {filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (
@@ -410,6 +417,7 @@ const Home = ({ navigation }) => {
           </Pressable>
         </Pressable>
       </Modal>
+      {/* <EscolherRamo /> */}
     </>
   );
 };
