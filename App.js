@@ -1,20 +1,27 @@
-import React, { useState } from "react";
-import { StyleSheet, Text, View, Button, TouchableOpacity, Modal, Pressable } from "react-native";
+import React, { useEffect, useState } from "react";
+import { StyleSheet, Text, View, Button, TouchableOpacity, Modal, Pressable, useColorScheme, Appearance } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StatusBar } from "expo-status-bar";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { ThemeProvider, useTheme } from "./ThemeContext";
+import { NavigationContainer, useNavigation, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import Main from "./view/Home/Home";
 import Config from "./view/Configuracoes/Config";
 import { TourGuideProvider } from "rn-tourguide";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-export default function App() {
+function App() {
+  var padrao = useColorScheme();
+  let teste = "dark";
+  const { theme, toggleTheme } = useTheme(); // Consumindo o contexto
+
+  // const styles = theme === 'dark' ? darkStyles : lightStyles;
+
   const Tab = createBottomTabNavigator();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <StatusBar style="inverted" backgroundColor={"black"} />
+      <StatusBar style="light" backgroundColor="black" />
       <TourGuideProvider
         preventOutsideInteraction={true}
         {...{
@@ -25,7 +32,7 @@ export default function App() {
             finish: "Finalizar",
           },
         }}>
-        <NavigationContainer backgroundColor={"red"}>
+        <NavigationContainer theme={theme === "dark" ? DarkTheme : DefaultTheme}>
           <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#001a66", padding: 2, height: 60, borderTopEndRadius: 50, borderTopLeftRadius: 50 } }}>
             <Tab.Screen
               name="Main"
@@ -64,6 +71,14 @@ export default function App() {
   );
 }
 
+export default function AppWrapper() {
+  return (
+    <ThemeProvider>
+      <App />
+    </ThemeProvider>
+  );
+}
+
 const styles = StyleSheet.create({
   iconDiv: {
     borderWidth: 1.5,
@@ -73,5 +88,56 @@ const styles = StyleSheet.create({
     height: 36,
     marginTop: 5,
     alignSelf: "center",
+  },
+});
+
+const lightStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
+  },
+  text: {
+    fontSize: 18,
+    color: "black",
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#0045a0",
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "white",
+    marginLeft: 10,
+  },
+});
+
+// Estilos para o tema escuro
+const darkStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#121212",
+  },
+  text: {
+    fontSize: 18,
+    color: "white",
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 10,
+    backgroundColor: "#BB86FC",
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  buttonText: {
+    color: "white",
+    marginLeft: 10,
   },
 });

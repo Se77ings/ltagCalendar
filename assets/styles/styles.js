@@ -42,12 +42,10 @@ const styles = StyleSheet.create({
 	},
 
 	container: {
-		backgroundColor: "#fff",
 		height: "100%",
 		borderColor: "red",
 	},
 	headerContainer: {
-		backgroundColor: "#13213c",
 		borderBottomLeftRadius: 40,
 		borderBottomRightRadius: 40,
 		shadowColor: "#000",
@@ -266,6 +264,17 @@ const styles = StyleSheet.create({
 		flex: 1,
 		textAlign: "right",
 	},
+	themeToggleButton: {
+		padding: 10,
+		backgroundColor: "#312fbf",
+		borderRadius: 5,
+		alignItems: "center",
+		marginVertical: 10,
+	  },
+	  themeToggleText: {
+		color: "white",
+		fontSize: 16,
+	  },
 });
 
 export default styles;

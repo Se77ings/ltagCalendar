@@ -23,17 +23,6 @@ export async function ObterColaboradoresPorServico(servicoId) {
 	return result;
 }
 
-// CREATE TABLE IF NOT EXISTS ServicosPorColaborador (
-// 	id INTEGER PRIMARY KEY AUTOINCREMENT,
-// 	ServicoId INTEGER,
-// 	ColaboradorId INTEGER,
-// 	Afinidade INTEGER NOT NULL CHECK (Afinidade IN (0, 1)),
-// 	UNIQUE (ServicoId, ColaboradorId),
-// 	FOREIGN KEY (ServicoId) REFERENCES servico(id),
-// 	FOREIGN KEY (ColaboradorId) REFERENCES colaborador(id)
-//   );
-
-
 export async function ObterColaboradores() {
 	const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
 	const result = await db.getAllAsync(
