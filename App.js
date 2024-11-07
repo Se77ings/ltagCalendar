@@ -11,11 +11,21 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function App() {
   const Tab = createBottomTabNavigator();
+
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar style="inverted" backgroundColor={"black"} />
-      <TourGuideProvider>
-        <NavigationContainer>
+      <TourGuideProvider
+        preventOutsideInteraction={true}
+        {...{
+          labels: {
+            previous: "Anterior",
+            next: "Próximo passo",
+            skip: "Pular tutorial",
+            finish: "Finalizar",
+          },
+        }}>
+        <NavigationContainer backgroundColor={"red"}>
           <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#001a66", padding: 2, height: 60, borderTopEndRadius: 50, borderTopLeftRadius: 50 } }}>
             <Tab.Screen
               name="Main"

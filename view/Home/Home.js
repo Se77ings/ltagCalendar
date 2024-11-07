@@ -337,9 +337,10 @@ const Home = ({ navigation }) => {
 
     setShowAtendidos(!showAtendidos);
   };
-
+  //TOUR:
   useEffect(() => {
     if (canStart) {
+      eventEmitter.on("stepChange", handleOnStepChange);
       // start();
       //comentei, pra nao ficar atrapalhando os testes!
     }
@@ -348,16 +349,56 @@ const Home = ({ navigation }) => {
     };
   }, [canStart]);
 
+  function handleOnStepChange(step) {
+    // console.log(step)
+    if (step !== undefined && step !== null) {
+      console.log("================");
+      console.log("Passo ->", step.name);
+      console.log("================");
+      switch (step.name) {
+        case "2":
+// A ideia é que o app faça a animação de scroll até o dia de hoje, e depois volte a animação para o dia atual.
+
+          // console.log("passo 2, executei a animação");
+          // let hoje = moment();
+          // let hojeOBJ = {
+          //   day: hoje.format("DD"),
+          //   dayName: hoje.format("ddd"),
+          //   fullDate: hoje.format("YYYY-MM-DD"),
+          // };
+
+          // flatListRef.current.scrollToIndex({ index: 0, animated: true, viewPosition: 0.5 });
+          // setTimeout(() => {
+          //   console.log("Vou voltar a animação para hoje!");
+          //   console.log(hojeOBJ);
+
+          //   flatListRef.current.scrollToIndex({
+          //     index: hojeOBJ,
+          //     animated: true,
+          //     viewPosition: 0.5,
+          //   });
+
+          //   setSelectedDate(hojeOBJ);
+          // }, 2000);
+
+          break;
+      }
+    } else {
+      console.log("step inexistente");
+    }
+  }
+
   return (
     <>
-      <View style={[styles.container]}>
+      {/* <TourGuideZone zone={1} text={"Olá, seja bem vindo ao LTAG Calendar, notei que é seu primeiro acesso. Siga os passos para aprender as principais funcionalidades do aplicativo. 😁"} borderRadius={0} maskOffset={0} /> */}
+      <View style={styles.container}>
         <TouchableOpacity style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }} onPress={() => navigation.navigate("NovoAgendamento")}>
           <Ionicons name="add-circle" size={50} color="#001a66" />
         </TouchableOpacity>
         <ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{}}>
           <Header title={"Menu Inicial"} />
           <View style={{ backgroundColor: "white", paddingBottom: 10 }}>
-            <TourGuideZone zone={2} text={"Opa, finalmente funcionou bem !!!"} borderRadius={12} maskOffset={10}>
+            <TourGuideZone zone={2} text={"Aqui você consegue navegar entre as datas que deseja realizar seu agendamento"} borderRadius={12} maskOffset={10}>
               <SliderData flatListRef={flatListRef} selectedDate={selectedDate} setSelectedDate={setSelectedDate} scrollToDay={scrollToDay} setShowAtendidos={setShowAtendidos} />
             </TourGuideZone>
             <Button
