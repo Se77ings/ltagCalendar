@@ -356,7 +356,7 @@ const Home = ({ navigation }) => {
         </TouchableOpacity>
         <ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{}}>
           <Header title={"Menu Inicial"} />
-          <View style={{ backgroundColor: "white", paddingBottom: 10 }}>
+          <View style={{paddingBottom: 10 }}>
             <TourGuideZone zone={2} text={"Opa, finalmente funcionou bem !!!"} borderRadius={12} maskOffset={10}>
               <SliderData flatListRef={flatListRef} selectedDate={selectedDate} setSelectedDate={setSelectedDate} scrollToDay={scrollToDay} setShowAtendidos={setShowAtendidos} />
             </TourGuideZone>
