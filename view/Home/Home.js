@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useContext } from "react";
-import { View, Text, FlatList, TouchableOpacity, ScrollView, Alert, Image, Modal, Pressable, Button, Animated } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, ScrollView, Alert, Image, Modal, Pressable, Button, Animated, Keyboard } from "react-native";
 import moment from "moment";
 import "moment/locale/pt-br";
 import NovoAgendamento from "./NovoAgendamento";
@@ -16,6 +16,8 @@ import { DesvincularAgendamentoServicos } from "../../database/agendamentoReposi
 
 import { TourGuideProvider, TourGuideZone, TourGuideZoneByPosition, useTourGuideController } from "rn-tourguide";
 import EscolherRamo from "../ramos";
+import CadastroInicial from "./CadastroInicial";
+import { ObterEstabelecimentoAsync } from "../../services/estabelecimentoService";
 
 const formatarData = (data) => {
   const partes = data.split("-");
@@ -252,6 +254,7 @@ const Home = ({ navigation }) => {
   const [animatedHeight] = useState(new Animated.Value(0));
   const [showAtendidos, setShowAtendidos] = useState(false);
   const [atendidosHeight, setAtendidosHeight] = useState(0);
+  const [primeiraInicializacao, setPrimeiraInicializacao] = useState(false);
   //hooks de controle do tour:
   const { canStart, start, stop, eventEmitter } = useTourGuideController();
 
@@ -339,10 +342,30 @@ const Home = ({ navigation }) => {
     setShowAtendidos(!showAtendidos);
   };
   //TOUR:
+  //ainda nao tenho a logica para iniciar ou finalizar.
+  // mas  assim que finalizar, devo exibir a tela para o cadastro de dados iniciais
+
+  //meta: no final de semana, vou terminar os seguintes tópicos:
+  // Criar a tela para cadastrar dados iniciais. Usar o modal por enquanto, e ver se precisa de uma tela nova.
+  // pensar no trigger que vai verificar se é o primeiro acesso ou não (provavelmente uma consulta no banco, se há dados iniciais...)
+  // Criar uma tela de controle de ramos (CRUD)
+
   useEffect(() => {
     if (canStart) {
       eventEmitter.on("stepChange", handleOnStepChange);
+      ObterEstabelecimentoAsync().then((result) => {
+        if (result.success) {
+          if (result.data == null) {
+            setPrimeiraInicializacao(true);
+            console.log("Primeira inicialização!");
+            // start();
+          }
+        }
+      });
+      //logica que verifica se é a primeira inicialização... caso sim, exibir o tour.
+
       // start();
+
       //comentei, pra nao ficar atrapalhando os testes!
     }
     return () => {
@@ -358,40 +381,20 @@ const Home = ({ navigation }) => {
       console.log("================");
       switch (step.name) {
         case "2":
-// A ideia é que o app faça a animação de scroll até o dia de hoje, e depois volte a animação para o dia atual.
-
-          // console.log("passo 2, executei a animação");
-          // let hoje = moment();
-          // let hojeOBJ = {
-          //   day: hoje.format("DD"),
-          //   dayName: hoje.format("ddd"),
-          //   fullDate: hoje.format("YYYY-MM-DD"),
-          // };
-
-          // flatListRef.current.scrollToIndex({ index: 0, animated: true, viewPosition: 0.5 });
-          // setTimeout(() => {
-          //   console.log("Vou voltar a animação para hoje!");
-          //   console.log(hojeOBJ);
-
-          //   flatListRef.current.scrollToIndex({
-          //     index: hojeOBJ,
-          //     animated: true,
-          //     viewPosition: 0.5,
-          //   });
-
-          //   setSelectedDate(hojeOBJ);
-          // }, 2000);
+          break;
+        case "4":
+          navigation.navigate("ConfigScreen");
 
           break;
       }
     } else {
-      console.log("step inexistente");
+      // console.log("step inexistente");
     }
   }
 
   return (
     <>
-      {/* <TourGuideZone zone={1} text={"Olá, seja bem vindo ao LTAG Calendar, notei que é seu primeiro acesso. Siga os passos para aprender as principais funcionalidades do aplicativo. 😁"} borderRadius={0} maskOffset={0} /> */}
+      <TourGuideZone zone={1} text={"Olá, seja bem vindo ao LTAG Calendar, notei que é seu primeiro acesso. Siga os passos para aprender as principais funcionalidades do aplicativo. 😁"} borderRadius={0} maskOffset={0} />
       <View style={styles.container}>
         <TouchableOpacity style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }} onPress={() => navigation.navigate("NovoAgendamento")}>
           <Ionicons name="add-circle" size={50} color="#001a66" />
@@ -439,6 +442,7 @@ const Home = ({ navigation }) => {
             </View>
           )}
         </ScrollView>
+        <TourGuideZone style={{ position: "absolute", width: 80, height: 50, bottom: "-7%", right: "15%" }} zone={3} text="Ao clicar aqui para você tem acesso às configurações" />
       </View>
       <Modal visible={modalCreate} transparent={true} animationType="slide">
         <Pressable
@@ -449,6 +453,13 @@ const Home = ({ navigation }) => {
           style={{ height: "100%", backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center" }}>
           <Pressable>
             <NovoAgendamento AgendamentoSelecionado={agendamentoSelecionado} option={option} CompleteAgendamento={agendamentoSelecionado} fecharModal={fecharModal} />
+          </Pressable>
+        </Pressable>
+      </Modal>
+      <Modal visible={primeiraInicializacao} transparent>
+        <Pressable onPress={() => Keyboard.dismiss()} style={{ backgroundColor: "rgba(0,0,0,0.5)", height: "100%", flex: 1, justifyContent: "center", padding: 8 }}>
+          <Pressable style={{ padding: 5, borderRadius: 6 }}>
+            <CadastroInicial />
           </Pressable>
         </Pressable>
       </Modal>

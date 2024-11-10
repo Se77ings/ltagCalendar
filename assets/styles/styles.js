@@ -4,7 +4,7 @@ import { shadow } from "react-native-paper";
 const styles = StyleSheet.create({
 	cardStyle: {
 		flexDirection: "col",
-		width: "50%",
+		width: "100%",
 		height: 100,
 		justifyContent: "center",
 		alignItems: "center",

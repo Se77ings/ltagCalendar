@@ -7,7 +7,7 @@ import { ThemeProvider, useTheme } from "./ThemeContext";
 import { NavigationContainer, useNavigation, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import Main from "./view/Home/Home";
 import Config from "./view/Configuracoes/Config";
-import { TourGuideProvider } from "rn-tourguide";
+import { TourGuideProvider, TourGuideZone } from "rn-tourguide";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 function App() {
@@ -33,19 +33,32 @@ function App() {
           },
         }}>
         <NavigationContainer theme={theme === "dark" ? DarkTheme : DefaultTheme}>
-          <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#001a66", padding: 2, height: 60, borderTopEndRadius: 50, borderTopLeftRadius: 50 } }}>
+          <Tab.Navigator
+            initialRouteName="Main"
+            screenOptions={{
+              tabBarStyle: {
+                backgroundColor: "#001a66",
+                padding: 2,
+                height: 60,
+                borderTopEndRadius: 50,
+                borderTopLeftRadius: 50,
+              },
+              tabBarActiveTintColor: "white", // Cor ícone ativo
+              tabBarInactiveTintColor: "#9c9c9c", // Cinza ícone inativo
+              lazy: false,
+            }}>
             <Tab.Screen
               name="Main"
               component={Main}
               options={{
                 headerShown: false,
-                // headerShown: true,
-                // headerTitle: () => <Header />,
                 tabBarLabel: "Início",
                 tabBarLabelStyle: { fontSize: 12, color: "white" },
-                tabBarIcon: () => (
-                  <View style={styles.iconDiv}>
-                    <Ionicons name="home" color={"white"} size={22} />
+                tabBarIcon: (
+                  { color } // Usa o color fornecido pelo Navigator
+                ) => (
+                  <View style={[styles.iconDiv, { borderColor: color }]}>
+                    <Ionicons name="home" color={color} size={22} />
                   </View>
                 ),
               }}
@@ -57,9 +70,11 @@ function App() {
                 headerShown: false,
                 tabBarLabel: "Configurações",
                 tabBarLabelStyle: { fontSize: 12, color: "white" },
-                tabBarIcon: () => (
-                  <View style={styles.iconDiv}>
-                    <Ionicons name="settings" color={"white"} size={22} />
+                tabBarIcon: (
+                  { color } // Usa o color fornecido pelo Navigator
+                ) => (
+                  <View style={[styles.iconDiv, { borderColor: color }]}>
+                    <Ionicons name="settings" color={color} size={22} />
                   </View>
                 ),
               }}

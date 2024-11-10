@@ -39,7 +39,8 @@
     "react-native-web": "~0.19.10",
     "rn-tourguide": "^3.3.2",
     "yarn": "^1.22.22",
-    "yup": "^1.4.0"
+    "yup": "^1.4.0",
+    "expo-image-picker": "~15.0.7"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
