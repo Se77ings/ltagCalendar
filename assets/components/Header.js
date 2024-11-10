@@ -14,7 +14,12 @@ const Header = ({ title }) => {
   const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
   const textColor = theme === "dark" ? "white" : "black";
   const ToggleThema = () => {
-    toggleTheme();
+    if(theme === "dark"){
+      toggleTheme("light");
+    }
+    else if(theme === "light"){
+      toggleTheme("dark");
+    }
   }
   
   return (
@@ -38,24 +43,4 @@ const Header = ({ title }) => {
     </View>
   );
 };
-// const styles = StyleSheet.create({
-//   lightHeader: {
-//     padding: 15,
-//     backgroundColor: "#f0f0f0",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     width: "100%",
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//   },
-//   darkHeader: {
-//     padding: 15,
-//     backgroundColor: "#333",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     width: "100%",
-//     flexDirection: "row",
-//     justifyContent: "space-between",
-//   },
-// });
 export default Header;

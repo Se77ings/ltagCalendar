@@ -2,6 +2,33 @@ import { StyleSheet } from "react-native";
 import { shadow } from "react-native-paper";
 
 const styles = StyleSheet.create({
+	iconDiv: {
+		borderWidth: 1.5,
+		borderColor: "white",
+		borderRadius: 50,
+		padding: 5,
+		height: 36,
+		marginTop: 5,
+		alignSelf: "center",
+	  },
+	lightHeader: {
+		padding: 15,
+		backgroundColor: "#f0f0f0",
+		justifyContent: "center",
+		alignItems: "center",
+		width: "100%",
+		flexDirection: "row",
+		justifyContent: "space-between",
+	  },
+	  darkHeader: {
+		padding: 15,
+		backgroundColor: "#333",
+		justifyContent: "center",
+		alignItems: "center",
+		width: "100%",
+		flexDirection: "row",
+		justifyContent: "space-between",
+	  },
 	cardStyle: {
 		flexDirection: "col",
 		width: "100%",
@@ -121,17 +148,12 @@ const styles = StyleSheet.create({
 
 	dayContainer: {
 		width: 60,
-
 		justifyContent: "center",
 		alignItems: "center",
 		marginHorizontal: 5,
 		borderRadius: 10,
-
-		paddingVertical: 5,
-	},
-
-	selectedDay: {
-		color: "#312fbf",
+		// backgroundColor: "#f0f0f0",
+		paddingVertical: 5
 	},
 	dayName: {
 		fontSize: 16,
@@ -276,5 +298,6 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 	  },
 });
+
 
 export default styles;

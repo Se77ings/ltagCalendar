@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Switch, TouchableOpacity, TextInput, Pressable, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, DefaultTheme, DarkTheme} from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
 import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteAtendimentoComServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, ObterTodosServicosAtivosAsync, RemoverServicoAsync } from "../../services/servicoService";
 
 const Servicos = () => {
@@ -76,28 +77,45 @@ const Servicos = () => {
 
   const renderServicos = ({ item }) => (
     <Pressable
-      style={item.Desabilitado ? styles.ServicosCardDesabilitado : styles.ServicosCard}
-      onPress={async () => {
-        setId(item.id);
-        setNome(item.Nome);
-        setDescricao(item.Descricao);
-        setFavorito(item.Favorito);
-        setEditingServicos(true);
-        abrirFormulario();
-      }}>
-      <View>
-        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <View>
-            <Text style={item.Desabilitado == false ? styles.ServicosNome : styles.ServicosNomeDesabilitado}>{item.Nome}</Text>
-            <Text style={styles.ServicosDescricao}>{item.Descricao}</Text>
-          </View>
-          <Ionicons name="star" size={24} color={item.Favorito ? "#ffcc00" : "gray"} style={{ alignSelf: "flex-start" }} />
-        </View>
-        <View style={{ alignItems: "center" }}>
-          <Text style={{ fontSize: 12, color: "#276000" }}>Clique para editar ou excluir</Text>
-        </View>
+  style={item.Desabilitado ? styles.ServicosCardDesabilitado : styles.ServicosCard}
+  onPress={async () => {
+    setId(item.id);
+    setNome(item.Nome);
+    setDescricao(item.Descricao);
+    setFavorito(item.Favorito);
+    setEditingServicos(true);
+    abrirFormulario();
+  }}
+>
+  <View>
+    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start"}}>
+      {/* Ajuste 1: Adicionamos flex: 1 e marginRight para o container do texto, para garantir espaço adequado ao ícone */}
+      <View style={{ flex: 1, marginRight: 8 }}>
+        <Text style={item.Desabilitado == false ? [theme == "dark" ? [styles.ServicosNome, {color:'white'}]: styles.ServicosNome] : styles.ServicosNomeDesabilitado}>
+          {item.Nome}
+        </Text>
+        
+        {/* Ajuste 2: Adicionamos flexShrink e flexWrap à descrição para evitar que ela force o ícone para fora */}
+        <Text style={theme == "dark"? {color:"#bfbfbf"} : {color:"black",fontSize:14, flexShrink: 1, flexWrap: 'wrap'} }>
+          {item.Descricao}
+        </Text>
       </View>
-    </Pressable>
+
+      {/* Ícone permanece alinhado ao topo e não é afetado pelo tamanho do texto devido aos ajustes */}
+      <Ionicons
+        name="star"
+        size={24}
+        color={item.Favorito ? "#ffcc00" : "gray"}
+        style={{ alignSelf: "flex-start" }}
+      />
+    </View>
+    
+    <View style={{ alignItems: "center" }}>
+      <Text style={theme == "dark" ? { fontSize: 12, color:'#ffff66'} : { fontSize: 12, color:'black'}}>Clique para editar ou excluir</Text>
+    </View>
+  </View>
+</Pressable>
+
   );
 
   abrirFormulario = () => {
@@ -211,6 +229,13 @@ const Servicos = () => {
   const toggleFavorito = () => {
     setFavorito((prevFavorito) => !prevFavorito);
   };
+
+  const { theme, toggleTheme } = useTheme();
+
+  // Estilos baseados no tema atual
+  const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
+  const textColor = theme === "dark" ? "white" : "black";
+  const FundoThema = theme === "dark" ? "#020C2A" : "red";
   return (
     <>
       <View contentContainerStyle={styles.container}>
@@ -247,7 +272,7 @@ const Servicos = () => {
           <View style={{ margin: "auto", marginVertical: 10, width: "84%" }}>
             <TouchableOpacity
               style={{
-                backgroundColor: "#3d3d5c",
+                backgroundColor: "#2F407A",
                 borderRadius: 10,
                 padding: 10,
                 alignItems: "center",
@@ -256,9 +281,9 @@ const Servicos = () => {
               <Text style={{ color: "white" }}>{editingServicos ? "Editar" : "Criar Serviço"}</Text>
             </TouchableOpacity>
           </View>
-          <Text style={styles.gridTitle}>Servicos Cadastrados:</Text>
+          <Text style={[styles.gridTitle, {color:textColor}]}>Servicos Cadastrados:</Text>
           {servicos && servicos.length > 0 ? (
-            <FlatList scrollEnabled={true} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", backgroundColor: "#a3a3c2", borderRadius: 12 }} />
+            <FlatList scrollEnabled={true} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", backgroundColor:{FundoThema}, borderRadius: 12 }} />
           ) : (
             <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flex: 1, justifyContent: "center" }}>
               <Text style={{ textAlign: "center" }}>Nenhum Servico cadastrado</Text>
@@ -267,8 +292,8 @@ const Servicos = () => {
           )}
 
           <TouchableOpacity onPress={() => handleMostraServicoDesabilitado()} style={{ marginTop: 2 }}>
-            <Ionicons name="albums-outline" size={15} color="black">
-              <Text style={{ textAlign: "center", fontSize: 20 }}>{mostrarDesabilitados ? "Mostrar Todos" : "Mostrar Apenas Habilitados"}</Text>
+            <Ionicons name="albums-outline" size={15} color={textColor}>
+              <Text style={{ textAlign: "center", fontSize: 20, color:textColor }}>{mostrarDesabilitados ? "Mostrar Todos" : "Mostrar Apenas Habilitados"}</Text>
             </Ionicons>
           </TouchableOpacity>
         </View>
@@ -349,7 +374,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     width: "100%",
-    backgroundColor: "#F3F4F6",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
@@ -380,10 +404,6 @@ const styles = StyleSheet.create({
     ffontWeight: "bold",
     fontSize: 16,
     color: "red",
-  },
-  ServicosDescricao: {
-    color: "#777",
-    fontSize: 14,
   },
 });
 
