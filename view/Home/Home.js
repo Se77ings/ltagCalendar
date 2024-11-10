@@ -13,6 +13,8 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import agendamentoCompleted from "../../assets/icon/agendamentoCompleted.png";
 import calendario from "../../assets/icon/calendario.png";
 import { DesvincularAgendamentoServicos } from "../../database/agendamentoRepository";
+import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
+
 
 import { TourGuideProvider, TourGuideZone, TourGuideZoneByPosition, useTourGuideController } from "rn-tourguide";
 import EscolherRamo from "../ramos";
@@ -87,8 +89,8 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay, s
 
         onDayPress(item);
       }}>
-      <Text style={[styles.dayName, item.fullDate === selectedDate.fullDate && styles.selectedDay]}>{item.dayName}</Text>
-      <Text style={[styles.dayNumber, item.fullDate === selectedDate.fullDate && styles.selectedDay]}>{item.day}</Text>
+      <Text style={[{color:textColor}, item.fullDate === selectedDate.fullDate && {color:textColorSelected}]}>{item.dayName}</Text>
+      <Text style={[[styles.dayNumber, {color:textColor}], item.fullDate === selectedDate.fullDate && {color:textColorSelected}]}>{item.day}</Text>
     </TouchableOpacity>
   );
 
@@ -108,25 +110,34 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay, s
       });
     });
   };
+
+
+  const { theme, toggleTheme } = useTheme();
+
+  // Estilos baseados no tema atual
+  const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
+  const textColor = theme === "dark" ? "white" : "black";
+  const textColorSelected = theme === "dark" ? "#94A2CF" : "#312fbf";
   return (
-    <>
-      <View style={styles.header}>
+    //aqui
+    <View>
+        <View style={[styles.header,{color:textColor}]}>
         <TouchableOpacity onPress={goToPreviousMonth}>
-          <Text style={styles.arrow}>←</Text>
+          <Text style={[styles.arrow, {color:textColor}]}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.monthText}>{currentMonth.format("MMMM YYYY")}</Text>
+        <Text style={[styles.monthText, {color:textColor}]}>{currentMonth.format("MMMM YYYY")}</Text>
         <TouchableOpacity onPress={goToNextMonth}>
-          <Text style={styles.arrow}>→</Text>
+          <Text style={[styles.arrow, {color:textColor}]}>→</Text>
         </TouchableOpacity>
       </View>
 
       <View>
-        <View style={{ borderTopWidth: 0.5, marginHorizontal: 20, borderColor: "grey" }} />
+        <View style={{ borderTopWidth: 0.5, marginHorizontal: 20, borderColor: textColor }} />
 
         <FlatList ref={flatListRef} getItemLayout={getItemLayout} onScrollToIndexFailed={handleScrollToIndexFailed} data={days} horizontal showsHorizontalScrollIndicator={false} keyExtractor={(item) => item.fullDate} renderItem={renderDay} contentContainerStyle={styles.listContainer} />
-        <View style={{ borderTopWidth: 0.5, marginHorizontal: 20, borderColor: "grey" }} />
+        <View style={{ borderTopWidth: 0.5, marginHorizontal: 20, borderColor: textColor }} />
       </View>
-    </>
+    </View>
   );
 };
 
@@ -389,16 +400,22 @@ const Home = ({ navigation }) => {
     }
   }
 
+  const { theme, toggleTheme } = useTheme();
+
+  // Estilos baseados no tema atual
+  const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
+  const textColor = theme === "dark" ? "white" : "black";
+
   return (
     <>
       {/* <TourGuideZone zone={1} text={"Olá, seja bem vindo ao LTAG Calendar, notei que é seu primeiro acesso. Siga os passos para aprender as principais funcionalidades do aplicativo. 😁"} borderRadius={0} maskOffset={0} /> */}
       <View style={styles.container}>
         <TouchableOpacity style={{ position: "absolute", bottom: 10, right: 10, zIndex: 50 }} onPress={() => navigation.navigate("NovoAgendamento")}>
-          <Ionicons name="add-circle" size={50} color="#001a66" />
+          <Ionicons name="add-circle" size={50} color={textColor} />
         </TouchableOpacity>
         <ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{}}>
           <Header title={"Menu Inicial"} />
-          <View style={{ backgroundColor: "white", paddingBottom: 10 }}>
+          <View style={{ paddingBottom: 10 }}>
             <TourGuideZone zone={2} text={"Aqui você consegue navegar entre as datas que deseja realizar seu agendamento"} borderRadius={12} maskOffset={10}>
               <SliderData flatListRef={flatListRef} selectedDate={selectedDate} setSelectedDate={setSelectedDate} scrollToDay={scrollToDay} setShowAtendidos={setShowAtendidos} />
             </TourGuideZone>
@@ -408,7 +425,7 @@ const Home = ({ navigation }) => {
                 start();
               }}
             />
-            <Text style={styles.titulo}>MEUS AGENDAMENTOS</Text>
+            <Text style={[styles.titulo, {color:textColor}]}>MEUS AGENDAMENTOS</Text>
           </View>
           {filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (
             <Pressable style={{ flex: 1, flexDirection: "row", alignSelf: "center", justifyContent: "space-around", alignItems: "center" }} onPress={toggleAtendidos}>
@@ -434,8 +451,8 @@ const Home = ({ navigation }) => {
             </>
           ) : (
             <View style={{ flex: 1, justifyContent: "center" }}>
-              <Text style={{ textAlign: "center", marginTop: 20 }}>Não há agendamentos para este dia</Text>
-              <Text style={{ textAlign: "center", marginTop: 0 }}>Utilize o item abaixo para adicionar um agendamento.</Text>
+              <Text style={{ textAlign: "center", marginTop: 20, color:textColor }}>Não há agendamentos para este dia</Text>
+              <Text style={{ textAlign: "center", marginTop: 0, color:textColor}}>Utilize o item abaixo para adicionar um agendamento.</Text>
             </View>
           )}
         </ScrollView>
