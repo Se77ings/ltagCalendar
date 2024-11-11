@@ -14,12 +14,11 @@ import agendamentoCompleted from "../../assets/icon/agendamentoCompleted.png";
 import calendario from "../../assets/icon/calendario.png";
 import { DesvincularAgendamentoServicos } from "../../database/agendamentoRepository";
 import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
-
-
 import { TourGuideProvider, TourGuideZone, TourGuideZoneByPosition, useTourGuideController } from "rn-tourguide";
 import EscolherRamo from "../ramos";
 import CadastroInicial from "./CadastroInicial";
 import { ObterEstabelecimentoAsync } from "../../services/estabelecimentoService";
+import Toast from 'react-native-simple-toast';
 
 const formatarData = (data) => {
   const partes = data.split("-");
@@ -476,7 +475,7 @@ const Home = ({ navigation }) => {
       <Modal visible={primeiraInicializacao} transparent>
         <Pressable onPress={() => Keyboard.dismiss()} style={{ backgroundColor: "rgba(0,0,0,0.5)", height: "100%", flex: 1, justifyContent: "center", padding: 8 }}>
           <Pressable style={{ padding: 5, borderRadius: 6 }}>
-            <CadastroInicial />
+            <CadastroInicial setPrimeiraInicializacao={setPrimeiraInicializacao} />
           </Pressable>
         </Pressable>
       </Modal>

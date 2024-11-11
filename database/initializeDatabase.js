@@ -11,6 +11,7 @@ export default async function initializaDatabase() {
     -- Drop Table IF EXISTS ServicosPorColaborador;
     -- Drop Table IF EXISTS AgendamentoColaborador;
     -- Drop Table IF EXISTS AgendamentoServicos; 
+    -- Drop Table IF EXISTS Estabelecimento;
 
     CREATE TABLE IF NOT EXISTS agendamento (
       id INTEGER PRIMARY KEY AUTOINCREMENT,

@@ -17,6 +17,7 @@
     "@react-navigation/stack": "^6.4.1",
     "expo": "^51.0.32",
     "expo-font": "~12.0.10",
+    "expo-image-picker": "~15.0.7",
     "expo-linear-gradient": "~13.0.2",
     "expo-sqlite": "~14.0.6",
     "expo-status-bar": "~1.12.1",
@@ -34,13 +35,13 @@
     "react-native-safe-area-context": "^4.10.5",
     "react-native-screens": "3.31.1",
     "react-native-sectioned-multi-select": "^0.10.0",
+    "react-native-simple-toast": "^3.3.1",
     "react-native-svg": "^15.2.0",
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.10",
     "rn-tourguide": "^3.3.2",
     "yarn": "^1.22.22",
-    "yup": "^1.4.0",
-    "expo-image-picker": "~15.0.7"
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"
