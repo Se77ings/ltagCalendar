@@ -27,10 +27,11 @@ function App() {
             skip: "Pular tutorial",
             finish: "Finalizar",
           },
-        }}>
-        <NavigationContainer theme={theme === "dark" ? DarkTheme : DefaultTheme}>
-          <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#001a66", padding: 2, height: 60 } }}>
-            <Tab.Screen
+        }}
+        >
+        <NavigationContainer theme={theme === "dark" ? DarkTheme : DefaultTheme} >
+          <Tab.Navigator initialRouteName="Main" screenOptions={{ tabBarStyle: { backgroundColor: "#001a66", padding: 2, height: 60 }, lazy: false }} >
+            <Tab.Screen 
               name="Main"
               component={Main}
               options={{

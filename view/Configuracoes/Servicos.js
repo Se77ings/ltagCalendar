@@ -4,7 +4,8 @@ import { useNavigation, DefaultTheme, DarkTheme} from "@react-navigation/native"
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
 import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteAtendimentoComServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, ObterTodosServicosAtivosAsync, RemoverServicoAsync } from "../../services/servicoService";
-
+//o que falta:
+//TODO: IMPORTAR OS SERVIÇOS BASEADOS EM RAMOS AQUI!!!!
 const Servicos = () => {
   const navigation = useNavigation();
   const [id, setId] = useState("");

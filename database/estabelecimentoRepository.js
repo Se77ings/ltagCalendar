@@ -19,6 +19,7 @@ export async function ObterEstabelecimento() {
 }
 
 export async function AtualizarEstabelecimento(estabelecimento) {
+  
   const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
   await db.runAsync(
     "UPDATE Estabelecimento SET Nome = ?, Telefone = ?, Endereco = ?, Logo = ? WHERE id = ?;",

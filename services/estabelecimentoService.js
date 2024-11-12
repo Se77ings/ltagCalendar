@@ -57,7 +57,6 @@ export async function ObterEstabelecimentoAsync() {
 export async function AtualizarEstabelecimentoAsync(estabelecimento) {
 	try {
         validarEstabelecimento(estabelecimento);
-
 		await AtualizarEstabelecimento(estabelecimento);		
 		return {
 			success: true,

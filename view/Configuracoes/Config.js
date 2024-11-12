@@ -27,9 +27,9 @@ const ConfigScreen = ({ navigation }) => {
         <Header title={"Configurações"} />
         <View style={{ flex: 1, alignItems: "center", height: "100%", justifyContent: "center" }}>
           <TourGuideZone zone={4} text="Essa é a zona 5" style={{ justifyContent: "center", width: "50%" }}>
+            <Card title={"Sua Empresa"} icon={"business"} screen="Estabelecimento" />
             <Card title={"Serviços"} icon={"construct-outline"} screen="Servicos" />
             <Card title={"Colaboradores"} icon={"people-outline"} screen="Colaboradores" />
-            <Card title={"Sua Empresa"} icon={"business"} screen="Estabelecimento" />
           </TourGuideZone>
         </View>
       </View>
