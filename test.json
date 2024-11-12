@@ -1,6 +1,7 @@
-[
-  { "Afinidade": 1, "ColaboradorId": 1, "Nome": "Fulano", "ServicoId": 1, "id": 1 },
-  { "Afinidade": 1, "ColaboradorId": 2, "Nome": "Ciclano", "ServicoId": 2, "id": 2 },
-  { "Afinidade": 1, "ColaboradorId": 3, "Nome": "FullStack", "ServicoId": 1, "id": 3 },
-  { "Afinidade": 1, "ColaboradorId": 3, "Nome": "FullStack", "ServicoId": 2, "id": 4 }
-]
+{
+  "Endereco": "Rua colibris",
+  "Logo": "{\"assetId\":null,\"type\":\"image\",\"exif\":null,\"height\":720,\"mimeType\":\"image/jpeg\",\"duration\":null,\":\"/9j/+PcGIgQKqquqEZCZtNvdjGkzBlEJtUOG8w7onwLNCKEkiIg2Zh { ... } vHHkyrGCSdV7CEhMN448mEw3jjyZz1YtPhzbMwXnhyYQv/9k=\",\"fileSize\":142376,\"rotation\":null,\"fileName\":\"980d1337-2ff2-42dd-8f80-e234f1c5d23a.jpeg\",\"uri\":\"file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252FltagCalendar-0e1cd101-870c-4e9e-b070-aaaab60ab59e/ImagePicker/980d1337-2ff2-42dd-8f80-e234f1c5d23a.jpeg\",\"width\":960}",
+  "Nome": "Gabriel store",
+  "Telefone": "1733216544",
+  "id": 1
+}

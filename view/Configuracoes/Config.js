@@ -6,6 +6,7 @@ import Header from "../../assets/components/Header";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Colaboradores from "./Colaboradores";
 import Servicos from "./Servicos";
+import Estabelecimento from "./Estabelecimento";
 import { TourGuideProvider, TourGuideZone } from "rn-tourguide";
 
 const Stack = createStackNavigator();
@@ -25,9 +26,10 @@ const ConfigScreen = ({ navigation }) => {
       <View style={styles.container}>
         <Header title={"Configurações"} />
         <View style={{ flex: 1, alignItems: "center", height: "100%", justifyContent: "center" }}>
-          <TourGuideZone zone={4} text="Essa é a zona 5" style={{justifyContent:"center", width:"50%" }}>
+          <TourGuideZone zone={4} text="Essa é a zona 5" style={{ justifyContent: "center", width: "50%" }}>
             <Card title={"Serviços"} icon={"construct-outline"} screen="Servicos" />
             <Card title={"Colaboradores"} icon={"people-outline"} screen="Colaboradores" />
+            <Card title={"Sua Empresa"} icon={"business"} screen="Estabelecimento" />
           </TourGuideZone>
         </View>
       </View>
@@ -41,6 +43,7 @@ const Config = () => {
       <Stack.Screen name="ConfigScreen" component={ConfigScreen} options={{ headerShown: false, headerTitle: "Configurações" }} />
       <Stack.Screen name="Colaboradores" component={Colaboradores} options={{ headerShown: true, headerTitle: "Colaboradores", headerTitleAlign: "center" }} />
       <Stack.Screen name="Servicos" component={Servicos} options={{ headerShown: true, headerTitle: "Serviços", headerTitleAlign: "center" }} />
+      <Stack.Screen name="Estabelecimento" component={Estabelecimento} options={{ headerShown: true, headerTitle: "Estabelecimento", headerTitleAlign: "center" }} />
     </Stack.Navigator>
   );
 };

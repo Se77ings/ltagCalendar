@@ -18,7 +18,7 @@ import { TourGuideProvider, TourGuideZone, TourGuideZoneByPosition, useTourGuide
 import EscolherRamo from "../ramos";
 import CadastroInicial from "./CadastroInicial";
 import { ObterEstabelecimentoAsync } from "../../services/estabelecimentoService";
-import Toast from 'react-native-simple-toast';
+import Toast from "react-native-simple-toast";
 
 const formatarData = (data) => {
   const partes = data.split("-");
@@ -90,8 +90,8 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay, s
 
         onDayPress(item);
       }}>
-      <Text style={[{color:textColor}, item.fullDate === selectedDate.fullDate && {color:textColorSelected}]}>{item.dayName}</Text>
-      <Text style={[[styles.dayNumber, {color:textColor}], item.fullDate === selectedDate.fullDate && {color:textColorSelected}]}>{item.day}</Text>
+      <Text style={[{ color: textColor }, item.fullDate === selectedDate.fullDate && { color: textColorSelected }]}>{item.dayName}</Text>
+      <Text style={[[styles.dayNumber, { color: textColor }], item.fullDate === selectedDate.fullDate && { color: textColorSelected }]}>{item.day}</Text>
     </TouchableOpacity>
   );
 
@@ -112,7 +112,6 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay, s
     });
   };
 
-
   const { theme, toggleTheme } = useTheme();
 
   // Estilos baseados no tema atual
@@ -122,13 +121,13 @@ const SliderData = ({ flatListRef, selectedDate, setSelectedDate, scrollToDay, s
   return (
     //aqui
     <View>
-        <View style={[styles.header,{color:textColor}]}>
+      <View style={[styles.header, { color: textColor }]}>
         <TouchableOpacity onPress={goToPreviousMonth}>
-          <Text style={[styles.arrow, {color:textColor}]}>←</Text>
+          <Text style={[styles.arrow, { color: textColor }]}>←</Text>
         </TouchableOpacity>
-        <Text style={[styles.monthText, {color:textColor}]}>{currentMonth.format("MMMM YYYY")}</Text>
+        <Text style={[styles.monthText, { color: textColor }]}>{currentMonth.format("MMMM YYYY")}</Text>
         <TouchableOpacity onPress={goToNextMonth}>
-          <Text style={[styles.arrow, {color:textColor}]}>→</Text>
+          <Text style={[styles.arrow, { color: textColor }]}>→</Text>
         </TouchableOpacity>
       </View>
 
@@ -416,7 +415,7 @@ const Home = ({ navigation }) => {
           <Ionicons name="add-circle" size={50} color={textColor} />
         </TouchableOpacity>
         <ScrollView stickyHeaderIndices={[1]} contentContainerStyle={{}}>
-          <Header title={"Menu Inicial"} />
+          <Header title={"Menu Inicial"} primeiraInicializacao={primeiraInicializacao} />
           <View style={{ paddingBottom: 10 }}>
             <TourGuideZone zone={2} text={"Aqui você consegue navegar entre as datas que deseja realizar seu agendamento"} borderRadius={12} maskOffset={10}>
               <SliderData flatListRef={flatListRef} selectedDate={selectedDate} setSelectedDate={setSelectedDate} scrollToDay={scrollToDay} setShowAtendidos={setShowAtendidos} />
@@ -427,7 +426,7 @@ const Home = ({ navigation }) => {
                 start();
               }}
             />
-            <Text style={[styles.titulo, {color:textColor}]}>MEUS AGENDAMENTOS</Text>
+            <Text style={[styles.titulo, { color: textColor }]}>MEUS AGENDAMENTOS</Text>
           </View>
           {filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (
             <Pressable style={{ flex: 1, flexDirection: "row", alignSelf: "center", justifyContent: "space-around", alignItems: "center" }} onPress={toggleAtendidos}>
@@ -453,8 +452,8 @@ const Home = ({ navigation }) => {
             </>
           ) : (
             <View style={{ flex: 1, justifyContent: "center" }}>
-              <Text style={{ textAlign: "center", marginTop: 20, color:textColor }}>Não há agendamentos para este dia</Text>
-              <Text style={{ textAlign: "center", marginTop: 0, color:textColor}}>Utilize o item abaixo para adicionar um agendamento.</Text>
+              <Text style={{ textAlign: "center", marginTop: 20, color: textColor }}>Não há agendamentos para este dia</Text>
+              <Text style={{ textAlign: "center", marginTop: 0, color: textColor }}>Utilize o item abaixo para adicionar um agendamento.</Text>
             </View>
           )}
         </ScrollView>
