@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, Switch, TouchableOpacity, TextInput, Pressable, ScrollView, FlatList, StyleSheet, Alert, Animated } from "react-native";
-import { useNavigation, DefaultTheme, DarkTheme} from "@react-navigation/native";
+import { View, Text, Button, Switch, TouchableOpacity, TextInput, Pressable, ScrollView, FlatList, StyleSheet, Alert, Animated, Modal } from "react-native";
+import { useNavigation, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
 import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteAtendimentoComServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, ObterTodosServicosAtivosAsync, RemoverServicoAsync } from "../../services/servicoService";
+import DropdownSelector from "../../assets/components/DropdownSelector";
+import { ramosDeAtividade } from "../../services/ramoService";
+import Toast from "react-native-simple-toast";
+
 //o que falta:
 //TODO: IMPORTAR OS SERVIÇOS BASEADOS EM RAMOS AQUI!!!!
 const Servicos = () => {
@@ -78,45 +82,34 @@ const Servicos = () => {
 
   const renderServicos = ({ item }) => (
     <Pressable
-  style={item.Desabilitado ? styles.ServicosCardDesabilitado : styles.ServicosCard}
-  onPress={async () => {
-    setId(item.id);
-    setNome(item.Nome);
-    setDescricao(item.Descricao);
-    setFavorito(item.Favorito);
-    setEditingServicos(true);
-    abrirFormulario();
-  }}
->
-  <View>
-    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start"}}>
-      {/* Ajuste 1: Adicionamos flex: 1 e marginRight para o container do texto, para garantir espaço adequado ao ícone */}
-      <View style={{ flex: 1, marginRight: 8 }}>
-        <Text style={item.Desabilitado == false ? [theme == "dark" ? [styles.ServicosNome, {color:'white'}]: styles.ServicosNome] : styles.ServicosNomeDesabilitado}>
-          {item.Nome}
-        </Text>
-        
-        {/* Ajuste 2: Adicionamos flexShrink e flexWrap à descrição para evitar que ela force o ícone para fora */}
-        <Text style={theme == "dark"? {color:"#bfbfbf"} : {color:"black",fontSize:14, flexShrink: 1, flexWrap: 'wrap'} }>
-          {item.Descricao}
-        </Text>
+      style={item.Desabilitado ? styles.ServicosCardDesabilitado : styles.ServicosCard}
+      onPress={async () => {
+        setId(item.id);
+        setNome(item.Nome);
+        setDescricao(item.Descricao);
+        setFavorito(item.Favorito);
+        setEditingServicos(true);
+        abrirFormulario();
+      }}>
+      <View>
+        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" }}>
+          {/* Ajuste 1: Adicionamos flex: 1 e marginRight para o container do texto, para garantir espaço adequado ao ícone */}
+          <View style={{ flex: 1, marginRight: 8 }}>
+            <Text style={item.Desabilitado == false ? [theme == "dark" ? [styles.ServicosNome, { color: "white" }] : styles.ServicosNome] : styles.ServicosNomeDesabilitado}>{item.Nome}</Text>
+
+            {/* Ajuste 2: Adicionamos flexShrink e flexWrap à descrição para evitar que ela force o ícone para fora */}
+            <Text style={theme == "dark" ? { color: "#bfbfbf" } : { color: "black", fontSize: 14, flexShrink: 1, flexWrap: "wrap" }}>{item.Descricao}</Text>
+          </View>
+
+          {/* Ícone permanece alinhado ao topo e não é afetado pelo tamanho do texto devido aos ajustes */}
+          <Ionicons name="star" size={24} color={item.Favorito ? "#ffcc00" : "gray"} style={{ alignSelf: "flex-start" }} />
+        </View>
+
+        <View style={{ alignItems: "center" }}>
+          <Text style={theme == "dark" ? { fontSize: 12, color: "#ffff66" } : { fontSize: 12, color: "black" }}>Clique para editar ou excluir</Text>
+        </View>
       </View>
-
-      {/* Ícone permanece alinhado ao topo e não é afetado pelo tamanho do texto devido aos ajustes */}
-      <Ionicons
-        name="star"
-        size={24}
-        color={item.Favorito ? "#ffcc00" : "gray"}
-        style={{ alignSelf: "flex-start" }}
-      />
-    </View>
-    
-    <View style={{ alignItems: "center" }}>
-      <Text style={theme == "dark" ? { fontSize: 12, color:'#ffff66'} : { fontSize: 12, color:'black'}}>Clique para editar ou excluir</Text>
-    </View>
-  </View>
-</Pressable>
-
+    </Pressable>
   );
 
   abrirFormulario = () => {
@@ -232,15 +225,53 @@ const Servicos = () => {
   };
 
   const { theme, toggleTheme } = useTheme();
+  const [modalImport, setModalImport] = useState(false);
+  const [formData, setFormData] = useState();
 
   // Estilos baseados no tema atual
   const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
   const textColor = theme === "dark" ? "white" : "black";
   const FundoThema = theme === "dark" ? "#020C2A" : "red";
+  const handleChange = (value) => {
+    const ramos = [];
+    const servicos = [];
+
+    value.forEach((item) => {
+      if (item.startsWith("list_")) {
+        const ramoId = item.split("_")[1]; // Pega o ID do ramo
+        ramos.push({ id: ramoId, nome: ramosDeAtividade.find((r) => r.id == ramoId)?.nome });
+      } else if (item.startsWith("servico_")) {
+        const [_, ramoId, servicoIndex] = item.split("_"); // Pega o ID do ramo e o índice do serviço
+        const ramo = ramosDeAtividade.find((r) => r.id == ramoId);
+        if (ramo) {
+          const servico = ramo.servicos[servicoIndex];
+          servicos.push({ ...servico, ramoId: ramoId }); // Inclui o `ramoId` como referência
+        }
+      }
+    });
+
+    setFormData({ ...formData, ramos, servicos });
+  };
   return (
     <>
       <View contentContainerStyle={styles.container}>
         <View style={styles.scrollContainer}>
+          {showForm && (
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#2F407A",
+                borderRadius: 10,
+                padding: 10,
+                alignItems: "center",
+                width: "50%",
+                marginBottom: 5,
+              }}
+              onPress={() => {
+                setModalImport(true);
+              }}>
+              <Text style={{ color: "white" }}>Importar Serviços</Text>
+            </TouchableOpacity>
+          )}
           <Animated.View style={{ width: "100%", height: formAnimation, overflow: "hidden" }}>
             {showForm && (
               <View onLayout={handleLayout} style={{ minHeight: 220, borderWidth: 0, borderColor: "#666699", borderRadius: 20, padding: 20, backgroundColor: "#c2c2d6", marginBottom: 15 }}>
@@ -282,9 +313,9 @@ const Servicos = () => {
               <Text style={{ color: "white" }}>{editingServicos ? "Editar" : "Criar Serviço"}</Text>
             </TouchableOpacity>
           </View>
-          <Text style={[styles.gridTitle, {color:textColor}]}>Servicos Cadastrados:</Text>
+          <Text style={[styles.gridTitle, { color: textColor }]}>Servicos Cadastrados:</Text>
           {servicos && servicos.length > 0 ? (
-            <FlatList scrollEnabled={true} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", backgroundColor:{FundoThema}, borderRadius: 12 }} />
+            <FlatList scrollEnabled={true} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", backgroundColor: { FundoThema }, borderRadius: 12 }} />
           ) : (
             <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flex: 1, justifyContent: "center" }}>
               <Text style={{ textAlign: "center" }}>Nenhum Servico cadastrado</Text>
@@ -294,11 +325,35 @@ const Servicos = () => {
 
           <TouchableOpacity onPress={() => handleMostraServicoDesabilitado()} style={{ marginTop: 2 }}>
             <Ionicons name="albums-outline" size={15} color={textColor}>
-              <Text style={{ textAlign: "center", fontSize: 20, color:textColor }}>{mostrarDesabilitados ? "Mostrar Todos" : "Mostrar Apenas Habilitados"}</Text>
+              <Text style={{ textAlign: "center", fontSize: 20, color: textColor }}>{mostrarDesabilitados ? "Mostrar Todos" : "Mostrar Apenas Habilitados"}</Text>
             </Ionicons>
           </TouchableOpacity>
         </View>
       </View>
+      <Modal visible={modalImport} transparent={true} animationType="fade">
+        <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,.5)", justifyContent: "flex-start" }} onPress={() => setModalImport(false)}>
+          <Pressable style={{ backgroundColor: "white", margin: 10, borderRadius: 9 }}>
+            <View style={{ width: "90%", alignSelf: "center", margin: 10 }}>
+              <Text style={{ textAlign: "center" }}>Aqui Você pode importar outros serviços!</Text>
+              <DropdownSelector lista={ramosDeAtividade} label="Serviço(s)" icone="business" callbackSelecionados={(value) => handleChange(value)} opt={"ramo"} />
+              <View style={{}}>
+                <Button
+                  title="Confirmar Importação"
+                  onPress={() => {
+                    formData.servicos.forEach((servico) => {
+                      adicionarServico(servico);
+                    });
+                    setModalImport(false);
+                    fetchServicos();
+                    Toast.show("Serviços importados com sucesso!", Toast.LONG, { backgroundColor: "#39bf2f", color: "white" });
+                  }}
+                  style={{ backgroundColor: "red" }}
+                />
+              </View>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </>
   );
 };

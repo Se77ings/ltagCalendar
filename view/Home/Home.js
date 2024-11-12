@@ -414,11 +414,7 @@ const Home = ({ navigation }) => {
 	}, [canStart]);
 
 	function handleOnStepChange(step) {
-		// console.log(step)
 		if (step !== undefined && step !== null) {
-			console.log("================");
-			console.log("Passo ->", step.name);
-			console.log("================");
 			switch (step.name) {
 				case "2":
 					break;
@@ -428,7 +424,6 @@ const Home = ({ navigation }) => {
 					break;
 			}
 		} else {
-			// console.log("step inexistente");
 		}
 	}
 
@@ -477,12 +472,12 @@ const Home = ({ navigation }) => {
 								setShowAtendidos={setShowAtendidos}
 							/>
 						</TourGuideZone>
-						<Button
+						{/* <Button
 							title="TESTAR"
 							onPress={() => {
 								start();
 							}}
-						/>
+						/> */}
 						<Text style={[styles.titulo, { color: textColor }]}>MEUS AGENDAMENTOS</Text>
 					</View>
 					{filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (

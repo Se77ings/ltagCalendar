@@ -103,9 +103,11 @@ const styles = StyleSheet.create({
 		fontWeight: "bold",
 		color: "#ffffff",
 		textAlign: "left",
+		
+		maxWidth: 250,
 	},
 	shopName_: {
-		fontSize: 16,
+		
 		fontWeight: "bold",
 		color: "#ffffff",
 		textAlign: "left",

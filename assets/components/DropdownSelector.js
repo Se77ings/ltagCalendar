@@ -34,7 +34,6 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
       setDadosFormatados(dadosAgrupados);
     } else if (opt == "colaborador") {
       let dadosAgrupados = [];
-      console.log("Validando se: ", servicoSelecionado, "é igual a [], resultado ->", servicoSelecionado == []);
       if (servicoSelecionado.length == 0) {
         const colaboradorIds = new Set();
 
@@ -99,7 +98,6 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
 
       setDadosFormatados(dadosAgrupados);
     } else if (opt === "ramo") {
-      // console.log(dadosAgrupados)
       const dadosAgrupados = lista.map((item, index) => {
         const children = item.servicos
           .filter((servico) => servico.desabilitado === 0) // Inclui apenas serviços habilitados

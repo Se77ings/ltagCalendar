@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, Button, StyleSheet, Alert } from "react-native";
+import { View, Text, TouchableOpacity, Button, StyleSheet, Alert, DeviceEventEmitter } from "react-native";
 import { FloatingLabelInput } from "react-native-floating-label-input";
 import DropdownSelector from "../../assets/components/DropdownSelector";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -48,7 +48,6 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 				}
 			});
 
-			// Agora você pode usar os arrays `ramos` e `servicos` para inseri-los nas tabelas apropriadas
 			setFormData({ ...formData, ramos, servicos });
 		} else {
 			setFormData({ ...formData, [name]: value });
@@ -57,7 +56,6 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 
 	const handleSendData = async () => {
 		if (formData.nome === "" || formData.telefone === "") {
-			// Alert.alert("Atenção", "Nome e telefone são obrigatórios"); // depois mudar esse Alert
 			setErro({ nome: "Nome é obrigatório", telefone: "Telefone é obrigatório" });
 			setTimeout(() => {
 				setErro({ nome: false, telefone: false });
@@ -90,7 +88,8 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 			adicionarServico(servico);
 		});
 		const result = await adicionarEstabelecimentoAsync(formSend);
-
+		DeviceEventEmitter.emit("atualizarEstabelecimento");
+		console.log("Dados Iniciais Cadastrados.")
 		if (result.success) {
 			Toast.show("Dados cadastrados com sucesso!", Toast.LONG, { backgroundColor: "#39bf2f", color: "white" });
 			setPrimeiraInicializacao(false);
@@ -140,6 +139,7 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 				labelStyles={styles.labelStyle}
 				containerStyles={styles.input}
 				label="Endereço"
+				hint="Opcional"
 				value={formData.endereco}
 				onChangeText={(value) => handleChange("endereco", value)}
 			/>
@@ -163,6 +163,7 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 				callbackSelecionados={(value) => handleChange("ramoAtividade", value)}
 				opt={"ramo"}
 			/>
+			<Text style={{margin:0, fontSize:12, position:"relative", top:-10, left:10}}>Opcional</Text>
 			<TouchableOpacity
 				style={styles.submitButton}
 				onPress={handleSendData}>
@@ -252,11 +253,5 @@ const styles = StyleSheet.create({
 		marginBottom: 5,
 	},
 });
-/*
-Nome do estabelecimento (obrigatório). Deve ser exibido na tela principal;
-Telefone para contato (obrigatório);
-Endereço (opcional);
-Logotipo (opcional). Caso não seja informado, será utilizado o logotipo do aplicativo). Deve ser exibido na tela principal;
-Ramo de atividade (geral, escritório contábil, advocacia, salão de beleza, oficina mecânica, etc.). Opcional.
-*/
+
 export default CadastroInicial;

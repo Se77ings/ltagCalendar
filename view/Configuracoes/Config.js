@@ -26,9 +26,13 @@ const ConfigScreen = ({ navigation }) => {
       <View style={styles.container}>
         <Header title={"Configurações"} />
         <View style={{ flex: 1, alignItems: "center", height: "100%", justifyContent: "center" }}>
-          <TourGuideZone zone={4} text="Essa é a zona 5" style={{ justifyContent: "center", width: "50%" }}>
+          <TourGuideZone zone={4} text="Aqui você consegue alterar as informações básicas da sua empresa, e inserir uma logo para personalizar sua experiência!" style={{ justifyContent: "center", width: "50%" }}>
             <Card title={"Sua Empresa"} icon={"business"} screen="Estabelecimento" />
+          </TourGuideZone>
+          <TourGuideZone zone={5} text="Nessa área você cadastrará os Serviços prestados pelo seu estabelecimento" style={{ justifyContent: "center", width: "50%", borderRadius:10 }}>
             <Card title={"Serviços"} icon={"construct-outline"} screen="Servicos" />
+          </TourGuideZone>
+          <TourGuideZone zone={6} text="Aqui você cadastrará os Colaboradores que trabalham no seu estabelecimento, e pode vinculá-los a algum serviço anteriormente cadastrado" style={{ justifyContent: "center", width: "50%", borderRadius:10 }}>
             <Card title={"Colaboradores"} icon={"people-outline"} screen="Colaboradores" />
           </TourGuideZone>
         </View>
