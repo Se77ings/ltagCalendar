@@ -187,12 +187,11 @@ const Colaboradores = () => {
                   <Text style={{color:textColor}}>Selecione os serviços do colaborador:</Text>
                   <DropdownSelector lista={todosServicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={setServicosSelecionados} selectedItems={servicosSelecionados} opt={"servico"} />
                   {editing && (
-                    <TouchableOpacity
-                      onPress={() => {
-                        handleDelete(colaboradorSelecionado.id);
-                      }}>
-                      <Ionicons name="trash-outline" size={24} color="#312fbf" style={{ position: "absolute", bottom: 10, right: 10 }} />
+                    <View style={{ alignItems: 'flex-end', marginTop: 10 }}>
+                    <TouchableOpacity onPress={() => handleDelete(colaboradorSelecionado.id)}>
+                      <Ionicons name="trash-outline" size={24} color="#312fbf" />
                     </TouchableOpacity>
+                  </View>
                   )}
                 </View>
               )}
