@@ -3,7 +3,7 @@ import { View, Text, Button, Switch, TouchableOpacity, TextInput, Pressable, Scr
 import { useNavigation, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
-import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteAtendimentoComServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, ObterTodosServicosAtivosAsync, RemoverServicoAsync } from "../../services/servicoService";
+import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteAtendimentoComServicoAsync, ExisteServicoAtivoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, ObterTodosServicosAtivosAsync, RemoverServicoAsync } from "../../services/servicoService";
 import DropdownSelector from "../../assets/components/DropdownSelector";
 import { ramosDeAtividade } from "../../services/ramoService";
 import Toast from "react-native-simple-toast";
@@ -16,7 +16,6 @@ const Servicos = () => {
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
   const [favorito, setFavorito] = useState(false);
-
   const [servicos, setServicos] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [errors, setErrors] = useState({ nome: "", descricao: "" });
@@ -340,8 +339,9 @@ const Servicos = () => {
                 <Button
                   title="Confirmar Importação"
                   onPress={() => {
-                    formData.servicos.forEach((servico) => {
-                      adicionarServico(servico);
+                    formData.servicos.forEach(async (servico) => {
+                      if(await ExisteServicoAtivoAsync(servico.nome))                      
+                        adicionarServico(servico);                        
                     });
                     setModalImport(false);
                     fetchServicos();

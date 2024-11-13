@@ -18,7 +18,7 @@ export async function ObterServicosPorFavorito() {
 
 export async function ObterServicosFavoritosAtivos() {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true });
-    const allRows = await db.getAllAsync('SELECT * FROM servico WHERE Desabilitado = 0 ORDER BY Favorito DESC;');
+    const allRows = await db.getAllAsync('SELECT * FROM servico WHERE Desabilitado = 0 ORDER BY Favorito DESC, Nome ASC ;');
 
     return allRows;
 }
@@ -78,6 +78,13 @@ export async function DesvincularTodosServicosColaborador(request){
 export async function ExisteServicoComColaborador(servicoId) {
     const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );        
     const result = await db.getFirstAsync('SELECT COUNT(*) as total FROM ServicosPorColaborador WHERE ServicoId = ?;', servicoId);
+    
+    return result.total > 0;
+}
+
+export async function ExisteServicoAtivo(nome) {
+    const db = await SQLite.openDatabaseAsync('ltagDatabase', { useNewConnection: true} );        
+    const result = await db.getFirstAsync('SELECT COUNT(*) as total FROM servico WHERE Nome = ? and Desabilitado = 0;', nome);
     
     return result.total > 0;
 }

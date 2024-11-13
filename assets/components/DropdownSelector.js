@@ -145,7 +145,7 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
       subKey={"children"}
       displayKey={"name"}
       selectText={label}
-      expandDropDowns={true}
+      expandDropDowns={false}
       showDropDowns={opt != "ramo" ? false : true}
       readOnlyHeadings={opt != "ramo" ? true : false}
       selectChildren={opt == "ramo" ? true : false}

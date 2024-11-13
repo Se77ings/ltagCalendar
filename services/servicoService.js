@@ -1,13 +1,15 @@
-import CriarServico, { AtualizarServico, DesabilitarServico, ExisteAtendimentoComServico, ExisteServicoComColaborador, ObterServicosFavoritosAtivos, ObterServicosPorColaborador, ObterServicosPorFavorito, VincularServicoColaborador } from "../database/servicoRepository";
+import CriarServico, { AtualizarServico, DesabilitarServico, ExisteAtendimentoComServico, ExisteServicoAtivo, ExisteServicoComColaborador, ObterServicosFavoritosAtivos, ObterServicosPorColaborador, ObterServicosPorFavorito, VincularServicoColaborador } from "../database/servicoRepository";
 
 export default async function adicionarServico(servico) {
   console.log(servico);
   try {
+
+
+
     validarServico(servico);
 
     await CriarServico(servico);
 
-    console.log("Serviço criado com sucesso.");
 
     return {
       success: true,
@@ -167,6 +169,25 @@ export async function ExisteAtendimentoComServicoAsync(servicoId) {
 export async function ExisteServicoComColaboradorAsync(servicoId) {
   try {
     var result = await ExisteServicoComColaborador(servicoId);
+
+    return {
+      success: true,
+      data: result,
+      error: null,
+    };
+  } catch (error) {
+    return {
+      success: false,
+      data: null,
+      error: error,
+    };
+  }
+}
+
+
+export async function ExisteServicoAtivoAsync(nome) {
+  try {
+    var result = await ExisteServicoAtivo(nome);
 
     return {
       success: true,
