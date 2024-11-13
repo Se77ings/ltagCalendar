@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, TextInput, Button, ScrollView, FlatList, 
 import { Ionicons } from "@expo/vector-icons"; // Se estiver usando Expo, ou outro ícone de sua escolha
 import { FloatingLabelInput } from "react-native-floating-label-input";
 import DropdownSelector from "../../assets/components/DropdownSelector";
+import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
 import { ObterServicosPorColaborador, ObterServicosPorFavorito, VincularServicoColaborador } from "../../database/servicoRepository";
 import adicionarColaborador, { AtualizarColaboradorAsync, ObterTodosColaboradoresComServicosAsync, RemoverColaboradorAsync } from "../../services/colaboradorService";
 
@@ -54,7 +55,7 @@ const Colaboradores = () => {
   const renderColaborador = ({ item }) => {
     return (
       <Pressable
-        style={styles.colaboradorCard}
+      style={styles.ServicosCard}
         onPress={() => {
           if (editing) {
             setEditing(false);
@@ -75,11 +76,11 @@ const Colaboradores = () => {
           }
         }}>
         <View>
-          <Text style={styles.colaboradorNome}>{item.Nome}</Text>
+          <Text style={[styles.colaboradorNome, {color:textColor}]}>{item.Nome}</Text>
           <View style={{ marginVertical: 5 }}>
             {item.servicos && item.servicos.length > 0 ? (
               item.servicos.map((servico, index) => (
-                <Text key={index} style={styles.colaboradorServico}>
+                <Text key={index} style={[styles.colaboradorServico, {color:textColor} ]}>
                   {servico.Nome}
                 </Text>
               ))
@@ -166,20 +167,24 @@ const Colaboradores = () => {
       { cancelable: false }
     );
   };
+  const { theme, toggleTheme } = useTheme();
+  const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
+  const textColor = theme === "dark" ? "white" : "black";
+  const FundoThema = theme === "dark" ? "#020C2A" : "red";
   return (
     <>
-      <View style={{ backgroundColor: "white" }}>
+      <View>
         <View contentContainerStyle={styles.container}>
           <View style={styles.scrollContainer}>
             <Animated.View style={{ width: "100%", height: animatedHeight, overflow: "hidden" }}>
               {showForm && (
-                <View onLayout={handleLayout} style={{ minHeight: 220, borderWidth: 0, borderColor: "#666699", borderRadius: 20, padding: 20, backgroundColor: "#c2c2d6", marginBottom: 15 }}>
+                <View onLayout={handleLayout} style={[{ minHeight: 220, borderRadius: 20, padding: 20, marginBottom: 15}, theme == 'dark'? { backgroundColor: "#001a66"}:{ backgroundColor: "#2F407A"}]}>
                   <TouchableOpacity style={styles.closeButton} onPress={() => toggleForm("close")}>
                     <Ionicons name="close" size={24} color="#fff" />
                   </TouchableOpacity>
-                  <Text style={[styles.label, { textAlign: "center" }]}>{editing ? "Editando" : "Cadastrar Novo"}</Text>
+                  <Text style={[styles.label, { textAlign: "center", color:textColor}]}>{editing ? "Editando" : "Cadastrar Novo"}</Text>
                   <FloatingLabelInput labelStyles={styles.labelStyle} inputStyles={styles.input} onChangeText={setNome} containerStyles={styles.inputContainerStyle} value={nome} label="Nome do Colaborador" keyboardType="default" />
-                  <Text>Selecione os serviços do colaborador:</Text>
+                  <Text style={{color:textColor}}>Selecione os serviços do colaborador:</Text>
                   <DropdownSelector lista={todosServicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={setServicosSelecionados} selectedItems={servicosSelecionados} opt={"servico"} />
                   {editing && (
                     <TouchableOpacity
@@ -196,7 +201,7 @@ const Colaboradores = () => {
             <View style={{ margin: "auto", marginBottom: 10, width: "84%" }}>
               <TouchableOpacity
                 style={{
-                  backgroundColor: "#3d3d5c",
+                  backgroundColor: "#2F407A",
                   borderRadius: 10,
                   padding: 10,
                   alignItems: "center",
@@ -207,9 +212,9 @@ const Colaboradores = () => {
               </TouchableOpacity>
             </View>
 
-            <Text style={styles.gridTitle}>Colaboradores Cadastrados:</Text>
+            <Text style={[styles.gridTitle, {color:textColor}]}>Colaboradores Cadastrados:</Text>
             {colaboradores && colaboradores.length > 0 ? (
-              <FlatList scrollEnabled={true} data={colaboradores} renderItem={renderColaborador} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", backgroundColor: "#a3a3c2", borderRadius: 15, paddingBottom: 15 }} />
+              <FlatList scrollEnabled={true} data={colaboradores} renderItem={renderColaborador} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", backgroundColor: {FundoThema}, borderRadius: 12 }} />
             ) : (
               <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flexGrow: 1, justifyContent: "center" }}>
                 <Text style={{ textAlign: "center" }}>Nenhum colaborador cadastrado</Text>
@@ -230,7 +235,14 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     backgroundColor: "white",
   },
-
+  ServicosCard: {
+    borderWidth: 1,
+    marginVertical: 7,
+    borderColor: "#312fbf",
+    borderRadius: 10,
+    padding: 20,
+    width: "100%",
+  },
   Header: {
     width: "100%",
     alignItems: "center",

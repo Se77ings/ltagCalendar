@@ -228,7 +228,7 @@ const Servicos = () => {
   const [modalImport, setModalImport] = useState(false);
   const [formData, setFormData] = useState();
 
-  // Estilos baseados no tema atual
+
   const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
   const textColor = theme === "dark" ? "white" : "black";
   const FundoThema = theme === "dark" ? "#020C2A" : "red";
@@ -274,27 +274,26 @@ const Servicos = () => {
           )}
           <Animated.View style={{ width: "100%", height: formAnimation, overflow: "hidden" }}>
             {showForm && (
-              <View onLayout={handleLayout} style={{ minHeight: 220, borderWidth: 0, borderColor: "#666699", borderRadius: 20, padding: 20, backgroundColor: "#c2c2d6", marginBottom: 15 }}>
+              <View onLayout={handleLayout} style={[{ minHeight: 220, borderRadius: 20, padding: 20, marginBottom: 15}, theme == 'dark'? { backgroundColor: "#001a66"}:{ backgroundColor: "#2F407A"}]}>
                 <TouchableOpacity style={styles.closeButton} onPress={toggleForm}>
                   <Ionicons name="close" size={24} color="#fff" />
                 </TouchableOpacity>
-                <Text style={styles.label}>Nome do Serviço:</Text>
+                <Text style={[styles.label, { color: textColor }]}>Nome do Serviço:</Text>
                 <TextInput style={styles.input} value={nome} onChangeText={setNome} placeholder="Insira o nome do serviço" />
                 {errors.nome ? <Text style={styles.error}>{errors.nome}</Text> : null}
 
-                <Text style={styles.label}>Descrição:</Text>
+                <Text style={[styles.label, { color: textColor }]}>Descrição:</Text>
                 <TextInput style={styles.textArea} value={descricao} onChangeText={setDescricao} placeholder="Insira a descrição do serviço" multiline numberOfLines={4} />
                 {errors.descricao ? <Text style={styles.error}>{errors.descricao}</Text> : null}
 
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", paddingTop: 5 }}>
                   <View style={styles.switchContainer}>
-                    <Text style={styles.label}>Favorito : </Text>
-                    <Ionicons onPress={toggleFavorito} name="star" size={24} color={favorito ? "#ffcc00" : "gray"} style={{ alignSelf: "flex-start" }} />
+                    <Text style={[styles.label, { color: textColor }]}>Favorito : </Text>
+                    <Ionicons onPress={toggleFavorito} name="star" size={24} color={favorito ? "#ffcc00" : "#ffff"} style={{ alignSelf: "flex-start" }} />
                   </View>
 
-                  {/* Botão de excluir posicionado à direita */}
                   <TouchableOpacity onPress={() => handleDelete(id)} style={{ marginLeft: 10 }}>
-                    <Ionicons name="trash" size={24} color="black" />
+                    <Ionicons name="trash" size={24} color={textColor}/>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -315,7 +314,7 @@ const Servicos = () => {
           </View>
           <Text style={[styles.gridTitle, { color: textColor }]}>Servicos Cadastrados:</Text>
           {servicos && servicos.length > 0 ? (
-            <FlatList scrollEnabled={true} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", backgroundColor: { FundoThema }, borderRadius: 12 }} />
+            <FlatList scrollEnabled={true} data={servicos} renderItem={renderServicos} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", backgroundColor: {FundoThema}, borderRadius: 12 }} />
           ) : (
             <View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flex: 1, justifyContent: "center" }}>
               <Text style={{ textAlign: "center" }}>Nenhum Servico cadastrado</Text>
@@ -362,7 +361,6 @@ const styles = StyleSheet.create({
   container: {
     justifyContent: "flex-start",
     paddingTop: 0,
-    backgroundColor: "white", // Nova cor de fundo
   },
   switchContainer: {
     flexDirection: "row",
@@ -423,18 +421,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   ServicosCard: {
-    padding: 15,
     borderWidth: 1,
     marginVertical: 7,
     borderColor: "#312fbf",
     borderRadius: 10,
     padding: 20,
     width: "100%",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
   },
   ServicosCardDesabilitado: {
     padding: 15,
@@ -443,13 +435,7 @@ const styles = StyleSheet.create({
     borderColor: "#312fbf",
     borderRadius: 10,
     padding: 20,
-    width: "100%",
-    backgroundColor: "#F3F4F6",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    width: "100%"
   },
   ServicosNome: {
     ffontWeight: "bold",
