@@ -397,6 +397,8 @@ const Home = ({ navigation }) => {
 	// Criar uma tela de controle de ramos (CRUD)
 
 	useEffect(() => {
+
+
 		if (canStart) {
 			eventEmitter.on("stepChange", handleOnStepChange);
 			ObterEstabelecimentoAsync().then((result) => {

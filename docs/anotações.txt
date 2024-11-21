@@ -8,6 +8,20 @@
     -- Drop Table IF EXISTS Estabelecimento;
     
 - Incremento 3:
+    -Bugs Encontrados:
+        - Novo Agendamento
+            Não pegou o tema, fundo ficou branco.
+
+        - DropdownSelector:
+            Não pegou o tema, fundo branco
+
+        -Campos Input:
+            Mudar o fundo de branco, para algum tom de cinza
+
+        - Ordenar Serviços importados
+        - Máscara de telefone no criar agendamento
+        - ~~Toast não funcionou no ios, mudar para a biblioteca sugerida pelo expo.~~ Ok, alterei a biblioteca.
+
     - Tabelas a serem criadas
         Estabelecimento
         - Nome*
@@ -50,41 +64,40 @@
         - Botão para abrir importação de serviços com base em ramo de serviços.
 
 - Incremento 2
+    - Tela de listagem de serviços (iniciar listagem por favoritos).
 
-- Tela de listagem de serviços (iniciar listagem por favoritos).
+    - Tela de Cadastro/Edição de Serviços 
+        - Nome, Descrição e marcar como favorito
 
-- Tela de Cadastro/Edição de Serviços 
-    - Nome, Descrição e marcar como favorito
+    - Tela de Cadastro de Colaboradores 
+        - Nome Colaborador e Serviços que ele pode realizar
+        - Tabela Vinculo (poderá marcar se tem afinidade com o serviço.)
 
-- Tela de Cadastro de Colaboradores 
-    - Nome Colaborador e Serviços que ele pode realizar
-    - Tabela Vinculo (poderá marcar se tem afinidade com o serviço.)
+    - Tela de Realizar/Visualizar Agendamentos 
+        - Vai pode remover e adicionar serviços (ao menos um deve ficar), além de poder adicionar colaboradores que realizaram o atendimento (listar os com afinidades primeiro)
+        - O atendimento pode ser alterado, além de excluído (precisa avisar com alert). Esse antedimento NÃO pode voltar para agendamento.
 
-- Tela de Realizar/Visualizar Agendamentos 
-    - Vai pode remover e adicionar serviços (ao menos um deve ficar), além de poder adicionar colaboradores que realizaram o atendimento (listar os com afinidades primeiro)
-    - O atendimento pode ser alterado, além de excluído (precisa avisar com alert). Esse antedimento NÃO pode voltar para agendamento.
+    - Tela de listar Agendamentos 
+        - Adicionar botão de realizar atendimento, além de filtro para exibir atendimentos finalizados ou pode ser uma tela separada para ver esses finalizados.)
 
-- Tela de listar Agendamentos 
-    - Adicionar botão de realizar atendimento, além de filtro para exibir atendimentos finalizados ou pode ser uma tela separada para ver esses finalizados.)
-
-- Tela de Criar/Editar Agendamento -
-    Deve ter uma listagem de serviços para selecionar e uma listagem de colaboradores.
-
+    - Tela de Criar/Editar Agendamento -
+        Deve ter uma listagem de serviços para selecionar e uma listagem de colaboradores.
 
 
-    -- Descomentar caso queira zerar as tabelas (excluir antes de enviar para avaliação)
--- Drop Table IF EXISTS agendamento;
--- Drop Table IF EXISTS servico;
--- Drop Table IF EXISTS colaborador;
--- Drop Table IF EXISTS ServicosPorColaborador;
--- Drop Table IF EXISTS AgendamentoColaborador;
--- Drop Table IF EXISTS AgendamentoServicos; 
+
+        -- Descomentar caso queira zerar as tabelas (excluir antes de enviar para avaliação)
+    -- Drop Table IF EXISTS agendamento;
+    -- Drop Table IF EXISTS servico;
+    -- Drop Table IF EXISTS colaborador;
+    -- Drop Table IF EXISTS ServicosPorColaborador;
+    -- Drop Table IF EXISTS AgendamentoColaborador;
+    -- Drop Table IF EXISTS AgendamentoServicos; 
 
 
-** Ordenação por afinidade **
-    ** Trocar Scrollview por Flatlist **
-    ** Menu principal ao rolar permitir visualização da data **
-    Padronizar as notificações de erro no Colaboradores
-    **StatusBar nao muda de cor quando o componente de data é fixado**
-    Ao clicar em favorito no FLatlist, setar favorito ou não
+    ** Ordenação por afinidade **
+        ** Trocar Scrollview por Flatlist **
+        ** Menu principal ao rolar permitir visualização da data **
+        Padronizar as notificações de erro no Colaboradores
+        **StatusBar nao muda de cor quando o componente de data é fixado**
+        Ao clicar em favorito no FLatlist, setar favorito ou não
 

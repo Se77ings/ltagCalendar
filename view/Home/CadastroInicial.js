@@ -7,9 +7,9 @@ import { TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { ramosDeAtividade } from "../../services/ramoService";
 import adicionarEstabelecimentoAsync from "../../services/estabelecimentoService";
-import Toast from "react-native-simple-toast";
 import adicionarServico from "../../services/servicoService";
 import { formatPhoneNumber } from "../../assets/global/functions";
+import Toast from "react-native-root-toast";
 
 const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 	const [formData, setFormData] = useState({
@@ -91,7 +91,14 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 		DeviceEventEmitter.emit("atualizarEstabelecimento");
 		console.log("Dados Iniciais Cadastrados.")
 		if (result.success) {
-			Toast.show("Dados cadastrados com sucesso!", Toast.LONG, { backgroundColor: "#39bf2f", color: "white" });
+			Toast.show("Dados cadastrados com sucesso", {
+				duration: Toast.durations.LONG,
+				position: Toast.positions.BOTTOM,
+				shadow: true,
+				animation: true,
+				hideOnPress: false,
+				
+			});
 			setPrimeiraInicializacao(false);
 		} else {
 			Alert.alert("Erro", result.error);
