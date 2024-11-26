@@ -65,7 +65,6 @@ const styles = StyleSheet.create({
 	},
 	lista: {
 		paddingBottom: 10,
-		backgroundColor: "red",
 	},
 
 	container: {
@@ -154,7 +153,6 @@ const styles = StyleSheet.create({
 		alignItems: "center",
 		marginHorizontal: 5,
 		borderRadius: 10,
-		// backgroundColor: "#f0f0f0",
 		paddingVertical: 5
 	},
 	dayName: {
@@ -183,11 +181,8 @@ const styles = StyleSheet.create({
 		color: "#000000",
 		paddingTop: 20,
 	},
-	lista: {
-		paddingBottom: 20,
-	},
+
 	agendamento: {
-		backgroundColor: "#eee",
 		borderRadius: 10,
 		padding: 15,
 		margin: 10,
@@ -199,8 +194,8 @@ const styles = StyleSheet.create({
 		elevation: 5,
 	},
 	imagemServico: {
-		width: 80,
-		height: 80,
+		width: '100%',
+		height: '100%',
 		borderRadius: 10,
 		marginRight: 15,
 	},

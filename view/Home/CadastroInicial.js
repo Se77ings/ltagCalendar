@@ -10,6 +10,8 @@ import adicionarEstabelecimentoAsync from "../../services/estabelecimentoService
 import adicionarServico from "../../services/servicoService";
 import { formatPhoneNumber } from "../../assets/global/functions";
 import Toast from "react-native-root-toast";
+import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
+
 
 const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 	const [formData, setFormData] = useState({
@@ -120,14 +122,27 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 		}
 	};
 
+
+	const { theme, toggleTheme } = useTheme();
+	const textColor = theme === "dark" ? "white" : "black";
+	const textColor2 = theme === "dark" ? "white" : "white";
+
+	const fundoInput = theme === "dark" ? "#020C2A" : "white";
+	const ColorInput = theme === "dark" ? "#666699" : "white";
+	const buttons = theme === "dark" ? "#020C2A" : "#666699";
+	const fundoTheme = theme === "dark" ? "#001a66" : "#2F407A";
+
+
 	return (
-		<View style={styles.formContainer}>
-			<Text style={styles.formTitle}>Dados Iniciais</Text>
-			<Text style={{ textAlign: "center" }}>Agora, você precisa informar alguns dados iniciais</Text>
+		<View style={[styles.formContainer, {backgroundColor:fundoTheme}]}>
+			<Text style={[styles.formTitle, {color:textColor2}]}>Dados Iniciais</Text>
+			<Text style={{ textAlign: "center", color:textColor2}}>Agora, você precisa informar alguns dados iniciais</Text>
 			<FloatingLabelInput
 				labelStyles={styles.labelStyle}
-				containerStyles={styles.input}
+				
+				containerStyles={[styles.input, {backgroundColor:fundoInput}]}
 				label="Nome do Estabelecimento"
+				inputStyles={{color:'white'}}
 				value={formData.nome}
 				onChangeText={(value) => handleChange("nome", value)}
 			/>
@@ -135,8 +150,9 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 			<FloatingLabelInput
 				keyboardType="numeric"
 				hint="(17) 9999-9999"
+				inputStyles={{color:'white'}}
 				labelStyles={styles.labelStyle}
-				containerStyles={styles.input}
+				containerStyles={[styles.input, {backgroundColor:fundoInput}]}
 				label="Telefone"
 				value={formData.telefone}
 				onChangeText={(value) => handleChange("telefone", value)}
@@ -144,23 +160,24 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 			{erro.telefone && <Text style={{ color: "red", paddingLeft: 15 }}>{erro.telefone}</Text>}
 			<FloatingLabelInput
 				labelStyles={styles.labelStyle}
-				containerStyles={styles.input}
+				containerStyles={[styles.input, {backgroundColor:fundoInput}]}
 				label="Endereço"
 				hint="Opcional"
+				inputStyles={{color:'white'}}
 				value={formData.endereco}
 				onChangeText={(value) => handleChange("endereco", value)}
 			/>
 			<TouchableOpacity
 				onPress={pickImage}
-				style={{ flexDirection: "row", justifyContent: "space-between", padding: 10, paddingHorizontal: 20, borderWidth: 1, borderStyle: "dashed", borderRadius: 10, backgroundColor: image ? "#20bf55" : null }}>
+				style={{ flexDirection: "row", justifyContent: "space-between", padding: 10, paddingHorizontal: 20, borderWidth: 1, borderColor: theme == 'dark' ? 'white' : 'black', borderStyle: "dashed", borderRadius: 10, backgroundColor: image ? "#20bf55" : null }}>
 				<View style={{ flexDirection: "column" }}>
-					<Text style={{ alignSelf: "center", color: image ? "white" : "black", fontSize: 16 }}>Logotipo do seu estabelecimento</Text>
-					<Text style={{ fontSize: 12, color: image ? "white" : "gray" }}>{image ? "Imagem Selecionada!" : "Clique aqui para enviar uma imagem"}</Text>
+					<Text style={{ alignSelf: "center", color: image ? textColor : textColor2, fontSize: 16 }}>Logotipo do seu estabelecimento</Text>
+					<Text style={{ fontSize: 12, color: image ? textColor : "gray" }}>{image ? "Imagem Selecionada!" : "Clique aqui para enviar uma imagem"}</Text>
 				</View>
 				<Ionicons
 					name={image ? "checkbox-outline" : "camera"}
 					size={30}
-					color={image ? "#fff" : "#000"}
+					color={image ? "white" : 'white'}
 				/>
 			</TouchableOpacity>
 			<DropdownSelector
@@ -170,9 +187,9 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 				callbackSelecionados={(value) => handleChange("ramoAtividade", value)}
 				opt={"ramo"}
 			/>
-			<Text style={{margin:0, fontSize:12, position:"relative", top:-10, left:10}}>Opcional</Text>
+			<Text style={{margin:0, fontSize:12, position:"relative", top:-10, left:10, color:textColor2}}>Opcional</Text>
 			<TouchableOpacity
-				style={styles.submitButton}
+				style={[styles.submitButton, { backgroundColor: buttons }]}
 				onPress={handleSendData}>
 				<Text style={styles.submitButtonText}>Cadastrar</Text>
 			</TouchableOpacity>
@@ -181,14 +198,7 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 };
 
 const styles = StyleSheet.create({
-	main: {
-		flexGrow: 1,
-		backgroundColor: "#f8f9fa",
-		padding: 20,
-		justifyContent: "center",
-	},
 	formContainer: {
-		backgroundColor: "white",
 		borderRadius: 10,
 		padding: 20,
 		shadowColor: "#000",
@@ -201,32 +211,21 @@ const styles = StyleSheet.create({
 		fontSize: 22,
 		fontWeight: "bold",
 		textAlign: "center",
-		color: "#312fbf",
 		marginBottom: 20,
 	},
 	input: {
-		backgroundColor: "#F3F4F6",
+		color: "white",
 		borderRadius: 5,
 		paddingHorizontal: 10,
 		marginVertical: 10,
 		height: 50,
 		justifyContent: "center",
 	},
-	inputText: {
-		color: "#333",
-		fontSize: 16,
-	},
 	labelStyle: {
-		color: "#312fbf",
-	},
-	picker: {
-		backgroundColor: "#F3F4F6",
-		borderRadius: 5,
-		marginVertical: 10,
-		height: 50,
+		color: "white",
+		paddingHorizontal: 5,
 	},
 	submitButton: {
-		backgroundColor: "#312fbf",
 		paddingVertical: 15,
 		borderRadius: 5,
 		alignItems: "center",

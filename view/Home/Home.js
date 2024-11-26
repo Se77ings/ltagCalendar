@@ -231,11 +231,10 @@ const Cards = ({ img, data, setAgendamentoSelecionado, setmodalCreate, obter, se
 	};
 
 	const renderAgendamento = ({ item }) => (
-		<View style={[styles.agendamento, item.Finalizado ? styles.agendamentoFinalizado : isPast(formatarData(item.Data), item.Hora) ? styles.agendamentoAtrasado : null]}>
-			<Image
-				source={img}
-				style={styles.imagemServico}
-			/>
+		<View style={[[styles.agendamento, {backgroundColor:'white', height:100}], item.Finalizado ? styles.agendamentoFinalizado : isPast(formatarData(item.Data), item.Hora) ? styles.agendamentoAtrasado : null]}>
+			<View style={{width:70,height:70, padding:5}}>
+				<Image source={img} style={styles.imagemServico}/>
+			</View>
 			<View style={styles.info}>
 				<Text style={styles.nome}>{item.Nome}</Text>
 				<Text style={styles.servico}>{item.Servico}</Text>

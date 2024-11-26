@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Switch, TouchableOpacity, TextInput, Pressable, ScrollView, FlatList, StyleSheet, Alert, Image, Button, DeviceEventEmitter, ActivityIndicator } from "react-native";
 import { useNavigation, DefaultTheme, DarkTheme } from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
 import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteAtendimentoComServicoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, ObterTodosServicosAtivosAsync, RemoverServicoAsync } from "../../services/servicoService";
 import { AtualizarEstabelecimentoAsync, ObterEstabelecimentoAsync } from "../../services/estabelecimentoService";
 import icon from "../../assets/icon.png";
 import * as ImagePicker from "expo-image-picker";
 import { formatPhoneNumber } from "../../assets/global/functions";
 import Toast from "react-native-root-toast";
+import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
+
 
 const Estabelecimento = () => {
 	const [editar, setEditar] = useState(false);
@@ -140,10 +141,20 @@ const Estabelecimento = () => {
 		}
 	};
 
+	const { theme, toggleTheme } = useTheme();
+	const textColor = theme === "dark" ? "white" : "001a66";
+	const fundoInput = theme === "dark" ? "#2F407A" : "white";
+	const ColorInput = theme === "dark" ? "white" : "white";
+	const buttons = theme === "dark" ? "#020C2A" : "white";
+
+
+
+	const FundoThema = theme === "dark" ? "#020C2A" : "red";
+
 	return (
 		<View contentContainerStyle={styles.container}>
 			{loading && (
-				<View style={{ position: "absolute", zIndex: 1, backgroundColor: "rgba(255,255,255,0.8)", justifyContent: "center", alignSelf: "center", height: "100%", width: "100%", borderRadius: 0 }}>
+				<View style={{ position: "absolute", zIndex: 1, backgroundColor: "rgba(0,0,0,0.2)", justifyContent: "center", alignSelf: "center", height: "100%", width: "100%", borderRadius: 0 }}>
 					<ActivityIndicator
 						size="large"
 						color="#0000ff"
@@ -156,7 +167,7 @@ const Estabelecimento = () => {
 					style={styles.logo}
 				/>
 				{editar && (
-					<View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+					<View style={{flexDirection: "row", justifyContent: "space-between" }}>
 						<View style={{ width: "50%", margin: 10 }}>
 							<Button
 								color={"#666699"}
@@ -165,7 +176,7 @@ const Estabelecimento = () => {
 								onPress={pickImage}
 							/>
 						</View>
-						<View style={{ width: "50%", margin: 10 }}>
+						<View style={{ width: "50%", margin: 10}}>
 							<Button
 								color={"red"}
 								style={styles.button}
@@ -191,11 +202,11 @@ const Estabelecimento = () => {
 						</View>
 					</View>
 				)}
-				<View style={{ width: "80%" }}>
+				<View style={{ width: "90%"}}>
 					<View style={{ flexDirection: "column" }}>
-						<Text style={styles.label}>Nome </Text>
+						<Text style={[styles.label,{color:textColor}]}>Nome </Text>
 						<TextInput
-							style={styles.input}
+							style={[styles.input,{backgroundColor:fundoInput,color:ColorInput}]}
 							value={estabelecimento.Nome}
 							editable={editar}
 							onChangeText={(value) => setEstabelecimento({ ...estabelecimento, Nome: value })}
@@ -203,9 +214,9 @@ const Estabelecimento = () => {
 						{erro.nome && <Text style={styles.error}>{erro.nome}</Text>}
 					</View>
 					<View style={{ flexDirection: "column" }}>
-						<Text style={styles.label}>Telefone </Text>
+						<Text style={[styles.label,{color:textColor}]}>Telefone </Text>
 						<TextInput
-							style={styles.input}
+							style={[styles.input,{backgroundColor:fundoInput,color:ColorInput}]}
 							value={estabelecimento.Telefone}
 							editable={editar}
 							//formatPhoneNumber
@@ -214,9 +225,9 @@ const Estabelecimento = () => {
 						{erro.telefone && <Text style={styles.error}>{erro.telefone}</Text>}
 					</View>
 					<View style={{ flexDirection: "column" }}>
-						<Text style={styles.label}>Endereço </Text>
+						<Text style={[styles.label,{color:textColor}]}>Endereço </Text>
 						<TextInput
-							style={styles.input}
+							style={[styles.input,{backgroundColor:fundoInput,color:ColorInput}]}
 							value={estabelecimento.Endereco}
 							editable={editar}
 							onChangeText={(value) => setEstabelecimento({ ...estabelecimento, Endereco: value })}
@@ -254,7 +265,6 @@ const styles = StyleSheet.create({
 	container: {
 		justifyContent: "flex-start",
 		paddingTop: 0,
-		backgroundColor: "white", // Nova cor de fundo
 	},
 	switchContainer: {
 		flexDirection: "row",
@@ -266,7 +276,7 @@ const styles = StyleSheet.create({
 		height: 150,
 		borderRadius: 100,
 	},
-	buton: {
+	button: {
 		backgroundColor: "#666699",
 		borderRadius: 15,
 		padding: 0,
@@ -281,6 +291,7 @@ const styles = StyleSheet.create({
 		justifyContent: "center",
 		alignItems: "center",
 		height: "100%",
+		width: "100%",
 	},
 	label: {
 		fontSize: 18,
@@ -298,7 +309,6 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 		paddingHorizontal: 10,
 		marginBottom: 2,
-		backgroundColor: "#fff",
 	},
 	textArea: {
 		height: 50,

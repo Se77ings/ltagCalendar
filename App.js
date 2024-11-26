@@ -16,6 +16,17 @@ function App() {
 	const { theme, toggleTheme } = useTheme(); // Consumindo o contexto
 	const Tab = createBottomTabNavigator();
 
+	const DarkTheme = {
+		dark: true,
+		colors: {
+		  primary: 'rgb(10, 132, 255)',
+		  background: '#020C2A',
+		  card: 'rgb(18, 18, 18)',
+		  text: 'rgb(229, 229, 231)',
+		  border: 'rgb(39, 39, 41)',
+		  notification: 'rgb(255, 69, 58)',
+		},
+	  };
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
 			<StatusBar
@@ -49,7 +60,7 @@ function App() {
 									<View style={[styles.iconDiv, { borderColor: color }]}>
 										<Ionicons
 											name="home"
-											color={color}
+											color={"white"}
 											size={22}
 										/>
 									</View>
@@ -69,7 +80,7 @@ function App() {
 									<View style={[styles.iconDiv, { borderColor: color }]}>
 										<Ionicons
 											name="settings"
-											color={color}
+											color={'white'}
 											size={22}
 										/>
 									</View>

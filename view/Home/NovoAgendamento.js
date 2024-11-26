@@ -5,6 +5,7 @@ import { Picker } from "@react-native-picker/picker";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 import { AsyncStorage } from "react-native";
+import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
 
 import { StyleSheet, Text, View, ScrollView, TextInput, Alert, TouchableOpacity, Pressable } from "react-native";
 import * as Yup from "yup";
@@ -242,6 +243,16 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
     Hora: AgendamentoSelecionado?.Hora || time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
   };
 
+	const { theme, toggleTheme } = useTheme();
+	const textColor = theme === "dark" ? "white" : "black";
+	const textColor2 = theme === "dark" ? "white" : "white";
+
+	const fundoInput = theme === "dark" ? "#2F407A" : "white";
+	const ColorInput = theme === "dark" ? "#666699" : "white";
+	const buttons = theme === "dark" ? "#2F407A" : "#312fbf";
+	const fundoTheme = theme === "dark" ? "#001a66" : "#2F407A";
+
+
   return (
     <>
       <Formik
@@ -293,29 +304,28 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
           }
         }}>
         {({ handleChange, handleSubmit, errors, touched, values }) => (
-          <ScrollView contentContainerStyle={[!AgendamentoSelecionado ? styles.main : { backgroundColor: "rgba(0,0,0,0.5)", height: "100%", justifyContent: "center", padding: 20, elevation: 5 }]}>
-            <View style={styles.formContainer}>
-              <Text style={styles.formTitle}>{option ? option + " Agendamento" : "Novo Agendamento"}</Text>
+          <ScrollView contentContainerStyle={[!AgendamentoSelecionado ? styles.main : {height: "100%", justifyContent: "center", padding: 20, elevation: 5 }]}>
+            <View style={[styles.formContainer,{backgroundColor:fundoTheme}]}>
+              <Text style={[styles.formTitle, {color:textColor2}]}>{option ? option + " Agendamento" : "Novo Agendamento"}</Text>
               {AgendamentoSelecionado && (
                 <TouchableOpacity
-                  style={{ position: "absolute", top: 10, right: 10, zIndex: 1, backgroundColor: "#312fbf", borderRadius: 15, padding: 0 }}
+                  style={{ position: "absolute", top: 10, right: 10, zIndex: 1, backgroundColor:buttons, borderRadius: 15, padding: 0 }}
                   onPress={() => {
                     fecharModal();
                   }}>
                   <Ionicons name="close" size={24} color="#fff" />
                 </TouchableOpacity>
               )}
-              <FloatingLabelInput labelStyles={styles.labelStyle} containerStyles={styles.input} onChangeText={handleChange("Nome")} value={values.Nome} label="Nome" />
+              <FloatingLabelInput labelStyles={styles.labelStyle}	inputStyles={{color:'white'}} containerStyles={[styles.input, {backgroundColor:fundoInput}]} onChangeText={handleChange("Nome")} value={values.Nome} label="Nome" />
               {errors.Nome && touched.Nome ? <Text style={styles.error}>{errors.Nome}</Text> : null}
-              <FloatingLabelInput labelStyles={styles.labelStyle} containerStyles={styles.input} onChangeText={handleChange("Telefone")} value={values.Telefone} label="Telefone" keyboardType="numeric" />
+              <FloatingLabelInput labelStyles={styles.labelStyle} inputStyles={{color:'white'}} containerStyles={[styles.input,{backgroundColor:fundoInput}]} onChangeText={handleChange("Telefone")} value={values.Telefone} label="Telefone" keyboardType="numeric" />
               {errors.Telefone && touched.Telefone ? <Text style={styles.error}>{errors.Telefone}</Text> : null}
-              {show && <DateTimePicker testID="dateTimePicker" value={date} mode="date" is24Hour={true} display="calendar" onChange={onChange} style={styles.datePicker} />}
-              {show && <DateTimePicker testID="dateTimePicker" value={date} mode="date" is24Hour={true} display="calendar" onChange={onChange} style={styles.input} />}
+              {show && <DateTimePicker testID="dateTimePicker" value={date} mode="date" is24Hour={true} display="calendar" onChange={onChange} style={[styles.datePicker, {color:'red'}]} />}
               <Pressable
                 onPress={() => {
                   setShow(true);
                 }}>
-                <TextInput editable={false} style={[styles.input, { color: "black" }]} value={DateString} />
+                <TextInput editable={false} style={[styles.input, {backgroundColor:fundoInput, color:textColor }]} value={DateString} />
                 <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="calendar" size={24} color="#312fbf" onPress={() => setShow(true)} />
               </Pressable>
               {showtime && <DateTimePicker value={time} mode="time" is24Hour={true} display="clock" onChange={onChangeTime} style={styles.input} />}
@@ -324,15 +334,15 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
                 onPress={() => {
                   setShowtime(true);
                 }}>
-                <TextInput style={[styles.input, { color: "black" }]} editable={false} value={formatTime(time)} />
+                <TextInput style={[styles.input, {backgroundColor:fundoInput, color:textColor }]} editable={false} value={formatTime(time)} />
                 <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="time" size={24} color="#312fbf" onPress={() => setShowtime(true)} />
               </Pressable>
               {!servicoLoading && <DropdownSelector lista={data.servicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={handleServicoChange} selectedItems={data.selectedServico} opt={"servico"} />}
               {errors.Servico && touched.Servico ? <Text style={styles.error}>{errors.Servico}</Text> : null}
               {!colaboradorLoading && <DropdownSelector lista={data.prestadores} label={"Colaborador(es)"} icone={"people-outline"} callbackSelecionados={handlePrestadorChange} selectedItems={data.selectedPrestador} opt={"colaborador"} servicoSelecionado={data.selectedServico} />}
               {errors.Prestador && touched.Prestador ? <Text style={styles.error}>{errors.Prestador}</Text> : null}
-              <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-                <Text style={styles.submitButtonText}>{option ? option : "Cadastrar"}</Text>
+              <TouchableOpacity style={[styles.submitButton, {backgroundColor:buttons}]} onPress={handleSubmit}>
+                <Text style={[styles.submitButtonText, {color:textColor2}]}>{option ? option : "Cadastrar"}</Text>
               </TouchableOpacity>
             </View>
           </ScrollView>
@@ -345,12 +355,10 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 const styles = StyleSheet.create({
   main: {
     flexGrow: 1,
-    backgroundColor: "#f8f9fa",
     padding: 20,
     justifyContent: "center",
   },
   formContainer: {
-    backgroundColor: "white",
     borderRadius: 10,
     padding: 20,
     shadowColor: "#000",
@@ -363,39 +371,30 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     textAlign: "center",
-    color: "#312fbf",
     marginBottom: 20,
   },
   input: {
-    backgroundColor: "#F3F4F6",
     borderRadius: 5,
     paddingHorizontal: 10,
     marginVertical: 10,
     height: 50,
     justifyContent: "center",
   },
-  inputText: {
-    color: "#333",
-    fontSize: 16,
-  },
   labelStyle: {
-    color: "#312fbf",
+    color: "white",
   },
   picker: {
-    backgroundColor: "#F3F4F6",
     borderRadius: 5,
     marginVertical: 10,
     height: 50,
   },
   submitButton: {
-    backgroundColor: "#312fbf",
     paddingVertical: 15,
     borderRadius: 5,
     alignItems: "center",
     marginTop: 20,
   },
   submitButtonText: {
-    color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },
@@ -407,8 +406,8 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
   },
   datePicker: {
-    backgroundColor: "#F3F4F6",
     borderRadius: 5,
+    color: "black",
   },
 
   error: {

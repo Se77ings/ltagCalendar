@@ -1,12 +1,16 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { View, Text, FlatList, TouchableOpacity, ScrollView, Alert, Image, Modal, Pressable, Button, InteractionManager } from "react-native";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
+import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedItems = null, opt, servicoSelecionado = null }) => {
   const [itensSelecionados, setItensSelecionados] = useState([]);
   const [dadosFormatados, setDadosFormatados] = useState([]);
+	const { theme, toggleTheme } = useTheme();
+  const textColor = theme === "dark" ? "white" : "black";
+	const fundoInput = theme === "dark" ? "#2F407A" : "white";
 
   useEffect(() => {
     if (opt == "servico") {
@@ -153,7 +157,7 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
       selectedItems={itensSelecionados}
       IconRenderer={Ionicons}
       headerComponent={() => (
-        <View style={{ padding: 10, flexDirection: "row", justifyContent: "space-between" }}>
+        <View style={{padding: 10, flexDirection: "row", justifyContent: "space-between" }}>
           <Text style={{ fontSize: 18, paddingLeft: 10, paddingTop: 10 }}>Selecione Abaixo:</Text>
           <Ionicons
             onPress={() => {
@@ -165,18 +169,18 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
           />
         </View>
       )}
-      selectToggleIconComponent={<Ionicons name="arrow-down" size={20} color="#312fbf" />}
+      selectToggleIconComponent={<Ionicons name="arrow-down" size={20} color="white" />}
       dropDownToggleIconDownComponent={<Ionicons name="arrow-down" size={20} color="#312fbf" />}
       dropDownToggleIconUpComponent={<Ionicons name="arrow-up" size={20} color="#312fbf" />}
       selectedIconComponent={<Ionicons name="checkmark" size={20} color="#312fbf" />}
       renderSelectText={() => {
         return (
           <View style={{ flex: 1, flexDirection: "row" }}>
-            <Ionicons name={icone} size={20} color="#312fbf" />
+            <Ionicons name={icone} size={20} color="white" />
             {itensSelecionados.length === 0 ? (
-              <Text style={{ color: "#312fbf", fontSize: 16, marginLeft: 5 }}>Selecione {label}</Text>
+              <Text style={{ color: textColor, fontSize: 16, marginLeft: 5 }}>Selecione {label}</Text>
             ) : (
-              <Text style={{ color: "#312fbf", fontSize: 16, marginLeft: 5 }}>
+              <Text style={{ color: textColor, fontSize: 16, marginLeft: 5 }}>
                 {itensSelecionados.length} {label} selecionado(s)
               </Text>
             )}
@@ -185,7 +189,7 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
       }}
       styles={{
         selectToggle: {
-          backgroundColor: "#F3F4F6",
+          backgroundColor: fundoInput,
           borderColor: "#312fbf",
           padding: 10,
           borderRadius: 5,

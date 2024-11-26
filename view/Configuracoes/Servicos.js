@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, Button, Switch, TouchableOpacity, TextInput, Pressable, ScrollView, FlatList, StyleSheet, Alert, Animated, Modal } from "react-native";
-import { useNavigation, DefaultTheme, DarkTheme } from "@react-navigation/native";
+import { useNavigation} from "@react-navigation/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
 import adicionarServico, { AtualizarServicoAsync, DesabilitarServicoAsync, ExisteAtendimentoComServicoAsync, ExisteServicoAtivoAsync, ExisteServicoComColaboradorAsync, ObterTodosServicosAsync, ObterTodosServicosAtivosAsync, RemoverServicoAsync } from "../../services/servicoService";
@@ -233,7 +233,8 @@ const Servicos = () => {
 	const [formData, setFormData] = useState();
 
 	const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
-	const textColor = theme === "dark" ? "white" : "black";
+	const textColor = theme === "dark" ? "white" : "white";
+	const textColor2 = theme === "dark" ? "white" : "black";
 	const FundoThema = theme === "dark" ? "#020C2A" : "red";
 	const handleChange = (value) => {
 		const ramos = [];
@@ -289,13 +290,13 @@ const Servicos = () => {
 										color="#fff"
 									/>
 								</TouchableOpacity>
-								<Text style={[styles.label, { color: textColor }]}>Nome do Serviço:</Text>
-								<TextInput
-									style={styles.input}
-									value={nome}
-									onChangeText={setNome}
-									placeholder="Insira o nome do serviço"
-								/>
+									<Text style={[styles.label, { color: textColor }]}>Nome do Serviço:</Text>
+									<TextInput
+										style={styles.input}
+										value={nome}
+										onChangeText={setNome}
+										placeholder="Insira o nome do serviço"
+									/>
 								{errors.nome ? <Text style={styles.error}>{errors.nome}</Text> : null}
 
 								<Text style={[styles.label, { color: textColor }]}>Descrição:</Text>
@@ -347,7 +348,7 @@ const Servicos = () => {
 							<Text style={{ color: "white" }}>{editingServicos ? "Editar" : "Criar Serviço"}</Text>
 						</TouchableOpacity>
 					</View>
-					<Text style={[styles.gridTitle, { color: textColor }]}>Servicos Cadastrados:</Text>
+					<Text style={[styles.gridTitle, {color:textColor2}]}>Servicos Cadastrados:</Text>
 					{servicos && servicos.length > 0 ? (
 						<FlatList
 							scrollEnabled={true}
@@ -358,9 +359,9 @@ const Servicos = () => {
 							style={{ width: "100%", backgroundColor: { FundoThema }, borderRadius: 12 }}
 						/>
 					) : (
-						<View style={{ width: "90%", backgroundColor: "#a3a3c2", borderRadius: 15, flex: 1, justifyContent: "center" }}>
-							<Text style={{ textAlign: "center" }}>Nenhum Servico cadastrado</Text>
-							{!showForm && <Text style={{ textAlign: "center" }}>Clique no botão abaixo para Cadastrar</Text>}
+						<View style={{ width: "90%", borderRadius: 15, flex: 1, justifyContent: "center" }}>
+							<Text style={{ textAlign: "center",color:textColor2}}>Nenhum Servico cadastrado</Text>
+							{!showForm && <Text style={{ textAlign: "center" }}>Clique no botão "Criar Serviço"</Text>}
 						</View>
 					)}
 
@@ -370,8 +371,8 @@ const Servicos = () => {
 						<Ionicons
 							name="albums-outline"
 							size={15}
-							color={textColor}>
-							<Text style={{ textAlign: "center", fontSize: 20, color: textColor }}>{mostrarDesabilitados ? "Mostrar Todos" : "Mostrar Apenas Habilitados"}</Text>
+							color={textColor2}>
+							<Text style={{ textAlign: "center", fontSize: 20, color: textColor2 }}>{mostrarDesabilitados ? "Mostrar Todos" : "Mostrar Apenas Habilitados"}</Text>
 						</Ionicons>
 					</TouchableOpacity>
 				</View>
