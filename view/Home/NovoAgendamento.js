@@ -326,7 +326,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
                   setShow(true);
                 }}>
                 <TextInput editable={false} style={[styles.input, {backgroundColor:fundoInput, color:textColor }]} value={DateString} />
-                <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="calendar" size={24} color="#312fbf" onPress={() => setShow(true)} />
+                <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="calendar" size={24} color={theme == "dark" ? "white" : "#312fbf"} onPress={() => setShow(true)} />
               </Pressable>
               {showtime && <DateTimePicker value={time} mode="time" is24Hour={true} display="clock" onChange={onChangeTime} style={styles.input} />}
               <Pressable
@@ -335,11 +335,11 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
                   setShowtime(true);
                 }}>
                 <TextInput style={[styles.input, {backgroundColor:fundoInput, color:textColor }]} editable={false} value={formatTime(time)} />
-                <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="time" size={24} color="#312fbf" onPress={() => setShowtime(true)} />
+                <Ionicons style={{ position: "absolute", right: 10, top: 20 }} name="time" size={24} color={theme == "dark" ? "white" : "#312fbf"} onPress={() => setShowtime(true)} />
               </Pressable>
-              {!servicoLoading && <DropdownSelector lista={data.servicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={handleServicoChange} selectedItems={data.selectedServico} opt={"servico"} />}
+              {!servicoLoading && <DropdownSelector lista={data.servicos} label={"Serviço(s)"} icone={"briefcase"} callbackSelecionados={handleServicoChange} selectedItems={data.selectedServico} opt={"servico"} />}
               {errors.Servico && touched.Servico ? <Text style={styles.error}>{errors.Servico}</Text> : null}
-              {!colaboradorLoading && <DropdownSelector lista={data.prestadores} label={"Colaborador(es)"} icone={"people-outline"} callbackSelecionados={handlePrestadorChange} selectedItems={data.selectedPrestador} opt={"colaborador"} servicoSelecionado={data.selectedServico} />}
+              {!colaboradorLoading && <DropdownSelector lista={data.prestadores} label={"Colaborador(es)"} icone={"people"} callbackSelecionados={handlePrestadorChange} selectedItems={data.selectedPrestador} opt={"colaborador"} servicoSelecionado={data.selectedServico} />}
               {errors.Prestador && touched.Prestador ? <Text style={styles.error}>{errors.Prestador}</Text> : null}
               <TouchableOpacity style={[styles.submitButton, {backgroundColor:buttons}]} onPress={handleSubmit}>
                 <Text style={[styles.submitButtonText, {color:textColor2}]}>{option ? option : "Cadastrar"}</Text>

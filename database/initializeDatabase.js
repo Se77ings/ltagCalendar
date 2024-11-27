@@ -4,6 +4,16 @@ export default async function initializaDatabase() {
   const db = await SQLite.openDatabaseAsync("ltagDatabase");
   
   await db.execAsync(`
+
+    -- Drop Table IF EXISTS agendamento;
+    -- Drop Table IF EXISTS servico;
+    -- Drop Table IF EXISTS colaborador;
+    -- Drop Table IF EXISTS ServicosPorColaborador;
+    -- Drop Table IF EXISTS AgendamentoColaborador;
+    -- Drop Table IF EXISTS AgendamentoServicos; 
+    -- Drop Table IF EXISTS Estabelecimento;
+
+
     CREATE TABLE IF NOT EXISTS agendamento (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       Nome TEXT NOT NULL,

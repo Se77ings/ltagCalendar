@@ -8,6 +8,7 @@ import Colaboradores from "./Colaboradores";
 import Servicos from "./Servicos";
 import Estabelecimento from "./Estabelecimento";
 import { TourGuideProvider, TourGuideZone } from "rn-tourguide";
+import AppConfig from "./Appconfig";
 
 const Stack = createStackNavigator();
 
@@ -35,6 +36,9 @@ const ConfigScreen = ({ navigation }) => {
           <TourGuideZone zone={6} text="Aqui você cadastrará os Colaboradores que trabalham no seu estabelecimento, e pode vinculá-los a algum serviço anteriormente cadastrado" style={{ justifyContent: "center", width: "50%", borderRadius:10 }}>
             <Card title={"Colaboradores"} icon={"people-outline"} screen="Colaboradores" />
           </TourGuideZone>
+          <TourGuideZone zone={7} text="Nessa área, você conseguirá alterar o tema do aplicativo, e também fazer alterações na base de dados do aplicativo" style={{ justifyContent: "center", width: "50%", borderRadius:10}}>
+              <Card title={"Aplicativo"} icon={"phone-portrait-outline"} screen={"AppConfig"}/>
+          </TourGuideZone>
         </View>
       </View>
     </>
@@ -43,11 +47,12 @@ const ConfigScreen = ({ navigation }) => {
 
 const Config = () => {
   return (
-    <Stack.Navigator initialRouteName="ConfigScreen">
-      <Stack.Screen name="ConfigScreen" component={ConfigScreen} options={{ headerShown: false, headerTitle: "Configurações" }} />
+    <Stack.Navigator initialRouteName="ConfigScreen" >
+      <Stack.Screen name="ConfigScreen"  component={ConfigScreen} options={{ headerShown: false, headerTitle: "Configurações" }} />
       <Stack.Screen name="Colaboradores" component={Colaboradores} options={{ headerShown: true, headerTitle: "Colaboradores", headerTitleAlign: "center" }} />
       <Stack.Screen name="Servicos" component={Servicos} options={{ headerShown: true, headerTitle: "Serviços", headerTitleAlign: "center" }} />
       <Stack.Screen name="Estabelecimento" component={Estabelecimento} options={{ headerShown: true, headerTitle: "Estabelecimento", headerTitleAlign: "center" }} />
+      <Stack.Screen name="AppConfig"  component={AppConfig} options={{ headerShown: true, headerTitle: "Configurações do Aplicativo", headerTitleAlign: "center"}}   />
     </Stack.Navigator>
   );
 };
