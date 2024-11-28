@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, TextInput, Button, ScrollView, FlatList, StyleSheet, Alert, Animated, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; // Se estiver usando Expo, ou outro ícone de sua escolha
+import { Ionicons } from "@expo/vector-icons"; 
 import DropdownSelector from "../../assets/components/DropdownSelector";
-import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
+import { useTheme } from "../../ThemeContext"; 
 import { ObterServicosPorColaborador, ObterServicosPorFavorito, VincularServicoColaborador } from "../../database/servicoRepository";
 import adicionarColaborador, { AtualizarColaboradorAsync, ObterTodosColaboradoresComServicosAsync, RemoverColaboradorAsync } from "../../services/colaboradorService";
 

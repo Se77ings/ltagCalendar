@@ -19,6 +19,7 @@
     "expo-font": "~12.0.10",
     "expo-image-picker": "~15.0.7",
     "expo-linear-gradient": "~13.0.2",
+    "expo-local-authentication": "~14.0.1",
     "expo-sqlite": "~14.0.6",
     "expo-status-bar": "~1.12.1",
     "formik": "^2.4.6",
@@ -41,7 +42,6 @@
     "react-native-vector-icons": "^10.2.0",
     "react-native-web": "~0.19.10",
     "rn-tourguide": "^3.3.2",
-    "yarn": "^1.22.22",
     "yup": "^1.4.0"
   },
   "devDependencies": {

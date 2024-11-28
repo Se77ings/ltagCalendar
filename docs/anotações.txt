@@ -6,7 +6,41 @@
     -- Drop Table IF EXISTS AgendamentoColaborador;
     -- Drop Table IF EXISTS AgendamentoServicos; 
     -- Drop Table IF EXISTS Estabelecimento;
-    
+- Incremento 4:
+    Atendimento 
+        - Deve permitir um texto com os dados daquele atendimento. Esse texto vai poder ser compartilhado, além de ser um texto genérico.
+        - Permitir alteração desse texto pelo cliente (tabela).
+    Exemplo do texto:
+        Olá Tiago. Você possui agendado o serviço Formatação de Computador Windows às 12:00 do dia 19 de novembro de 2024 na PCs e Companhia.
+
+
+    Tela para listagem de clientes (utilizar dados já cadastrados em atendimento)
+        - Na tela, exibir por ordem alfabética e exibir o nome e telefone.
+        - Permitir filtro por nome do cliente e data.
+        - Opções de intervalo de data (mês, ano ou determinado intervalo)
+
+    Exemplo de filtragem por data:
+    Todo o período;
+    Clientes atendidos em agosto/2024;
+    Clientes atendidos nos últimos 30 dias;
+    Clientes atendidos em 2023;
+    Clientes atendidos entre 10/08/2024 e 07/09/2024.
+    Etc.
+
+    Funcionalidade BACKUP:
+        - Tela em configurações, por exemplo, onde, ao clicar no botão exportar backup, ele gere um arquivo com os dados das tabelas no dispositivo.
+        - Deve ser possível compartilhar por e-mail ou salvo em nuvem.
+
+    Além disso, deve ser possível restaurar o sistema através desse arquivo de backup.
+        - Deve ter, portanto, uma opção de Importar Backup além do Exportar Backup, o qual vai ler o arquivo e cadastrar todos os dados.
+        - Na hora de importar, ele vai excluir os dados atuais e voltar o sistema para os dados do backup.
+        - O backup deve ser de todos os dados, ou seja, todas as tabelas
+        - Deve solicitar a autenticação local do dispositivo antes de restaurar o backup (senha, facial etc)
+
+    Botão para voltar às configurações iniciais.
+        - Em configurações ter um botão para voltar às configurações de fábrica, vai apagar tudo. Pedir confirmação e deixar isso claro ao usuário (mensagem).
+        - Da mesma forma que o restaurar backup, pedir autenticação local. Deve exibir a mensagem de boas vindas nesse caso após a reinicialização.    
+
 - Incremento 3:
     -Bugs Encontrados:
         - Novo Agendamento
