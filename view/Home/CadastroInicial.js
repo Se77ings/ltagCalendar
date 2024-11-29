@@ -128,7 +128,7 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 	const textColor2 = theme === "dark" ? "white" : "white";
 
 	const fundoInput = theme === "dark" ? "#020C2A" : "white";
-	const ColorInput = theme === "dark" ? "#666699" : "white";
+	const ColorInput = theme === "dark" ? "#666699" : "black";
 	const buttons = theme === "dark" ? "#020C2A" : "#666699";
 	const fundoTheme = theme === "dark" ? "#001a66" : "#2F407A";
 
@@ -139,10 +139,9 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 			<Text style={{ textAlign: "center", color:textColor2}}>Agora, você precisa informar alguns dados iniciais</Text>
 			<FloatingLabelInput
 				labelStyles={styles.labelStyle}
-				
 				containerStyles={[styles.input, {backgroundColor:fundoInput}]}
 				label="Nome do Estabelecimento"
-				inputStyles={{color:'white'}}
+				inputStyles={theme == 'dark' ? {color:'white'}:{color:'black'}}
 				value={formData.nome}
 				onChangeText={(value) => handleChange("nome", value)}
 			/>
@@ -150,7 +149,7 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 			<FloatingLabelInput
 				keyboardType="numeric"
 				hint="(17) 9999-9999"
-				inputStyles={{color:'white'}}
+				inputStyles={theme == 'dark' ? {color:'white'}:{color:'black'}}
 				labelStyles={styles.labelStyle}
 				containerStyles={[styles.input, {backgroundColor:fundoInput}]}
 				label="Telefone"
@@ -163,7 +162,7 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 				containerStyles={[styles.input, {backgroundColor:fundoInput}]}
 				label="Endereço"
 				hint="Opcional"
-				inputStyles={{color:'white'}}
+				inputStyles={theme == 'dark' ? {color:'white'}:{color:'black'}}
 				value={formData.endereco}
 				onChangeText={(value) => handleChange("endereco", value)}
 			/>

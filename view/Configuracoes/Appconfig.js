@@ -9,9 +9,9 @@ import { clearDatabase, exportDB, importDb } from "../../assets/global/functions
 import { useNavigation } from "@react-navigation/native";
 
 const AppConfig = () => {
-	const { theme, toggleTheme } = useTheme();
 	const [isLoading, setIsLoading] = useState(false);
-	const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
+
+	const { theme, toggleTheme } = useTheme();
 	const textColor = theme === "dark" ? "white" : "white";
 	const textColor2 = theme === "dark" ? "white" : "black";
 	const FundoThema = theme === "dark" ? "#020C2A" : "red";
@@ -66,7 +66,7 @@ const AppConfig = () => {
 					<View style={styles.childContainer}>
 						<Text>Escolher entre opções de tema</Text>
 						<TouchableOpacity
-							style={[styles.button, { backgroundColor: "#2F407A" }]}
+							style={[styles.button, { backgroundColor: "#2F407A"}]}
 							onPress={() => Alert.alert("nada ainda")}>
 							<Text style={{ color: textColor }}>Alterar Tema</Text>
 							<Ionicons

@@ -200,7 +200,8 @@ const styles = StyleSheet.create({
 		marginRight: 15,
 	},
 	info: {
-		flex: 1,
+		marginLeft:15,
+		flex: 1
 	},
 	nome: {
 		fontSize: 18,
@@ -210,12 +211,10 @@ const styles = StyleSheet.create({
 	horario: {
 		fontSize: 16,
 		color: "#555",
-		marginVertical: 5,
 	},
 	data: {
 		fontSize: 16,
 		color: "#555",
-		marginVertical: 5,
 		fontWeight: "600",
 		color: "#000000",
 	},
@@ -225,13 +224,11 @@ const styles = StyleSheet.create({
 		paddingTop: 2,
 	},
 	botoes: {
+		gap:10,
 		flexDirection: "column",
-		justifyContent: "space-between",
 	},
 	botao: {
-		padding: 10,
 		borderRadius: 10,
-		marginVertical: 5,
 	},
 
 	textoBotao: {

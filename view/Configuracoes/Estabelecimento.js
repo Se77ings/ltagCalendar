@@ -144,7 +144,7 @@ const Estabelecimento = () => {
 	const { theme, toggleTheme } = useTheme();
 	const textColor = theme === "dark" ? "white" : "001a66";
 	const fundoInput = theme === "dark" ? "#2F407A" : "white";
-	const ColorInput = theme === "dark" ? "white" : "white";
+	const ColorInput = theme === "dark" ? "white" : "black";
 	const buttons = theme === "dark" ? "#020C2A" : "white";
 
 
