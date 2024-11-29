@@ -1,7 +1,8 @@
 import * as SQLite from "expo-sqlite";
+import { db } from "./database";
 
 export async function CriarEstabelecimento(estabelecimento) {
-  const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
+  // const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
   const result = await db.runAsync(
     "INSERT INTO Estabelecimento (Nome, Telefone, Endereco, Logo) VALUES (?, ?, ?, ?);",
     estabelecimento.nome,
@@ -12,7 +13,7 @@ export async function CriarEstabelecimento(estabelecimento) {
 }
 
 export async function ObterEstabelecimento() {
-  const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
+  // const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
   const result = await db.getFirstAsync(
     "SELECT * FROM Estabelecimento;");
   return result;
@@ -20,7 +21,7 @@ export async function ObterEstabelecimento() {
 
 export async function AtualizarEstabelecimento(estabelecimento) {
   
-  const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
+  // const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
   await db.runAsync(
     "UPDATE Estabelecimento SET Nome = ?, Telefone = ?, Endereco = ?, Logo = ? WHERE id = ?;",
     estabelecimento.nome,

@@ -17,6 +17,9 @@ import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para ac
 import { TourGuideProvider, TourGuideZone, TourGuideZoneByPosition, useTourGuideController } from "rn-tourguide";
 import CadastroInicial from "./CadastroInicial";
 import { ObterEstabelecimentoAsync } from "../../services/estabelecimentoService";
+import * as FileSystem from "expo-file-system";
+import { db } from "../../database/database";
+import { clearDatabase, importDb } from "../../assets/global/functions";
 
 const formatarData = (data) => {
 	const partes = data.split("-");
@@ -231,9 +234,12 @@ const Cards = ({ img, data, setAgendamentoSelecionado, setmodalCreate, obter, se
 	};
 
 	const renderAgendamento = ({ item }) => (
-		<View style={[[styles.agendamento, {backgroundColor:'white', height:100}], item.Finalizado ? styles.agendamentoFinalizado : isPast(formatarData(item.Data), item.Hora) ? styles.agendamentoAtrasado : null]}>
-			<View style={{width:70,height:70, padding:5}}>
-				<Image source={img} style={styles.imagemServico}/>
+		<View style={[[styles.agendamento, { backgroundColor: "white", height: 100 }], item.Finalizado ? styles.agendamentoFinalizado : isPast(formatarData(item.Data), item.Hora) ? styles.agendamentoAtrasado : null]}>
+			<View style={{ width: 70, height: 70, padding: 5 }}>
+				<Image
+					source={img}
+					style={styles.imagemServico}
+				/>
 			</View>
 			<View style={styles.info}>
 				<Text style={styles.nome}>{item.Nome}</Text>
@@ -299,15 +305,19 @@ const Home = ({ navigation }) => {
 	const [animatedHeight] = useState(new Animated.Value(0));
 	const [showAtendidos, setShowAtendidos] = useState(false);
 	const [atendidosHeight, setAtendidosHeight] = useState(0);
+	const [dbCreated, setDbCreated] = useState(false);
 	const [primeiraInicializacao, setPrimeiraInicializacao] = useState(false);
+
 	//hooks de controle do tour:
 	const { canStart, start, stop, eventEmitter } = useTourGuideController();
 
 	async function obter() {
-		await setAgendamentos([]);
-		var result = await obterAgendamentos();
-		setAgendamentos(result.data);
-		getAtendidosHeight(result.data.filter((agendamento) => agendamento.Finalizado === 1).length);
+		if (dbCreated) {
+			await setAgendamentos([]);
+			var result = await obterAgendamentos();
+			setAgendamentos(result.data);
+			getAtendidosHeight(result.data.filter((agendamento) => agendamento.Finalizado === 1).length);
+		}
 	}
 
 	useFocusEffect(
@@ -343,10 +353,22 @@ const Home = ({ navigation }) => {
 
 	const initialize = async () => {
 		try {
-			await initializaDatabase();
+			const databasePath = FileSystem.documentDirectory + "SQLite/ltagDatabase.db";
+
+			// Verificar se o arquivo do banco já existe
+			const dbExists = (await FileSystem.getInfoAsync(databasePath)).exists;
+
+			if (dbExists) {
+				console.log("Banco de dados já existe. Inicializando...");
+			} else {
+				console.log("Banco de dados não encontrado. Criando um novo...");
+				await initializaDatabase();
+			}
+			setDbCreated(true);
 			console.log("Banco de dados inicializado com sucesso.");
 		} catch (error) {
 			console.error("Erro ao inicializar o banco de dados:", error);
+			setDbCreated(false);
 		}
 	};
 
@@ -396,9 +418,8 @@ const Home = ({ navigation }) => {
 	// Criar uma tela de controle de ramos (CRUD)
 
 	useEffect(() => {
-
-
-		if (canStart) {
+		if (canStart && dbCreated) {
+			
 			eventEmitter.on("stepChange", handleOnStepChange);
 			ObterEstabelecimentoAsync().then((result) => {
 				if (result.success) {
@@ -411,8 +432,9 @@ const Home = ({ navigation }) => {
 				//Tour finalizado
 				setPrimeiraInicializacao(true);
 			});
+			obter();
 		}
-	}, [canStart]);
+	}, [canStart, dbCreated]);
 
 	function handleOnStepChange(step) {
 		if (step !== undefined && step !== null) {
@@ -433,6 +455,10 @@ const Home = ({ navigation }) => {
 	// Estilos baseados no tema atual
 	const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
 	const textColor = theme === "dark" ? "white" : "black";
+
+	const handleImportDB = async () => {
+		importDb();
+	};
 
 	return (
 		<>
@@ -566,6 +592,16 @@ const Home = ({ navigation }) => {
 				<Pressable
 					onPress={() => Keyboard.dismiss()}
 					style={{ backgroundColor: "rgba(0,0,0,0.5)", height: "100%", flex: 1, justifyContent: "center", padding: 8 }}>
+					<Pressable
+						style={{ padding: 20, backgroundColor: "red", position: "absolute", width: "100%", top: 10, alignSelf: "center", flex: 1, flexDirection: "row", justifyContent: "space-between" }}
+						onPress={handleImportDB}>
+						<Text style={{ alignSelf: "center" }}>Importar Banco de Dados</Text>
+						<Ionicons
+							name="cloud-upload-outline"
+							size={30}
+							color={textColor}
+						/>
+					</Pressable>
 					<Pressable style={{ padding: 5, borderRadius: 6 }}>
 						<CadastroInicial setPrimeiraInicializacao={setPrimeiraInicializacao} />
 					</Pressable>

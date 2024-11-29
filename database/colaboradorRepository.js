@@ -1,13 +1,14 @@
 import * as SQLite from "expo-sqlite";
+import { db } from "./database";
 
 export default async function CriarColaborador(colaborador) {
-	const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
+	// const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
 	let insertedId = await db.runAsync("INSERT INTO colaborador (Nome) VALUES (?);", colaborador.nome);
 	return insertedId.lastInsertRowId;
 }
 
 export async function ObterColaboradoresPorServico(servicoId) {
-	const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
+	// const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
 	const result = await db.getAllAsync(
 		`
         SELECT 
@@ -24,7 +25,7 @@ export async function ObterColaboradoresPorServico(servicoId) {
 }
 
 export async function ObterColaboradores() {
-	const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
+	// const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
 	const result = await db.getAllAsync(
 		`
         SELECT 
@@ -40,11 +41,11 @@ export async function ObterColaboradores() {
 }
 
 export async function RemoverColaborador(id) {
-	const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
+	// const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
 	await db.runAsync("DELETE FROM colaborador WHERE id = ?;", id);
 }
 
 export async function AtualizarColaborador(colaborador) {
-	const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
+	// const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
 	await db.runAsync("UPDATE colaborador SET Nome = ? WHERE id = ?;", colaborador.nome, colaborador.id);
 }

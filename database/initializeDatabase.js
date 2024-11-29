@@ -1,7 +1,8 @@
 import * as SQLite from "expo-sqlite";
+import { db } from "./database";
 
 export default async function initializaDatabase() {
-  const db = await SQLite.openDatabaseAsync("ltagDatabase");
+  // const db = await SQLite.openDatabaseAsync("ltagDatabase");
   
   await db.execAsync(`
 
