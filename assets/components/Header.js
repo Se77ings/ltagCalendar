@@ -8,16 +8,20 @@ import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para ac
 import { ObterEstabelecimentoAsync } from "../../services/estabelecimentoService";
 
 const Header = ({ title, primeiraInicializacao }) => {
+  const { themeAuto, togglethemeAuto } = useTheme();
   const { theme, toggleTheme } = useTheme();
   const [estabelecimento, setEstabelecimento] = useState(null);
 
   // Estilos baseados no tema atual
-  const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
-  const textColor = theme === "dark" ? "white" : "black";
+  const textColor = theme === "dark" ? "white" : "dark";
+  const textColor2 = theme === "dark" ? "black" : "white";
+
   const ToggleThema = () => {
     if (theme === "dark") {
       toggleTheme("light");
     } else if (theme === "light") {
+      toggleTheme("auto");
+    }else{
       toggleTheme("dark");
     }
   };
@@ -63,8 +67,13 @@ const Header = ({ title, primeiraInicializacao }) => {
               <Text style={styles.shopName_}>{title}</Text>
             </View>
             {/* <Text style={styles.shopName_}>SEJA BEM-VINDO!!</Text> */}
-            <View style={{ marginLeft: 25 }}>
-              <Ionicons name="contrast-outline" size={25} color="white" onPress={ToggleThema} />
+            <View style={{ marginLeft: 25, backgroundColor:textColor, justifyContent:'center', borderRadius:100, height:25}}>
+              {theme != 'auto'? 
+              (<Ionicons name="contrast-outline" size={25} color={textColor2} onPress={ToggleThema} />) 
+              : 
+              (<Text onPress={ToggleThema} style={{paddingLeft:7, paddingRight:7, fontWeight:"bold"}}>AUTO</Text>)
+               }
+              <Text>{theme}</Text>
             </View>
           </View>
         </View>

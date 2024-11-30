@@ -493,7 +493,7 @@ const Home = ({ navigation }) => {
 								size={20}
 								color="#312fbf"
 							/>
-							<Text style={{ marginHorizontal: 40, marginVertical: 15 }}>Agendamentos atendidos</Text>
+							<Text style={{ marginHorizontal: 40, marginVertical: 15, color:textColor}}>Agendamentos atendidos</Text>
 							<Ionicons
 								name={showAtendidos ? "arrow-up" : "arrow-down"}
 								size={20}
@@ -514,7 +514,7 @@ const Home = ({ navigation }) => {
 										obter={obter}
 									/>
 
-									<View style={{ width: "80%", borderWidth: 0.5, alignSelf: "center" }} />
+									<View style={{ width: "80%", borderWidth: 0.5, alignSelf: "center", backgroundColor:textColor}} />
 								</>
 							)}
 						</View>

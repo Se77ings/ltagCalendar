@@ -248,7 +248,7 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
 	const textColor2 = theme === "dark" ? "white" : "white";
 
 	const fundoInput = theme === "dark" ? "#2F407A" : "white";
-	const ColorInput = theme === "dark" ? "#666699" : "white";
+	const ColorInput = theme === "dark" ? "#666699" : "black";
 	const buttons = theme === "dark" ? "#2F407A" : "#312fbf";
 	const fundoTheme = theme === "dark" ? "#001a66" : "#2F407A";
 
@@ -316,9 +316,9 @@ export default function NovoAgendamento({ fecharModal, AgendamentoSelecionado, o
                   <Ionicons name="close" size={24} color="#fff" />
                 </TouchableOpacity>
               )}
-              <FloatingLabelInput labelStyles={styles.labelStyle}	inputStyles={{color:'white'}} containerStyles={[styles.input, {backgroundColor:fundoInput}]} onChangeText={handleChange("Nome")} value={values.Nome} label="Nome" />
+              <FloatingLabelInput labelStyles={styles.labelStyle}	inputStyles={theme == "dark"? {color:'white'}:{color:'black'}} containerStyles={[styles.input, {backgroundColor:fundoInput}]} onChangeText={handleChange("Nome")} value={values.Nome} label="Nome" />
               {errors.Nome && touched.Nome ? <Text style={styles.error}>{errors.Nome}</Text> : null}
-              <FloatingLabelInput labelStyles={styles.labelStyle} inputStyles={{color:'white'}} containerStyles={[styles.input,{backgroundColor:fundoInput}]} onChangeText={handleChange("Telefone")} value={values.Telefone} label="Telefone" keyboardType="numeric" />
+              <FloatingLabelInput labelStyles={styles.labelStyle} inputStyles={theme == "dark"? {color:'white'}:{color:'black'}} containerStyles={[styles.input,{backgroundColor:fundoInput}]} onChangeText={handleChange("Telefone")} value={values.Telefone} label="Telefone" keyboardType="numeric" />
               {errors.Telefone && touched.Telefone ? <Text style={styles.error}>{errors.Telefone}</Text> : null}
               {show && <DateTimePicker testID="dateTimePicker" value={date} mode="date" is24Hour={true} display="calendar" onChange={onChange} style={[styles.datePicker, {color:'red'}]} />}
               <Pressable
@@ -409,7 +409,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     color: "black",
   },
-
   error: {
     color: "red",
     padding: 0,
