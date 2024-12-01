@@ -33,13 +33,10 @@ export async function DesvincularAgendamentoServicos(agendamentoId) {
 }
 
 export async function VincularAgendamentoServicos(agendamentoId, servicoId) {
-  // const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
-
   await db.runAsync("INSERT INTO AgendamentoServicos (AgendamentoId, ServicoId) VALUES (?, ?);", agendamentoId, servicoId);
 }
 
 export async function ObterAgendamentos() {
-  // const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
   const allRows = await db.getAllAsync("SELECT * FROM agendamento ORDER BY Data DESC, Hora ASC;");
   return allRows;
 }
@@ -51,19 +48,20 @@ export async function obterServicosColaboradoresPorAgendamento(agendamentoId) {
   return { servicos: servicos, colaboradores: colaboradores };
 }
 
+export async function obterServicosPorAgendamento(agendamentoId) {  
+  const servicos = await db.getAllAsync(`SELECT s.Nome FROM AgendamentoServicos agServ LEFT JOIN servico s ON agServ.ServicoId = s.id WHERE agServ.AgendamentoId = ?`, agendamentoId);
+  return servicos.map(servico => servico.Nome);
+}
+
 export async function RemoverAgendamento(id) {
-  // const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
   await db.runAsync("DELETE FROM agendamento WHERE id = ?;", id);
 }
 
 export async function AtualizarAgendamento(agendamento) {
-  // const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
   await db.runAsync("UPDATE agendamento SET Nome = ?, Telefone = ?, data = ?, hora = ? WHERE id = ?;", agendamento.nome, agendamento.telefone, agendamento.data, agendamento.hora, agendamento.id);
 }
 
 export async function ObterAgendamentosPaginado(pagina = 1, limite = 2) {
-  // const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
-
   const offset = (pagina - 1) * limite;
 
   const result = await db.getAllAsync(`SELECT * FROM agendamento ORDER BY Data DESC LIMIT ? OFFSET ?`, [limite, offset]);
@@ -72,8 +70,6 @@ export async function ObterAgendamentosPaginado(pagina = 1, limite = 2) {
 }
 
 export async function VerificarDuplicados(data, hora, id = null) {
-  // const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
-
   const query = id ? `SELECT COUNT(*) as total FROM agendamento WHERE data = ? AND hora = ? AND id != ?` : `SELECT COUNT(*) as total FROM agendamento WHERE data = ? AND hora = ?`;
 
   const params = id ? [data, hora, id] : [data, hora];

@@ -70,5 +70,14 @@ export default async function initializaDatabase() {
       Endereco TEXT,
       Logo BLOB    
     );
+
+    CREATE TABLE IF NOT EXISTS MensagemAgendamento (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      Mensagem TEXT NOT NULL  
+    );
+
+    INSERT INTO MensagemAgendamento (Mensagem)
+    SELECT 'Olá, {Nome}, você tem um atendimento às {Data} {Hora}!'
+    WHERE NOT EXISTS (SELECT 1 FROM MensagemAgendamento LIMIT 1);
   `);
 }

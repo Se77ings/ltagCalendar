@@ -1,4 +1,4 @@
-import CriarAgendamento, { AtualizarAgendamento, DesvincularAgendamentoServicos, DesvincularAtendimentoColaboradores, ObterAgendamentos, ObterAgendamentosPaginado, obterServicosColaboradoresPorAgendamento, RealizarAtendimento, RemoverAgendamento, VerificarDuplicados, VincularAgendamentoServicos, VincularAtendimentoColaboradores } from "../database/agendamentoRepository";
+import CriarAgendamento, { AtualizarAgendamento, DesvincularAgendamentoServicos, DesvincularAtendimentoColaboradores, ObterAgendamentos, ObterAgendamentosPaginado, obterServicosColaboradoresPorAgendamento, obterServicosPorAgendamento, RealizarAtendimento, RemoverAgendamento, VerificarDuplicados, VincularAgendamentoServicos, VincularAtendimentoColaboradores } from "../database/agendamentoRepository";
 import { RemoverServico } from "../database/servicoRepository";
 
 export default async function adicionarAgendamento(agendamento) {
@@ -154,6 +154,24 @@ export async function obterAgendamentos() {
 export async function obterServicosColaboradoresPorAgendamentoAsync(id) {
 	try {
 		results = await obterServicosColaboradoresPorAgendamento(id);
+		return {
+			success: true,
+			data: results,
+			error: null,
+		};
+	} catch (error) {
+		console.error("Erro ao obter agendamento:", error);
+		return {
+			success: false,
+			data: null,
+			error: "Erro ao obter agendamentos",
+		};
+	}
+}
+
+export async function obterServicosPorAgendamentoAsync(id) {
+	try {
+		results = await obterServicosPorAgendamento(id);
 		return {
 			success: true,
 			data: results,
