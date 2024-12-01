@@ -116,12 +116,18 @@ export default function DetalhesAtendimento() {
           animationType="fade"
           onRequestClose={() => setModalVisible(false)}
         >
-          <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: transparentBG }}>
-            <View style={{ width: '80%', backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-            
-            <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 15 }}>
-              Variáveis
-            </Text> 
+          <TouchableOpacity 
+            style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: transparentBG }}
+            activeOpacity={1} 
+            onPress={() => setModalVisible(false)}
+          >
+            <TouchableOpacity 
+              style={{ width: '80%', backgroundColor: 'white', padding: 20, borderRadius: 10 }}
+              activeOpacity={1} 
+            >
+              <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 15 }}>
+                Variáveis
+              </Text> 
 
               <FlatList
                 data={variaveis}
@@ -135,9 +141,10 @@ export default function DetalhesAtendimento() {
                 keyExtractor={item => item.id}
                 keyboardShouldPersistTaps="handled"
               />
-            </View>
-          </View>
+            </TouchableOpacity>
+          </TouchableOpacity>
         </Modal>
+
 
       </View>
     </KeyboardAvoidingView>

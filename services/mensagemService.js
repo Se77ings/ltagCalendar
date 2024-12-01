@@ -65,9 +65,10 @@ async function buscarServicos(id) {
 
 function substituirVariaveis(mensagem, atendimento) {
   return mensagem
-    .replace('{Nome}', atendimento.Nome)
-    .replace('{Data}', atendimento.Data)
-    .replace('{Hora}', atendimento.Hora);
+  .replace(/{Nome}/g, atendimento.Nome)
+  .replace(/{Servico}/g, atendimento.Servico)
+  .replace(/{Data}/g, atendimento.Data)
+  .replace(/{Hora}/g, atendimento.Hora);
 }
 
 function formatarServicos(servicos) {
@@ -89,7 +90,7 @@ export async function ObterMensagemFormatadaAsync(atendimento) {
 
       const servicosConcatenados = formatarServicos(servicos);
       console.log(servicosConcatenados);
-      mensagem = mensagem.replace('{Serviço}', servicosConcatenados);
+      mensagem = mensagem.replace(/{Serviço}/g, servicosConcatenados);
 
     }
 
