@@ -9,6 +9,7 @@ import Servicos from "./Servicos";
 import Estabelecimento from "./Estabelecimento";
 import { TourGuideProvider, TourGuideZone } from "rn-tourguide";
 import AppConfig from "./Appconfig";
+import DetalhesAtendimento from "./GerenciarMensagem";
 
 const Stack = createStackNavigator();
 
@@ -39,6 +40,9 @@ const ConfigScreen = ({ navigation }) => {
           <TourGuideZone zone={7} text="Nessa área, você conseguirá alterar o tema do aplicativo, e também fazer alterações na base de dados do aplicativo" style={{ justifyContent: "center", width: "50%", borderRadius:10}}>
               <Card title={"Aplicativo"} icon={"phone-portrait-outline"} screen={"AppConfig"}/>
           </TourGuideZone>
+          <TourGuideZone zone={5} text="Teste" style={{ justifyContent: "center", width: "50%", borderRadius:10 }}>
+            <Card title={"Mensagem"} icon={"construct-outline"} screen="DetalhesAtendimento" />
+          </TourGuideZone>
         </View>
       </View>
     </>
@@ -53,6 +57,11 @@ const Config = () => {
       <Stack.Screen name="Servicos" component={Servicos} options={{ headerShown: true, headerTitle: "Serviços", headerTitleAlign: "center" }} />
       <Stack.Screen name="Estabelecimento" component={Estabelecimento} options={{ headerShown: true, headerTitle: "Estabelecimento", headerTitleAlign: "center" }} />
       <Stack.Screen name="AppConfig"  component={AppConfig} options={{ headerShown: true, headerTitle: "Configurações do Aplicativo", headerTitleAlign: "center"}}   />
+      <Stack.Screen 
+        name="DetalhesAtendimento" 
+        component={DetalhesAtendimento} 
+        options={{ headerShown: true, headerTitle: "DetalhesAtendimento", headerTitleAlign: "center" }} 
+      />
     </Stack.Navigator>
   );
 };

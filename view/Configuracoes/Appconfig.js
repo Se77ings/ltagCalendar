@@ -106,7 +106,7 @@ const AppConfig = () => {
 							onPress={handleClearDB}>
 							<Text style={{ color: textColor }}>Limpar Banco de Dados</Text>
 						</TouchableOpacity>
-					</View>
+					</View>				
 				</View>
 			</View>
 		</>
