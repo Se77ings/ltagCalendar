@@ -15,6 +15,8 @@ import { RootSiblingParent } from 'react-native-root-siblings';
 function App() {
 	const { theme, toggleTheme } = useTheme(); // Consumindo o contexto
 	const Tab = createBottomTabNavigator();
+	const { themeAuto, togglethemeAuto } = useTheme();
+
 
 	const DarkTheme = {
 		dark: true,
@@ -27,6 +29,7 @@ function App() {
 		  notification: 'rgb(255, 69, 58)',
 		},
 	  };
+
 	return (
 		<SafeAreaView style={{ flex: 1 }}>
 			<StatusBar
@@ -43,7 +46,11 @@ function App() {
 						finish: "Finalizar",
 					},
 				}}>
-				<NavigationContainer theme={theme === "dark" ? DarkTheme : DefaultTheme}>
+				<NavigationContainer theme={theme === "dark"
+					? DarkTheme
+					: theme === "ligth"
+					? DefaultTheme
+					: themeAuto}>
 					<Tab.Navigator
 						initialRouteName="Main"
 						screenOptions={{ tabBarStyle: { backgroundColor: "#001a66", padding: 2, height: 60}, lazy: false }}>

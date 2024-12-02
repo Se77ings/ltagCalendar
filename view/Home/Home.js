@@ -309,7 +309,6 @@ const Home = ({ navigation }) => {
 		await setAgendamentos([]);
 		var result = await obterAgendamentos();
 		setAgendamentos(result.data);
-		console.log("result--->", result)
 		getAtendidosHeight(result.data.filter((agendamento) => agendamento.Finalizado === 1).length);
 	}
 

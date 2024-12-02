@@ -33,8 +33,6 @@ function validarColaborador(colaborador) {
 }
 
 export async function AtualizarColaboradorAsync(colaborador) {
-  console.log("========== Atualizeei! ==========");
-  console.log(colaborador);
   try {
     validarColaborador(colaborador);
 

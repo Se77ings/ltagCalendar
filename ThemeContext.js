@@ -7,7 +7,6 @@ const ThemeContext = createContext();
 // Provider para gerenciar o estado do tema
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(useColorScheme()); // Definindo o tema inicial
-  console.log(theme);
   const toggleTheme = () => {
     setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
   };

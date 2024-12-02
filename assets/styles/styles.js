@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
 	cardStyle: {
 		flexDirection: "col",
 		width: "100%",
-		height: 100,
+		height: 85,
 		justifyContent: "center",
 		alignItems: "center",
 		borderRadius: 12,
@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
 
 	container: {
 		height: "100%",
-		borderColor: "red",
 	},
 	headerContainer: {
 		borderBottomLeftRadius: 40,
