@@ -451,6 +451,8 @@ const Home = ({ navigation }) => {
 					if (result.data == null) {
 						start();
 					}
+				}else{
+					return;
 				}
 			});
 			eventEmitter.on("stop", () => {
@@ -527,7 +529,7 @@ const Home = ({ navigation }) => {
 						/> */}
 						<Text style={[styles.titulo, { color: textColor }]}>MEUS AGENDAMENTOS</Text>
 					</View>
-					{filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (
+					{agendamentos && filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (
 						<Pressable
 							style={{ flex: 1, flexDirection: "row", alignSelf: "center", justifyContent: "space-around", alignItems: "center"}}
 							onPress={toggleAtendidos}>
@@ -562,7 +564,7 @@ const Home = ({ navigation }) => {
 							)}
 						</View>
 					</Animated.View>
-					{filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 0)).length != 0 ? (
+					{agendamentos && filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 0)).length != 0 ? (
 						<>
 							<Cards
 								img={calendario}

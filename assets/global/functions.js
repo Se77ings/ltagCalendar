@@ -5,7 +5,7 @@ import * as LocalAuthentication from "expo-local-authentication";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
-import { db } from "../../database/database";
+import { db, initialize } from "../../database/database";
 import { ObterEstabelecimentoAsync } from "../../services/estabelecimentoService";
 
 export const formatPhoneNumber = (input) => {
@@ -130,13 +130,36 @@ export const importDb = async () => {
 			} else {
 				console.log("Diretório não existe, criando novo.");
 				// await FileSystem.makeDirectoryAsync(databasePath);
-				await updateDatabase(result.assets[0].uri, databasePath);
+				let response = await updateDatabase(result.assets[0].uri, databasePath);
+				if (response) {
+					//aqui tem que reiniciar o aplicativo
+					return true;
+				} else {
+					Toast.show("Erro ao importar o banco de dados", {
+						duration: Toast.durations.LONG,
+						position: Toast.positions.BOTTOM,
+						shadow: true,
+						animation: true,
+						hideOnPress: false,
+						textColor: "white",
+						backgroundColor: "red",
+					});
+				}
 			}
 		} catch (error) {
 			console.error("Erro ao importar o banco de dados:", error);
 		}
 	} else {
-		Alert.alert("Erro ao abrir arquivo", "O arquivo selecionado é inválido ou o processo foi cancelado.");
+		// Alert.alert("Erro ao abrir arquivo", "O arquivo selecionado é inválido ou o processo foi cancelado.");
+		Toast.show("Erro ao abrir arquivo", {
+			duration: Toast.durations.LONG,
+			position: Toast.positions.BOTTOM,
+			shadow: true,
+			animation: true,
+			hideOnPress: false,
+			textColor: "white",
+			backgroundColor: "red",
+		});
 	}
 };
 
@@ -154,6 +177,14 @@ export const updateDatabase = async (uri, databasePath) => {
 		await FileSystem.writeAsStringAsync(databasePath, base64, {
 			encoding: FileSystem.EncodingType.Base64,
 		});
+		try {
+			await db.closeAsync();
+		} catch {
+			// provavelmente estava caindo aqui por eu não atualizar o app, entao ja estava com um banco fechado, só não atualizado!
+			console.log("db já fechado!");
+		}
+		await SQLite.deleteDatabaseAsync("ltagDatabase");
+		initialize();
 
 		console.log("Banco de dados importado e aberto com sucesso!");
 
@@ -166,8 +197,10 @@ export const updateDatabase = async (uri, databasePath) => {
 			textColor: "white",
 			backgroundColor: "green",
 		});
+		return true;
 	} catch (error) {
 		console.error("Erro ao abrir o banco de dados:", error);
+		return false;
 	}
 };
 
