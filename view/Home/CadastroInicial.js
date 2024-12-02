@@ -94,7 +94,7 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
 		console.log("Dados Iniciais Cadastrados.")
 		if (result.success) {
 			Toast.show("Dados cadastrados com sucesso", {
-				duration: Toast.durations.LONG,
+				duration: Toast.durations.SHORT,
 				position: Toast.positions.BOTTOM,
 				shadow: true,
 				animation: true,

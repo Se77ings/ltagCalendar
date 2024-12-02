@@ -66,6 +66,7 @@ async function editarCompletarAgendamento(fecharModal, id, nome, telefone, data,
 
 async function criarAgendamento(navigation, nome, telefone, data, hora, Colaboradores, servico) {
   try {
+    console.log(servico);
     const agendamento = {
       nome,
       telefone,

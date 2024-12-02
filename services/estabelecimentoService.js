@@ -45,7 +45,12 @@ export async function ObterEstabelecimentoAsync() {
 			error: null,
 		};
 	} catch (error) {
-		console.error("Erro ao obter Estabelecimento:", error);
+		return{
+			success: false,
+			data: null,
+			error: "Erro ao obter Estabelecimento",
+		}
+		// console.error("Erro ao obter Estabelecimento:", error);
 		return {
 			success: false,
 			data: null,

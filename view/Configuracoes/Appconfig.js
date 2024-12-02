@@ -7,20 +7,38 @@ import { ObterServicosPorColaborador, ObterServicosPorFavorito, VincularServicoC
 import adicionarColaborador, { AtualizarColaboradorAsync, ObterTodosColaboradoresComServicosAsync, RemoverColaboradorAsync } from "../../services/colaboradorService";
 import { clearDatabase, exportDB, importDb } from "../../assets/global/functions";
 import { useNavigation } from "@react-navigation/native";
+import * as LocalAuthentication from 'expo-local-authentication';
 
 const AppConfig = () => {
 	const [isLoading, setIsLoading] = useState(false);
 
 	const { theme, toggleTheme } = useTheme();
-	const textColor = theme === "dark" ? "white" : "white";
+	const textColor = theme === "dark" ? "white" : "black";
+	console.log("textColor-> ",textColor);
 	const textColor2 = theme === "dark" ? "white" : "black";
 	const FundoThema = theme === "dark" ? "#020C2A" : "red";
 	const transparentBG = theme === "dark" ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.8)";
+	
 	const navigation = useNavigation();
 
 	const handleImport = async () => {
 		setIsLoading(true);
-		await importDb();
+		LocalAuthentication.authenticateAsync().then((result) => {
+			console.log("Existe success em response? ", result)
+			if (result.success) {
+				console.log("result.success é true")
+				importDb().then((response) => {
+					if (response.success) {
+					setIsLoading(false);
+					navigation.navigate("Home", { screen: "Home" });
+					}
+				});
+			} else {
+				console.log("result.success é false")
+				setIsLoading(false);
+			}
+		});
+		
 		setIsLoading(false);
 	};
 
@@ -68,11 +86,11 @@ const AppConfig = () => {
 						<TouchableOpacity
 							style={[styles.button, { backgroundColor: "#2F407A"}]}
 							onPress={() => Alert.alert("nada ainda")}>
-							<Text style={{ color: textColor }}>Alterar Tema</Text>
+							<Text style={{ color: "white" }}>Alterar Tema</Text>
 							<Ionicons
 								name="contrast-outline"
 								size={30}
-								color={textColor}
+								color={"white"}
 							/>
 						</TouchableOpacity>
 					</View>
@@ -80,22 +98,22 @@ const AppConfig = () => {
 						<Text style={{ color: textColor }}>Banco de Dados</Text>
 						<TouchableOpacity
 							style={[styles.button, { backgroundColor: "#2F407A" }]}
-							onPress={handleExport}>
-							<Text style={{ color: textColor }}>Exportar Banco de Dados</Text>
+							onPress={handleImport}>
+							<Text style={{ color: "white" }}>Importar Banco de Dados</Text>
 							<Ionicons
 								name="cloud-upload-outline"
 								size={30}
-								color={textColor}
+								color={"white"}
 							/>
 						</TouchableOpacity>
 						<TouchableOpacity
 							style={[styles.button, { backgroundColor: "#2F407A" }]}
-							onPress={handleImport}>
-							<Text style={{ color: textColor }}>Importar Banco de Dados</Text>
+							onPress={handleExport}>
+							<Text style={{ color: "white" }}>Exportar Banco de Dados</Text>
 							<Ionicons
 								name="download-outline"
 								size={30}
-								color={textColor}
+								color={"white"}
 							/>
 						</TouchableOpacity>
 					</View>
@@ -104,9 +122,10 @@ const AppConfig = () => {
 						<TouchableOpacity
 							style={[styles.button, { backgroundColor: "#2F407A" }]}
 							onPress={handleClearDB}>
-							<Text style={{ color: textColor }}>Limpar Banco de Dados</Text>
+							<Text style={{ color:"white", width:"100%" }}>Limpar Banco de Dados</Text>
+							
 						</TouchableOpacity>
-					</View>
+					</View>				
 				</View>
 			</View>
 		</>
@@ -158,9 +177,10 @@ const styles = StyleSheet.create({
 		padding: 10,
 		alignItems: "center",
 		marginTop: 10,
-		flex: 1,
+		flexGrow: 1,
 		flexDirection: "row",
 		justifyContent: "space-between",
+		width:"80%"
 	},
 	labelStyle: {
 		paddingHorizontal: 10,

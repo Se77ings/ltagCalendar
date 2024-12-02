@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useContext } from "react";
-import { View, Text, FlatList, TouchableOpacity, ScrollView, Alert, Image, Modal, Pressable, Button, Animated, Keyboard } from "react-native";
+import { View, Text, FlatList, TouchableOpacity, ScrollView, Alert, Image, Modal, Pressable, Button, Animated, Keyboard, Share } from "react-native";
 import moment from "moment";
 import "moment/locale/pt-br";
 import NovoAgendamento from "./NovoAgendamento";
@@ -17,6 +17,8 @@ import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para ac
 import { TourGuideProvider, TourGuideZone, TourGuideZoneByPosition, useTourGuideController } from "rn-tourguide";
 import CadastroInicial from "./CadastroInicial";
 import { ObterEstabelecimentoAsync } from "../../services/estabelecimentoService";
+import * as Clipboard from 'expo-clipboard';
+import { ObterMensagemFormatadaAsync } from "../../services/mensagemService";
 
 const formatarData = (data) => {
 	const partes = data.split("-");
@@ -174,6 +176,29 @@ const Cards = ({ img, data, setAgendamentoSelecionado, setmodalCreate, obter, se
 		);
 	};
 
+	const copiarParaClipboard = async (atendimento) => {
+		let mensagem = await ObterMensagemFormatadaAsync(atendimento);
+
+		Clipboard.setStringAsync(mensagem.data)
+			.then(() => { //TODO: ver com o Gabriel qual toast ta usando e alterar o alert
+			alert("Texto copiado para a área de transferência! (ALTERAR PARA TOAST APÓS CONVERSAR COM GABRIEL)");
+			})
+			.catch((erro) => {
+			console.error("Erro ao copiar para a área de transferência", erro);
+			});
+	  }
+
+	  const compartilharTexto = async (atendimento) => {
+		try {
+			let mensagem = await ObterMensagemFormatadaAsync(atendimento);
+			await Share.share({
+			message: mensagem.data,
+		});
+		} catch (erro) {
+			console.error("Erro ao compartilhar", erro);
+		}
+	}
+
 	const editarAgendamento = (item) => {
 		setAgendamentoSelecionado(item);
 		setOption("Editar");
@@ -271,6 +296,24 @@ const Cards = ({ img, data, setAgendamentoSelecionado, setmodalCreate, obter, se
 							<Ionicons
 								name="checkmark"
 								color={"#008000"}
+								size={22}
+							/>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.botao, {}]}
+							onPress={() => copiarParaClipboard(item)}>
+							<Ionicons
+								name="clipboard-outline"
+								color={"#0045a0"}
+								size={22}
+							/>
+						</TouchableOpacity>
+						<TouchableOpacity
+							style={[styles.botao, {}]}
+							onPress={() => compartilharTexto(item)}>
+							<Ionicons
+								name="share-social-outline"
+								color={"#0045a0"}
 								size={22}
 							/>
 						</TouchableOpacity>
@@ -407,6 +450,8 @@ const Home = ({ navigation }) => {
 					if (result.data == null) {
 						start();
 					}
+				}else{
+					return;
 				}
 			});
 			eventEmitter.on("stop", () => {
@@ -483,7 +528,7 @@ const Home = ({ navigation }) => {
 						/> */}
 						<Text style={[styles.titulo, { color: textColor }]}>MEUS AGENDAMENTOS</Text>
 					</View>
-					{filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (
+					{agendamentos && filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 1)).length != 0 && (
 						<Pressable
 							style={{ flex: 1, flexDirection: "row", alignSelf: "center", justifyContent: "space-around", alignItems: "center"}}
 							onPress={toggleAtendidos}>
@@ -518,7 +563,7 @@ const Home = ({ navigation }) => {
 							)}
 						</View>
 					</Animated.View>
-					{filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 0)).length != 0 ? (
+					{agendamentos && filterAgendamentos(agendamentos.filter((agendamento) => agendamento.Finalizado === 0)).length != 0 ? (
 						<>
 							<Cards
 								img={calendario}

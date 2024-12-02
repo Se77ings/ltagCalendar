@@ -222,10 +222,16 @@ const styles = StyleSheet.create({
 		color: "#555",
 		paddingTop: 2,
 	},
+	// botoes: {
+	// 	gap:10,
+	// 	flexDirection: "column",
+	// },
 	botoes: {
-		gap:10,
-		flexDirection: "column",
-	},
+		gap: 10,
+		flexDirection: 'row',    // Organiza os ícones em linha
+		flexWrap: 'wrap',        // Permite que os ícones que não couberem quebrem para a linha seguinte
+		justifyContent: 'space-between', // Espaça os itens de forma adequada
+	  }, //TODO: ver se é a melhor forma depois com o pessoal, precisa exibir mais botões
 	botao: {
 		borderRadius: 10,
 	},
