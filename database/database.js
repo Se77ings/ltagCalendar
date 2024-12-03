@@ -1,21 +1,38 @@
 // import * as SQLite from "expo-sqlite";
+// let db = "";
+// function initialize() {
+//   console.log("\t\t Initialize database chamado!!!!");
+//   db = SQLite.openDatabaseSync("ltagDatabase");
+//   if (db) {
+//     console.log("is db open ");
+//   } else {
+//     console.log("db is null");
+//   }
+// }
+// initialize();
 
-// // Inicializando DB
-
-// export const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
+// export { db, initialize };
 
 import * as SQLite from "expo-sqlite";
-let db = "";
-function initialize() {
-    console.log("\t\t Initialize database chamado!!!!");
-	db = SQLite.openDatabaseSync("ltagDatabase");
-    if(db){
-        console.log("is db open ");
-    }else{
-        console.log("db is null");
-    }
-}
-initialize();
 
-// Inicializa e exporta a conexão com o banco
-export { db, initialize };
+let db;
+
+function initialize(databaseName = "ltagDatabase") {
+  console.log("\t\t Initialize database chamado!!!!");
+  db = SQLite.openDatabaseSync(databaseName);
+  if (db) {
+    console.log("Banco de dados inicializado com sucesso.");
+  } else {
+    console.error("Erro ao inicializar o banco de dados.");
+  }
+}
+
+function getDatabaseInstance() {
+  if (!db) {
+    console.log("Banco de dados não inicializado. Chamando initialize.");
+    initialize();
+  }
+  return db;
+}
+
+export { initialize, getDatabaseInstance };

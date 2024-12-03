@@ -45,9 +45,9 @@ const ConfigScreen = ({ navigation }) => {
               <Card title={"ListaClientes"} icon={"phone-portrait-outline"} screen={"ListaClientes"}/>
           </TourGuideZone>
 
-          <TourGuideZone zone={5} text="Teste" style={{ justifyContent: "center", width: "50%", borderRadius:10 }}>
+          {/* <TourGuideZone zone={5} text="Teste" style={{ justifyContent: "center", width: "50%", borderRadius:10 }}>
             <Card title={"Mensagem"} icon={"construct-outline"} screen="GerenciarMensagem" />
-          </TourGuideZone>
+          </TourGuideZone> */}
         </View>
       </View>
     </>
@@ -64,11 +64,11 @@ const Config = () => {
       <Stack.Screen name="AppConfig"  component={AppConfig} options={{ headerShown: true, headerTitle: "Configurações do Aplicativo", headerTitleAlign: "center"}}   />
       <Stack.Screen name="ListaClientes"  component={ListaClientes} options={{ headerShown: true, headerTitle: "Lista de clientes", headerTitleAlign: "center"}}   />
 
-      <Stack.Screen 
+      {/* <Stack.Screen 
         name="GerenciarMensagem" 
         component={DetalhesAtendimento} 
         options={{ headerShown: true, headerTitle: "Gerenciar Mensagem", headerTitleAlign: "center" }} 
-      />
+      /> */}
     </Stack.Navigator>
   );
 };

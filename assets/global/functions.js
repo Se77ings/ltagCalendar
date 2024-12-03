@@ -1,222 +1,236 @@
 import { Alert, Platform } from "react-native";
 import * as SQLite from "expo-sqlite";
 import Toast from "react-native-root-toast";
-import * as LocalAuthentication from "expo-local-authentication";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
-import { db, initialize } from "../../database/database";
-import { ObterEstabelecimentoAsync } from "../../services/estabelecimentoService";
+import { getDatabaseInstance, initialize } from "../../database/database";
+
+const db = getDatabaseInstance();
 
 export const formatPhoneNumber = (input) => {
-	let maskedValue = input;
+  let maskedValue = input;
 
-	maskedValue = input.replace(/\D/g, "").slice(0, 11); // Remove não números e limita a 11 caracteres
-	if (maskedValue.length == 10) {
-		maskedValue = maskedValue.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
-	} else if (maskedValue.length == 11) {
-		maskedValue = maskedValue.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
-	} else {
-		maskedValue = maskedValue.replace(/\D/g, "");
-	}
-	return maskedValue;
+  maskedValue = input.replace(/\D/g, "").slice(0, 11); // Remove não números e limita a 11 caracteres
+  if (maskedValue.length == 10) {
+    maskedValue = maskedValue.replace(/(\d{2})(\d{4})(\d{4})/, "($1) $2-$3");
+  } else if (maskedValue.length == 11) {
+    maskedValue = maskedValue.replace(/(\d{2})(\d{5})(\d{4})/, "($1) $2-$3");
+  } else {
+    maskedValue = maskedValue.replace(/\D/g, "");
+  }
+  return maskedValue;
 };
 
-export const exportDB = async () => {
-	if (Platform.OS === "android") {
-		const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-		if (permissions.granted) {
-			const base64 = await FileSystem.readAsStringAsync(FileSystem.documentDirectory + "SQLite/ltagDatabase", {
-				encoding: FileSystem.EncodingType.Base64,
-			});
-
-			await FileSystem.StorageAccessFramework.createFileAsync(permissions.directoryUri, "ltagDatabase.db", "application/octet-stream")
-				.then(async (uri) => {
-					await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
-					Toast.show("Banco de dados exportado com sucesso", {
-						duration: Toast.durations.LONG,
-						position: Toast.positions.BOTTOM,
-						shadow: true,
-						animation: true,
-						hideOnPress: false,
-						textColor: "white",
-						backgroundColor: "green",
-					});
-				})
-				.catch((e) => {
-					// console.log(e);
-					Alert.alert("Erro ao exportar o banco de dados", "Por favor, escolha outra pasta para realizar esta ação.");
-				});
-		} else {
-			// Alert.alert("Permissão negada", "Por favor, conceda permissão para exportar o banco de dados.");
-			Toast.show("Permissão negada", {
-				duration: Toast.durations.LONG,
-				position: Toast.positions.BOTTOM,
-				shadow: true,
-				animation: true,
-				hideOnPress: false,
-				textColor: "white",
-				backgroundColor: "red",
-			});
-		}
-	} else {
-		try {
-			await Sharing.shareAsync(FileSystem.documentDirectory + "SQLite/ltagDatabase");
-			Toast.show("Banco de dados exportado com sucesso", {
-				duration: Toast.durations.LONG,
-				position: Toast.positions.BOTTOM,
-				shadow: true,
-				animation: true,
-				hideOnPress: false,
-				textColor: "white",
-				backgroundColor: "green",
-			});
-		} catch (e) {
-			// console.log(e);
-			Alert.alert("Erro ao exportar o banco de dados", "Por favor, tente novamente em outro diretório.");
-		}
-	}
+const showToast = (message, type = "success") => {
+  const backgroundColor = type === "success" ? "green" : "red";
+  Toast.show(message, {
+    duration: Toast.durations.LONG,
+    position: Toast.positions.BOTTOM,
+    shadow: true,
+    animation: true,
+    hideOnPress: false,
+    textColor: "white",
+    backgroundColor,
+  });
 };
 
-export const importDb = async () => {
-	let result = await DocumentPicker.getDocumentAsync({
-		copyToCacheDirectory: true,
-	});
-	console.log(result);
+// export const exportDB = async () => {
+//   if (Platform.OS === "android") {
+//     const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+//     if (permissions.granted) {
+//       const base64 = await FileSystem.readAsStringAsync(FileSystem.documentDirectory + "SQLite/ltagDatabase", {
+//         encoding: FileSystem.EncodingType.Base64,
+//       });
 
-	if (result.canceled === false && result.assets[0].uri) {
-		try {
-			console.log("Começando a importação");
+//       await FileSystem.StorageAccessFramework.createFileAsync(permissions.directoryUri, "ltagDatabase.db", "application/octet-stream")
+//         .then(async (uri) => {
+//           await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
 
-			const sqliteDirectory = FileSystem.documentDirectory + "SQLite";
-			const databasePath = sqliteDirectory + "/ltagDatabase.db";
+//           showToast("Banco de dados exportado com sucesso", "success");
+//         })
+//         .catch((e) => {
+//           // console.log(e);
+//           Alert.alert("Erro ao exportar o banco de dados", "Por favor, escolha outra pasta para realizar esta ação.");
+//         });
+//     } else {
+//       showToast("Permissão negada", "error");
+//     }
+//   } else {
+//     try {
+//       await Sharing.shareAsync(FileSystem.documentDirectory + "SQLite/ltagDatabase");
 
-			// Vou mudar a validação, por que aqui sempre vai ser true... pois na primeira inicialização, ja cria o banco antes mesmo de ser possível importar um novo.
-			// const directoryExists = (await FileSystem.getInfoAsync(databasePath)).exists;
+//       showToast("Banco de dados exportado com sucesso", "success");
+//     } catch (e) {
+//       // console.log(e);
+//       Alert.alert("Erro ao exportar o banco de dados", "Por favor, tente novamente em outro diretório.");
+//     }
+//   }
+// };
 
-			const directoryExists = ObterEstabelecimentoAsync().then((estabelecimento) => {
-				if (estabelecimento.data.id) {
-					return true;
-				} else {
-					return false;
-				}
-			});
+export const exportDB = async (compartilhar = false) => {
+  try {
+    const dbPath = FileSystem.documentDirectory + "SQLite/ltagDatabase";
+	console.log("Ao exportar, peguei daqui:");
+	console.log(dbPath);
 
-			if (directoryExists) {
-				Alert.alert("Atenção", "Um banco de dados já existe. Deseja substituí-lo? Os dados atuais serão perdidos.", [
-					{
-						text: "Cancelar",
-						style: "cancel",
-						onPress: () => {
-							console.log("Usuário cancelou a importação.");
-						},
-					},
-					{
-						text: "Aceitar",
-						onPress: async () => {
-							console.log("Usuário aceitou substituir o banco de dados.");
 
-							// Deleta o banco de dados atual
-							const clearDB = await clearDatabase();
-							if (!clearDB) {
-								console.error("Erro ao limpar o banco de dados.");
-								return;
-							}
-							// Continua com a importação
-							await updateDatabase(result.assets[0].uri, databasePath);
-						},
-					},
-				]);
-			} else {
-				console.log("Diretório não existe, criando novo.");
-				// await FileSystem.makeDirectoryAsync(databasePath);
-				let response = await updateDatabase(result.assets[0].uri, databasePath);
-				if (response) {
-					//aqui tem que reiniciar o aplicativo
-					return true;
-				} else {
-					Toast.show("Erro ao importar o banco de dados", {
-						duration: Toast.durations.LONG,
-						position: Toast.positions.BOTTOM,
-						shadow: true,
-						animation: true,
-						hideOnPress: false,
-						textColor: "white",
-						backgroundColor: "red",
-					});
-				}
-			}
-		} catch (error) {
-			console.error("Erro ao importar o banco de dados:", error);
-		}
-	} else {
-		// Alert.alert("Erro ao abrir arquivo", "O arquivo selecionado é inválido ou o processo foi cancelado.");
-		Toast.show("Erro ao abrir arquivo", {
-			duration: Toast.durations.LONG,
-			position: Toast.positions.BOTTOM,
-			shadow: true,
-			animation: true,
-			hideOnPress: false,
-			textColor: "white",
-			backgroundColor: "red",
-		});
-	}
+    // Verifica se o banco de dados existe
+    const fileExists = await FileSystem.getInfoAsync(dbPath);
+    if (!fileExists.exists) {
+      throw new Error("O arquivo do banco de dados não foi encontrado.");
+    }
+
+	// LOG  file:///data/user/0/host.exp.exponent/files/SQLite/ltagDatabase.db
+	// LOG  file:///data/user/0/host.exp.exponent/files/SQLite/ltagDatabase
+    if (compartilhar) {
+      // Compartilha o banco de dados
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(dbPath);
+        showToast("Banco de dados compartilhado com sucesso!", "success");
+      } else {
+        throw new Error("A funcionalidade de compartilhamento não está disponível.");
+      }
+    } else {
+      if (Platform.OS === "android") {
+        // Solicita permissão para escolher o diretório
+        const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+        if (permissions.granted) {
+          // Cria o arquivo no diretório escolhido
+          const destUri = await FileSystem.StorageAccessFramework.createFileAsync(permissions.directoryUri, "ltagDatabase.db", "application/octet-stream");
+
+          // Escreve diretamente o arquivo no URI usando StorageAccessFramework
+          const fileContents = await FileSystem.readAsStringAsync(dbPath, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+          await FileSystem.StorageAccessFramework.writeAsStringAsync(destUri, fileContents, {
+            encoding: FileSystem.EncodingType.Base64,
+          });
+
+          showToast("Banco de dados exportado com sucesso!", "success");
+        } else {
+          throw new Error("Permissão negada para acessar o diretório.");
+        }
+      } else {
+        if (await Sharing.isAvailableAsync()) {
+          await Sharing.shareAsync(dbPath);
+          showToast("Banco de dados compartilhado com sucesso!", "success");
+        } else {
+          throw new Error("Compartilhamento não disponível.");
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Erro ao exportar o banco de dados:", error);
+    showToast("Erro ao exportar o banco de dados", "error");
+  }
 };
 
-export const updateDatabase = async (uri, databasePath) => {
-	try {
-		if (!uri) {
-			throw new Error("URI do arquivo não encontrada.");
-		}
+const dbDirectory = FileSystem.documentDirectory + "SQLite/";
+const dbPath = dbDirectory + "ltagDatabase";
 
-		const base64 = await FileSystem.readAsStringAsync(uri, {
-			encoding: FileSystem.EncodingType.Base64,
-		});
-		console.log("Base64 lido com sucesso");
-
-		await FileSystem.writeAsStringAsync(databasePath, base64, {
-			encoding: FileSystem.EncodingType.Base64,
-		});
-		try {
-			await db.closeAsync();
-		} catch {
-			// provavelmente estava caindo aqui por eu não atualizar o app, entao ja estava com um banco fechado, só não atualizado!
-			console.log("db já fechado!");
-		}
-		await SQLite.deleteDatabaseAsync("ltagDatabase");
-		initialize();
-
-		console.log("Banco de dados importado e aberto com sucesso!");
-
-		Toast.show("Banco de dados importado com sucesso", {
-			duration: Toast.durations.LONG,
-			position: Toast.positions.BOTTOM,
-			shadow: true,
-			animation: true,
-			hideOnPress: false,
-			textColor: "white",
-			backgroundColor: "green",
-		});
-		return true;
-	} catch (error) {
-		console.error("Erro ao abrir o banco de dados:", error);
-		return false;
-	}
+export const clearDatabase = async (dbName) => {
+  try {
+    console.log("Limpando db... recebi o nome do banco:", dbName);
+	db.closeAsync();
+    await SQLite.deleteDatabaseAsync(dbName);
+    console.log("Banco de dados excluído com sucesso usando SQLite.deleteDatabaseAsync.");
+    return true;
+  } catch (error) {
+    console.error("Erro ao limpar banco de dados:", error);
+    return false;
+  }
 };
 
-export const clearDatabase = async () => {
-	console.log("Limpando db... recebi o nome do banco:", "ltagDatabase.db");
+// Função para sobrescrever o banco de dados
+const updateDatabase = async (sourceUri, destinationPath) => {
+	console.log("updateDatabase ->  ", destinationPath);
+  try {
+    console.log("Substituindo banco de dados...");
+    await FileSystem.copyAsync({
+      from: sourceUri,
+      to: destinationPath,
+    });
+    console.log("Banco de dados substituído com sucesso.");
+    return true;
+  } catch (error) {
+    console.error("Erro ao copiar banco de dados:", error);
+    return false;
+  }
+};
 
-	try {
-		// const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
-		await db.closeAsync();
+// Função para reabrir a conexão com o banco de dados
+const reopenDatabase = () => {
+  try {
+    console.log("Reabrindo conexão com o banco de dados...");
+    const db = SQLite.openDatabaseSync("ltagDatabase.db"); // Atualizado para método síncrono
+    console.log("Banco de dados reaberto com sucesso.");
+    return db;
+  } catch (error) {
+    console.error("Erro ao reabrir banco de dados:", error);
+    return null;
+  }
+};
 
-		await SQLite.deleteDatabaseAsync("ltagDatabase");
+export const importDb = async (arg) => {
+  try {
+    const result = await DocumentPicker.getDocumentAsync({
+      copyToCacheDirectory: false,
+    });
 
-		console.log("Banco de dados excluído com sucesso usando SQLite.deleteDatabaseAsync.");
-		return true;
-	} catch (error) {
-		console.error("Erro ao excluir o banco de dados:", error);
-		return false;
-	}
+    if (result.canceled || !result.assets || !result.assets[0].uri) {
+      showToast("Erro ao abrir arquivo", "error");
+      return false;
+    }
+
+    console.log("Arquivo selecionado:", result.assets[0].uri);
+
+    if (arg !== "new") {
+      Alert.alert("Atenção", "Um banco de dados já existe. Deseja substituí-lo? Os dados atuais serão perdidos.", [
+        {
+          text: "Cancelar",
+          style: "cancel",
+          onPress: () => console.log("Usuário cancelou a importação."),
+        },
+        {
+          text: "Aceitar",
+          onPress: async () => {
+            console.log("Usuário aceitou substituir o banco de dados.");
+            const isCleared = await clearDatabase("ltagDatabase");
+            if (!isCleared) {
+              showToast("Erro ao limpar banco de dados", "error");
+              return false;
+            }
+            const isUpdated = await updateDatabase(result.assets[0].uri, dbPath);
+            if (isUpdated) {
+              const db = reopenDatabase();
+              return !!db;
+            } else {
+              showToast("Erro ao importar banco de dados", "error");
+              return false;
+            }
+          },
+        },
+      ]);
+    } else {
+      console.log("Argumento 'new', sobrescrevendo banco.");
+      const isCleared = await clearDatabase("ltagDatabase");
+      if (!isCleared) {
+        showToast("Erro ao limpar banco de dados", "error");
+        return false;
+      }
+      const isUpdated = await updateDatabase(result.assets[0].uri, dbPath);
+      if (isUpdated) {
+        const db = reopenDatabase();
+        return !!db;
+      } else {
+        showToast("Erro ao importar banco de dados", "error");
+        return false;
+      }
+    }
+  } catch (error) {
+    console.error("Erro ao importar o banco de dados:", error);
+    showToast("Erro ao importar banco de dados", "error");
+    return false;
+  }
 };

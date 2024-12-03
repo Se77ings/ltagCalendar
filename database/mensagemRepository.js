@@ -1,4 +1,6 @@
-import { db } from "./database";
+import { getDatabaseInstance } from "./database";
+
+const db = getDatabaseInstance();
 
 export async function CriarMensagem(mensagem) {
   await db.runAsync("INSERT INTO MensagemAgendamento (Mensagem) VALUES (?);", mensagem);

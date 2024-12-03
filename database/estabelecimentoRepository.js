@@ -1,5 +1,7 @@
 import * as SQLite from "expo-sqlite";
-import { db } from "./database";
+import { getDatabaseInstance } from "./database";
+
+const db = getDatabaseInstance();
 
 export async function CriarEstabelecimento(estabelecimento) {
   // const db = await SQLite.openDatabaseAsync("ltagDatabase", { useNewConnection: true });
