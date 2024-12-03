@@ -81,3 +81,77 @@ export async function VerificarDuplicados(data, hora, id = null) {
 
   return result != null && result.total > 0;
 }
+export async function obterClientes(
+  filtro,
+  dataInicio = null,
+  dataFim = null,
+  nomeCliente = null,
+  incluirFinalizados = true
+) {
+  let query = "SELECT * FROM agendamento";
+  const params = [];
+
+  // Verifica se deve incluir apenas finalizados = 0
+  if (!incluirFinalizados) {
+    query += " WHERE Finalizado = 0";
+  } else {
+    query += " WHERE 1 = 1"; // Placeholder para facilitar a concatenação de condições
+  }
+
+  const hoje = new Date();
+
+  switch (filtro) {
+    case "todo": 
+      break;
+
+    case "ultimaSemana": 
+      const ultimaSemana = new Date();
+      ultimaSemana.setDate(hoje.getDate() - 7);
+      query += " AND Data >= ?";
+      params.push(ultimaSemana.toISOString().split("T")[0]);
+      break;
+
+    case "ultimos30Dias": 
+      const ultimos30Dias = new Date();
+      ultimos30Dias.setDate(hoje.getDate() - 30);
+      query += " AND Data >= ?";
+      params.push(ultimos30Dias.toISOString().split("T")[0]);
+      break;
+
+    case "ultimos3Meses": 
+      const tresMesesAtras = new Date();
+      tresMesesAtras.setMonth(hoje.getMonth() - 3);
+      query += " AND Data >= ?";
+      params.push(tresMesesAtras.toISOString().split("T")[0]);
+      break;
+
+    case "anoPassado": 
+      const anoAtual = hoje.getFullYear();
+      const inicioAnoPassado = new Date(anoAtual - 1, 0, 1);
+      const fimAnoPassado = new Date(anoAtual - 1, 11, 31);
+      query += " AND Data BETWEEN ? AND ?";
+      params.push(
+        inicioAnoPassado.toISOString().split("T")[0],
+        fimAnoPassado.toISOString().split("T")[0]
+      );
+      break;
+
+    case "personalizado": //TODO: implementar front (abner)
+      if (!dataInicio || !dataFim) {
+        throw new Error("Intervalo personalizado requer data de início e fim.");
+      }
+      query += " AND Data BETWEEN ? AND ?";
+      params.push(dataInicio, dataFim);
+      break;
+
+    default:
+      throw new Error("Filtro inválido.");
+  }
+
+  if (nomeCliente) {
+    query += " AND Nome LIKE ?";
+    params.push(`%${nomeCliente}%`);
+  }
+
+  return await db.getAllAsync(query, params);
+}

@@ -1,4 +1,4 @@
-import CriarAgendamento, { AtualizarAgendamento, DesvincularAgendamentoServicos, DesvincularAtendimentoColaboradores, ObterAgendamentos, ObterAgendamentosPaginado, obterServicosColaboradoresPorAgendamento, obterServicosPorAgendamento, RealizarAtendimento, RemoverAgendamento, VerificarDuplicados, VincularAgendamentoServicos, VincularAtendimentoColaboradores } from "../database/agendamentoRepository";
+import CriarAgendamento, { AtualizarAgendamento, DesvincularAgendamentoServicos, DesvincularAtendimentoColaboradores, ObterAgendamentos, ObterAgendamentosPaginado, obterClientes, obterServicosColaboradoresPorAgendamento, obterServicosPorAgendamento, RealizarAtendimento, RemoverAgendamento, VerificarDuplicados, VincularAgendamentoServicos, VincularAtendimentoColaboradores } from "../database/agendamentoRepository";
 import { RemoverServico } from "../database/servicoRepository";
 
 export default async function adicionarAgendamento(agendamento) {
@@ -226,3 +226,20 @@ export async function RemoverAgendamentoAsync(id) {
 		};
 	}
 }
+
+export async function filtrarClientes(filtro, dataInicio = null, dataFim = null, nomeCliente = null) {
+    try {
+		console.log(filtro);
+      const clientes = await obterClientes(filtro, dataInicio, dataFim, nomeCliente);
+      return clientes.map(cliente => ({
+        id: cliente.id,
+        nome: cliente.Nome,
+        telefone: cliente.Telefone,
+        data: cliente.Data,
+        hora: cliente.Hora,
+      }));
+    } catch (error) {
+      console.error("Erro ao filtrar clientes:", error);
+      throw error;
+    }
+};

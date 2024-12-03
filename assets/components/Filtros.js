@@ -15,25 +15,28 @@ const Filtros = ({ filtroSelecionado, setFiltroSelecionado, lista }) => {
 
   const { theme } = useTheme();
   const textColor = theme === "dark" ? "white" : "black";
-  const textColor2 = theme === "dark" ? "white" : "white";
   const fundoInput = theme === "dark" ? "#2F407A" : "white";
   const ColorInput = theme === "dark" ? "#666699" : "black";
   const buttons = theme === "dark" ? "#2F407A" : "#312fbf";
-  const fundoTheme = theme === "dark" ? "#001a66" : "#2F407"
 
-  const handleFiltroSelecionado = (filtro) => {
-    setFiltroSelecionado(filtro);
-    setModalVisible(false); // Fecha o modal após a seleção
+  // Busca o label correspondente ao filtro selecionado
+  const filtroAtualLabel =
+    lista.find((item) => item.id === filtroSelecionado)?.label ||
+    "Selecione um filtro";
+
+  const handleFiltroSelecionado = (filtroId) => {
+    setFiltroSelecionado(filtroId); // Armazena o ID da opção
+    setModalVisible(false); // Fecha o modal
   };
 
   return (
     <View style={[styles.container]}>
       <TouchableOpacity
-        style={[styles.dropdown,  {backgroundColor:fundoInput}]}
+        style={[styles.dropdown, { backgroundColor: fundoInput }]}
         onPress={() => setModalVisible(true)}
       >
-        <Text style={[styles.dropdownText, {color:textColor}]}>
-          {filtroSelecionado || "Selecione um filtro"}
+        <Text style={[styles.dropdownText, { color: textColor }]}>
+          {filtroAtualLabel}
         </Text>
         <Ionicons name="chevron-down" size={20} color={textColor} />
       </TouchableOpacity>
@@ -54,7 +57,7 @@ const Filtros = ({ filtroSelecionado, setFiltroSelecionado, lista }) => {
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={styles.option}
-                  onPress={() => handleFiltroSelecionado(item.label)}
+                  onPress={() => handleFiltroSelecionado(item.id)} // Passa o ID ao invés do label
                 >
                   <Text style={styles.optionText}>{item.label}</Text>
                 </TouchableOpacity>

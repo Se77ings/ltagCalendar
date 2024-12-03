@@ -3,18 +3,21 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext";
 import Filtros from "../../assets/components/Filtros";
+import { obterClientes } from "../../database/agendamentoRepository";
+import { filtrarClientes } from "../../services/agendamentoService";
 
 const ListaClientes = () => {
   const [clientes, setClientes] = useState([]);
-  const [filtroSelecionado, setFiltroSelecionado] = useState(""); // Estado para o filtro selecionado
+  const [filtroSelecionado, setFiltroSelecionado] = useState("todo"); 
+  const [intervalo, setIntervalo] = useState({ dataInicio: null, dataFim: null });
 
   const { theme } = useTheme();
   const textColor = theme === "dark" ? "white" : "black";
 
-  const renderCliente = ({ item }) => (
+  const renderCliente = ({ item }) => ( 
     <TouchableOpacity
       style={[styles.card, theme === "dark" ? styles.cardDark : styles.cardLight]}
-      onPress={() => Alert.alert("Cliente", `Detalhes de ${item.nome}`)}
+      // onPress={() => Alert.alert("Cliente", `Detalhes de ${item.nome}`)} //TODO: ver se vai colocar algo em detalhes
     >
       <View style={styles.cardContent}>
         <Text style={[styles.clienteNome, { color: textColor }]}>{item.nome}</Text>
@@ -24,36 +27,48 @@ const ListaClientes = () => {
     </TouchableOpacity>
   );
 
+  const carregarClientes = async () => {
+    try {
+      const { dataInicio, dataFim } = intervalo;
+      const clientesFiltrados = await filtrarClientes(filtroSelecionado, dataInicio, dataFim);
+      setClientes(clientesFiltrados);
+    } catch (error) {
+      console.error("Erro ao carregar clientes:", error);
+    }
+  };
+
   useEffect(() => {
-    // Lista estática para fins de teste
-    const clientesTeste = [
-      { id: 1, nome: "Maria Silva", email: "maria.silva@gmail.com", telefone: "123-456-7890" },
-      { id: 2, nome: "João Pereira", email: "joao.pereira@yahoo.com", telefone: "987-654-3210" },
-      { id: 3, nome: "Ana Souza", email: "ana.souza@outlook.com", telefone: "555-666-7777" },
-    ];
-    setClientes(clientesTeste);
-  }, []);
+    carregarClientes();
+  }, [filtroSelecionado, intervalo]); // Atualiza sempre que o filtro ou intervalo mudar
 
   const opcoes = [
-    { id: "1", label: "Todo o período" },
-    { id: "2", label: "Últimos 30 dias" },
-    { id: "3", label: "Agosto/2024" },
-    { id: "4", label: "2023" },
-    { id: "5", label: "Intervalo personalizado" },
+    { id: "todo", label: "Todo o período" },
+    { id: "ultimaSemana", label: "Última semana" },
+    { id: "ultimos30Dias", label: "Últimos 30 dias" },
+    { id: "ultimos3Meses", label: "Últimos 3 meses" },
+    { id: "anoPassado", label: "Ano Passado" },
+
+    { id: "personalizado", label: "Intervalo personalizado" },
   ];
 
   return (
     <View style={[styles.container, theme === "dark" ? styles.containerDark : styles.containerLight]}>
       <Text style={[styles.title, { color: textColor }]}>Clientes com Agendamentos</Text>
 
-      {/* Adicione o componente de filtros */}
+      {/* Componente de filtros */}
       <Filtros
         filtroSelecionado={filtroSelecionado}
-        setFiltroSelecionado={setFiltroSelecionado}
+        setFiltroSelecionado={(filtro) => {
+          setFiltroSelecionado(filtro);
+          if (filtro !== "personalizado") {
+            setIntervalo({ dataInicio: null, dataFim: null });
+          }
+        }}
         lista={opcoes}
+        setIntervalo={setIntervalo} 
       />
 
-      {/* Lista de clientes */}
+      {}
       {clientes.length > 0 ? (
         <FlatList
           data={clientes}
