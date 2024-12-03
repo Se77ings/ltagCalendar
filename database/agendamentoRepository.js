@@ -91,11 +91,10 @@ export async function obterClientes(
   let query = "SELECT * FROM agendamento";
   const params = [];
 
-  // Verifica se deve incluir apenas finalizados = 0
   if (!incluirFinalizados) {
     query += " WHERE Finalizado = 0";
   } else {
-    query += " WHERE 1 = 1"; // Placeholder para facilitar a concatenação de condições
+    query += " WHERE 1 = 1"; 
   }
 
   const hoje = new Date();
