@@ -121,7 +121,7 @@ export const exportDB = async (compartilhar = false) => {
       }
     }
   } catch (error) {
-    console.error("Erro ao exportar o banco de dados:", error);
+    console.log("Erro ao exportar o banco de dados:", error);
     showToast("Erro ao exportar o banco de dados", "error");
   }
 };
@@ -137,7 +137,8 @@ export const clearDatabase = async (dbName) => {
     console.log("Banco de dados excluído com sucesso usando SQLite.deleteDatabaseAsync.");
     return true;
   } catch (error) {
-    console.error("Erro ao limpar banco de dados:", error);
+    showToast("Erro ao limpar banco de dados", "error");
+    console.log("Erro ao limpar banco de dados:", error);
     return false;
   }
 };
@@ -154,7 +155,8 @@ const updateDatabase = async (sourceUri, destinationPath) => {
     console.log("Banco de dados substituído com sucesso.");
     return true;
   } catch (error) {
-    console.error("Erro ao copiar banco de dados:", error);
+    showToast("Erro ao copiar banco de dados", "error");
+    console.log("Erro ao copiar banco de dados:", error);
     return false;
   }
 };
@@ -167,7 +169,8 @@ const reopenDatabase = () => {
     console.log("Banco de dados reaberto com sucesso.");
     return db;
   } catch (error) {
-    console.error("Erro ao reabrir banco de dados:", error);
+    showToast("Erro ao reabrir banco de dados", "error");
+    console.log("Erro ao reabrir banco de dados:", error);
     return null;
   }
 };
@@ -229,7 +232,7 @@ export const importDb = async (arg) => {
       }
     }
   } catch (error) {
-    console.error("Erro ao importar o banco de dados:", error);
+    console.log("Erro ao importar o banco de dados:", error);
     showToast("Erro ao importar banco de dados", "error");
     return false;
   }

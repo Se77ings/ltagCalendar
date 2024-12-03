@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, TextInput, Button, ScrollView, FlatList, StyleSheet, Alert, Animated, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, TextInput, Button, ScrollView, FlatList, StyleSheet, Alert, Animated, ActivityIndicator, Pressable } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import DropdownSelector from "../../assets/components/DropdownSelector";
 import { useTheme } from "../../ThemeContext";
@@ -10,15 +10,16 @@ import { useNavigation } from "@react-navigation/native";
 import * as LocalAuthentication from "expo-local-authentication";
 import Toast from "react-native-root-toast";
 import DetalhesAtendimento from "./GerenciarMensagem";
+import Modal from "react-native-modal";
 
 const AppConfig = () => {
   const [isLoading, setIsLoading] = useState(false);
-
   const { theme, toggleTheme } = useTheme();
   const textColor = theme === "dark" ? "white" : "black";
   const textColor2 = theme === "dark" ? "white" : "black";
   const FundoThema = theme === "dark" ? "#020C2A" : "red";
   const transparentBG = theme === "dark" ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.8)";
+  const [modalexport, setModalExport] = useState(false);
 
   const navigation = useNavigation();
 
@@ -72,9 +73,11 @@ const AppConfig = () => {
   };
 
   const handleExport = async () => {
-    setIsLoading(true);
-    await exportDB();
-    setIsLoading(false);
+    setModalExport(true);
+    //verificar se quer salvar localmente ou remoto...
+    // setIsLoading(true);
+    // await exportDB();
+    // setIsLoading(false);
   };
 
   const handleClearDB = async () => {
@@ -136,11 +139,53 @@ const AppConfig = () => {
           </View>
         </View>
       </ScrollView>
+      <Modal
+        testID={"modal"}
+        isVisible={modalexport}
+        hasBackdrop={true}
+        backdropColor="rgba(0,0,0,0.5)"
+        onRequestClose={() => {
+          setModalExport(false);
+        }}
+        onBackdropPress={() => {
+          setModalExport(false);
+        }}
+        onSwipeComplete={() => {
+          setModalExport(false);
+        }}
+        swipeDirection={"down"}
+        style={{ justifyContent: "flex-end", margin: 0 }}>
+        <View style={{ backgroundColor: textColor == "white" ? "#00002b" : "white", padding: 0, borderTopRightRadius: 20, borderTopLeftRadius: 20 }}>
+          <Text style={{textAlign:"center", padding:20, color:textColor, fontSize:16 }}>Como deseja enviar este arquivo?</Text>
+          <Pressable style={styles.itemModal}>
+            <Text style={{color:textColor, fontSize:15}}>Salvar localmente</Text>
+            <Ionicons name="download-outline" size={30} color={textColor} />
+          </Pressable>
+          <Pressable style={styles.itemModal}>
+            <Text style={{color:textColor, fontSize:15}}>Compartilhar</Text>
+            <Ionicons name="share-social-outline" size={30} color={textColor} />
+          </Pressable>
+        </View>
+      </Modal>
     </>
   );
 };
 
 const styles = StyleSheet.create({
+  itemModal: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignSelf :"center",
+    paddingHorizontal:20,
+    alignItems: "center",
+    width:"90%",
+    padding: 10,
+    marginVertical: 5,
+    borderBottomWidth:1,
+    borderTopWidth  :1,
+    backgroundColor: "#2F407A",
+    borderRadius:10
+  },
   loadingStyle: {
     position: "absolute",
     zIndex: 1,
@@ -154,7 +199,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "space-between",
     paddingTop: 0,
-    backgroundColor: "white",
+    
   },
   ServicosCard: {
     borderWidth: 1,
@@ -163,6 +208,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 20,
     width: "100%",
+    
   },
   Header: {
     width: "100%",

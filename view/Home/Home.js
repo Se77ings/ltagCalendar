@@ -19,7 +19,7 @@ import CadastroInicial from "./CadastroInicial";
 import { ObterEstabelecimentoAsync } from "../../services/estabelecimentoService";
 import * as Clipboard from "expo-clipboard";
 import { ObterMensagemFormatadaAsync } from "../../services/mensagemService";
-import { importDb } from "../../assets/global/functions";
+// import { importDb } from "../../assets/global/functions";
 import Toast from "react-native-root-toast";
 
 const formatarData = (data) => {
@@ -434,25 +434,25 @@ const Home = ({ navigation }) => {
   const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
   const textColor = theme === "dark" ? "white" : "black";
 
-  const handleImport = async () => {
-    await importDb("new").then((response) => {
-      console.log("response-> ", response);
-      if (response) {
-		obter();
-        //preciso chamar um reload aqui
-        //fazer esse reload acima, vai ser bom até para quando atualizar o AppConfig
-      } else {
-        Toast.show("Falha ao importar banco de dados", {
-          duration: Toast.durations.SHORT,
-          position: Toast.positions.BOTTOM,
-          shadow: true,
-          animation: true,
-          hideOnPress: true,
-          delay: 0,
-        });
-      }
-    });
-  };
+  // const handleImport = async () => {
+  //   await importDb("new").then((response) => {
+  //     console.log("response-> ", response);
+  //     if (response) {
+	// 	obter();
+  //       //preciso chamar um reload aqui
+  //       //fazer esse reload acima, vai ser bom até para quando atualizar o AppConfig
+  //     } else {
+  //       Toast.show("Falha ao importar banco de dados", {
+  //         duration: Toast.durations.SHORT,
+  //         position: Toast.positions.BOTTOM,
+  //         shadow: true,
+  //         animation: true,
+  //         hideOnPress: true,
+  //         delay: 0,
+  //       });
+  //     }
+  //   });
+  // };
 
   return (
     <>
@@ -520,10 +520,10 @@ const Home = ({ navigation }) => {
       </Modal>
       <Modal visible={primeiraInicializacao} transparent >
         <Pressable onPress={() => {Keyboard.dismiss(); setPrimeiraInicializacao(false)}} style={{ backgroundColor: "rgba(0,0,0,0.5)", height: "100%", flex: 1, justifyContent: "center", padding: 8 }}>
-          <Pressable style={{ padding: 20, backgroundColor: "red", position: "absolute", width: "100%", top: 10, alignSelf: "center", flex: 1, flexDirection: "row", justifyContent: "space-between" }} onPress={handleImport}>
+          {/* <Pressable style={{ padding: 20, backgroundColor: "red", position: "absolute", width: "100%", top: 10, alignSelf: "center", flex: 1, flexDirection: "row", justifyContent: "space-between" }} onPress={handleImport}>
             <Text style={{ alignSelf: "center" }}>Importar Banco de Dados</Text>
             <Ionicons name="cloud-upload-outline" size={30} color={textColor} />
-          </Pressable>
+          </Pressable> */}
           <Pressable style={{ padding: 5, borderRadius: 6 }}>
             <CadastroInicial setPrimeiraInicializacao={setPrimeiraInicializacao} />
           </Pressable>

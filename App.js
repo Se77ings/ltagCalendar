@@ -11,6 +11,7 @@ import Config from "./view/Configuracoes/Config";
 import { TourGuideProvider, TourGuideZone } from "rn-tourguide";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootSiblingParent } from 'react-native-root-siblings';
+import ListaClientes from "./view/Configuracoes/Clientes";
 
 function App() {
 	const { theme, toggleTheme } = useTheme(); // Consumindo o contexto
@@ -54,6 +55,27 @@ function App() {
 					<Tab.Navigator
 						initialRouteName="Main"
 						screenOptions={{ tabBarStyle: { backgroundColor: "#001a66", padding: 2, height: 60}, lazy: false }}>
+							<Tab.Screen
+							name="Relatorios"
+							component={ListaClientes}
+							options={{
+								headerShown: false,
+								tabBarLabel: "Relatórios",
+								tabBarLabelStyle: { fontSize: 12, color: "white" },
+								tabBarIcon: (
+									{ color } // Usa o color fornecido pelo Navigator
+								) => (
+									<View style={[styles.iconDiv, { borderColor: color }]}>
+										<Ionicons
+											name="document-text"
+											color={"white"}
+											size={22}
+										/>
+									</View>
+								),
+							}}>
+
+							</Tab.Screen>
 						<Tab.Screen
 							name="Main"
 							component={Main}

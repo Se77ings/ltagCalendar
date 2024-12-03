@@ -41,9 +41,9 @@ const ConfigScreen = ({ navigation }) => {
           <TourGuideZone zone={7} text="Nessa área, você conseguirá alterar o tema do aplicativo, e também fazer alterações na base de dados do aplicativo" style={{ justifyContent: "center", width: "50%", borderRadius:10}}>
               <Card title={"Aplicativo"} icon={"phone-portrait-outline"} screen={"AppConfig"}/>
           </TourGuideZone>
-          <TourGuideZone zone={8} text="Nessa área, você conseguirá acessar a lista de clientes que já foram atendidos pela nossa empresa." style={{ justifyContent: "center", width: "50%", borderRadius:10}}>
+          {/* <TourGuideZone zone={8} text="Nessa área, você conseguirá acessar a lista de clientes que já foram atendidos pela nossa empresa." style={{ justifyContent: "center", width: "50%", borderRadius:10}}>
               <Card title={"ListaClientes"} icon={"phone-portrait-outline"} screen={"ListaClientes"}/>
-          </TourGuideZone>
+          </TourGuideZone> */}
 
           {/* <TourGuideZone zone={5} text="Teste" style={{ justifyContent: "center", width: "50%", borderRadius:10 }}>
             <Card title={"Mensagem"} icon={"construct-outline"} screen="GerenciarMensagem" />
@@ -62,7 +62,7 @@ const Config = () => {
       <Stack.Screen name="Servicos" component={Servicos} options={{ headerShown: true, headerTitle: "Serviços", headerTitleAlign: "center" }} />
       <Stack.Screen name="Estabelecimento" component={Estabelecimento} options={{ headerShown: true, headerTitle: "Estabelecimento", headerTitleAlign: "center" }} />
       <Stack.Screen name="AppConfig"  component={AppConfig} options={{ headerShown: true, headerTitle: "Configurações do Aplicativo", headerTitleAlign: "center"}}   />
-      <Stack.Screen name="ListaClientes"  component={ListaClientes} options={{ headerShown: true, headerTitle: "Lista de clientes", headerTitleAlign: "center"}}   />
+      {/* <Stack.Screen name="ListaClientes"  component={ListaClientes} options={{ headerShown: true, headerTitle: "Lista de clientes", headerTitleAlign: "center"}}   /> */}
 
       {/* <Stack.Screen 
         name="GerenciarMensagem" 

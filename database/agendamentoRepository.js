@@ -142,7 +142,6 @@ export async function obterClientes(
       const dataInicioFormatada = new Date(dataInicio).toISOString().split("T")[0];
       const dataFimFormatada = new Date(dataFim).toISOString().split("T")[0];
       query += " AND Data BETWEEN ? AND ?";
-      console.log(query);
       params.push(dataInicioFormatada, dataFimFormatada);
       break;
 

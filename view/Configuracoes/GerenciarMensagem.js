@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, TextInput, FlatList, Text, TouchableOpacity, Modal, KeyboardAvoidingView, Platform } from "react-native";
+import { View, TextInput, FlatList, Text, TouchableOpacity, Modal, KeyboardAvoidingView, Platform, Button } from "react-native";
 import { AtualizarMensagemAsync, ObterMensagemAsync, ObterMensagemFormatadaAsync } from "../../services/mensagemService";
-import { Button, useTheme } from "react-native-paper";
+import { useTheme } from "../../ThemeContext";
 
 export default function DetalhesAtendimento() {
   const { theme, toggleTheme } = useTheme();
-  const textColor = theme === "dark" ? "white" : "white";
+  const textColor = theme === "dark" ? "white" : "black";
   const textColor2 = theme === "dark" ? "white" : "black";
   const FundoThema = theme === "dark" ? "#020C2A" : "red";
   const transparentBG = theme === "dark" ? "rgba(0,0,0,0.6)" : "rgba(255,255,255,0.8)";
@@ -73,17 +73,18 @@ export default function DetalhesAtendimento() {
 
   return (
     <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 15 }}>Mensagem</Text>
-      <TextInput value={texto} onChangeText={handleInputChange} placeholder="Digite sua mensagem" multiline={true} numberOfLines={5} style={{ height: 100, borderColor: "gray", borderWidth: 1, marginBottom: 10, paddingLeft: 8 }} />
+      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 15, color: textColor }}>Mensagem</Text>
+      <TextInput value={texto} onChangeText={handleInputChange} placeholder="Digite sua mensagem" multiline={true} numberOfLines={5} style={{  borderColor: "gray", borderWidth: 1, marginBottom: 10, paddingLeft: 8, color: textColor }} />
 
       <View style={{ flexDirection: "row", gap: 10, marginTop: 20 }}>
-        <Button mode="contained" onPress={atualizarMensagemBanco} style={{ paddingVertical: 10, backgroundColor: "#2F407A", flex: 1 }} labelStyle={{ fontSize: 16, fontWeight: "bold" }}>
-          Salvar
-        </Button>
-
-        <Button mode="contained" onPress={limparMensagem} style={{ paddingVertical: 10, backgroundColor: "#2F407A", flex: 1 }} labelStyle={{ fontSize: 16, fontWeight: "bold" }}>
-          Limpar
-        </Button>
+        {/* <Button title="Salvar" onPress={atualizarMensagemBanco} style={{ paddingVertical: 10, backgroundColor: "#2F407A", flex: 1 }} labelStyle={{ fontSize: 16, fontWeight: "bold" }}/>
+        <Button title="Limpar" onPress={limparMensagem} style={{ paddingVertical: 10, backgroundColor: "#2F407A", flex: 1 }} labelStyle={{ fontSize: 16, fontWeight: "bold" }}/> */}
+        <TouchableOpacity onPress={atualizarMensagemBanco} style={{ paddingVertical: 10, backgroundColor: "#2F407A", flex: 1, borderRadius: 10 }}>
+          <Text style={{ textAlign: "center", color: "white", fontSize: 16, fontWeight: "bold" }}>Salvar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={limparMensagem} style={{ paddingVertical: 10, backgroundColor: "#2F407A", flex: 1, borderRadius: 10 }}>
+          <Text style={{ textAlign: "center", color: "white", fontSize: 16, fontWeight: "bold" }}>Limpar</Text>
+        </TouchableOpacity>
       </View>
 
       <Modal transparent={true} visible={modalVisible} animationType="fade" onRequestClose={() => setModalVisible(false)}>
