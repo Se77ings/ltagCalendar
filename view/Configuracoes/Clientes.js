@@ -3,21 +3,22 @@ import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext";
 import Filtros from "../../assets/components/Filtros";
-import { obterClientes } from "../../database/agendamentoRepository";
 import { filtrarClientes } from "../../services/agendamentoService";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 const ListaClientes = () => {
   const [clientes, setClientes] = useState([]);
-  const [filtroSelecionado, setFiltroSelecionado] = useState("todo"); 
+  const [filtroSelecionado, setFiltroSelecionado] = useState("todo");
   const [intervalo, setIntervalo] = useState({ dataInicio: null, dataFim: null });
+  const [showDataInicio, setShowDataInicio] = useState(false);
+  const [showDataFim, setShowDataFim] = useState(false);
 
   const { theme } = useTheme();
   const textColor = theme === "dark" ? "white" : "black";
 
-  const renderCliente = ({ item }) => ( 
+  const renderCliente = ({ item }) => (
     <TouchableOpacity
       style={[styles.card, theme === "dark" ? styles.cardDark : styles.cardLight]}
-      // onPress={() => Alert.alert("Cliente", `Detalhes de ${item.nome}`)} //TODO: ver se vai colocar algo em detalhes
     >
       <View style={styles.cardContent}>
         <Text style={[styles.clienteNome, { color: textColor }]}>{item.nome}</Text>
@@ -38,8 +39,19 @@ const ListaClientes = () => {
   };
 
   useEffect(() => {
-    carregarClientes();
-  }, [filtroSelecionado, intervalo]); // Atualiza sempre que o filtro ou intervalo mudar
+    if (filtroSelecionado === "personalizado" && !intervalo.dataInicio && !intervalo.dataFim) {
+      const hoje = new Date();
+      const umMesAntes = new Date(hoje);
+      umMesAntes.setMonth(hoje.getMonth() - 1);
+
+      setIntervalo({
+        dataInicio: umMesAntes,
+        dataFim: hoje,
+      });
+    } else {
+      carregarClientes();
+    }
+  }, [filtroSelecionado, intervalo]);
 
   const opcoes = [
     { id: "todo", label: "Todo o período" },
@@ -47,15 +59,27 @@ const ListaClientes = () => {
     { id: "ultimos30Dias", label: "Últimos 30 dias" },
     { id: "ultimos3Meses", label: "Últimos 3 meses" },
     { id: "anoPassado", label: "Ano Passado" },
-
     { id: "personalizado", label: "Intervalo personalizado" },
   ];
+
+  const handleDataChange = (event, selectedDate, tipo) => {
+    const currentDate = selectedDate || intervalo[tipo];
+    if (tipo === "dataInicio") {
+      setIntervalo({ ...intervalo, dataInicio: currentDate });
+    } else if (tipo === "dataFim") {
+      setIntervalo({ ...intervalo, dataFim: currentDate });
+    }
+    if (tipo === "dataInicio") {
+      setShowDataInicio(false);
+    } else if (tipo === "dataFim") {
+      setShowDataFim(false);
+    }
+  };
 
   return (
     <View style={[styles.container, theme === "dark" ? styles.containerDark : styles.containerLight]}>
       <Text style={[styles.title, { color: textColor }]}>Clientes com Agendamentos</Text>
 
-      {/* Componente de filtros */}
       <Filtros
         filtroSelecionado={filtroSelecionado}
         setFiltroSelecionado={(filtro) => {
@@ -65,10 +89,45 @@ const ListaClientes = () => {
           }
         }}
         lista={opcoes}
-        setIntervalo={setIntervalo} 
+        setIntervalo={setIntervalo}
       />
 
-      {}
+      {filtroSelecionado === "personalizado" && (
+        <View style={styles.datePickerContainer}>
+          <Text style={[styles.label, { color: textColor }]}>Data Início:</Text>
+          <TouchableOpacity onPress={() => setShowDataInicio(true)}>
+            <Text style={[styles.dateText, { color: textColor }]}>
+              {intervalo.dataInicio ? intervalo.dataInicio.toLocaleDateString() : "Selecione a data"}
+            </Text>
+          </TouchableOpacity>
+
+          {showDataInicio && (
+            <DateTimePicker
+              value={intervalo.dataInicio || new Date()}
+              mode="date"
+              display="default"
+              onChange={(e, date) => handleDataChange(e, date, "dataInicio")}
+            />
+          )}
+
+          <Text style={[styles.label, { color: textColor }]}>Data Fim:</Text>
+          <TouchableOpacity onPress={() => setShowDataFim(true)}>
+            <Text style={[styles.dateText, { color: textColor }]}>
+              {intervalo.dataFim ? intervalo.dataFim.toLocaleDateString() : "Selecione a data"}
+            </Text>
+          </TouchableOpacity>
+
+          {showDataFim && (
+            <DateTimePicker
+              value={intervalo.dataFim || new Date()}
+              mode="date"
+              display="default"
+              onChange={(e, date) => handleDataChange(e, date, "dataFim")}
+            />
+          )}
+        </View>
+      )}
+
       {clientes.length > 0 ? (
         <FlatList
           data={clientes}
@@ -131,6 +190,18 @@ const styles = StyleSheet.create({
   clienteInfo: {
     fontSize: 14,
     marginTop: 4,
+  },
+  datePickerContainer: {
+    marginVertical: 16,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: 8,
+  },
+  dateText: {
+    fontSize: 16,
+    marginBottom: 16,
   },
 });
 

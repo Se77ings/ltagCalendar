@@ -231,6 +231,7 @@ export async function filtrarClientes(filtro, dataInicio = null, dataFim = null,
     try {
 		console.log(filtro);
       const clientes = await obterClientes(filtro, dataInicio, dataFim, nomeCliente);
+	  console.log(clientes);
       return clientes.map(cliente => ({
         id: cliente.id,
         nome: cliente.Nome,
