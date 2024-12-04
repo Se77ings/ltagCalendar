@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState} from "react";
+import {  useFocusEffect } from "@react-navigation/native";
+
 import { View, Text, TouchableOpacity } from "react-native";
 import { createStackNavigator } from "@react-navigation/stack";
 import styles from "../../assets/styles/styles";
@@ -15,6 +17,8 @@ import DetalhesAtendimento from "./GerenciarMensagem";
 const Stack = createStackNavigator();
 
 const ConfigScreen = ({ navigation }) => {
+  const [atualizarDB, setAtualizarDB] = useState(false);
+
   const Card = ({ title, icon, screen }) => {
     return (
       <TouchableOpacity style={styles.cardStyle} onPress={() => navigation.navigate(screen)}>
@@ -23,11 +27,17 @@ const ConfigScreen = ({ navigation }) => {
       </TouchableOpacity>
     );
   };
+  useFocusEffect(
+    React.useCallback(() => {
+      //Home focada, obter novamente..
+      setAtualizarDB(!true);
+    }, [])
+);
 
   return (
     <>
       <View style={styles.container}>
-        <Header title={"Configurações"} />
+        <Header title={"Configurações"} atualizarDB={atualizarDB} />
         <View style={{ flex: 1, alignItems: "center", height: "100%", justifyContent: "center" }}>
           <TourGuideZone zone={4} text="Aqui você consegue alterar as informações básicas da sua empresa, e inserir uma logo para personalizar sua experiência!" style={{ justifyContent: "center", width: "50%" }}>
             <Card title={"Sua Empresa"} icon={"business"} screen="Estabelecimento" />

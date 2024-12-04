@@ -5,6 +5,7 @@ import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
 import { getDatabaseInstance, initialize } from "../../database/database";
+import { limpaDatabase } from "../../database/initializeDatabase";
 
 const db = getDatabaseInstance();
 
@@ -132,9 +133,15 @@ const dbPath = dbDirectory + "ltagDatabase";
 export const clearDatabase = async (dbName) => {
   try {
     console.log("Limpando db... recebi o nome do banco:", dbName);
-	db.closeAsync();
-    await SQLite.deleteDatabaseAsync(dbName);
+	
+    // await SQLite.deleteDatabaseAsync(dbName);
+
+    
     console.log("Banco de dados excluído com sucesso usando SQLite.deleteDatabaseAsync.");
+
+    await limpaDatabase();
+
+    console.log("Cheguei aqui")
     return true;
   } catch (error) {
     showToast("Erro ao limpar banco de dados", "error");
@@ -153,6 +160,7 @@ const updateDatabase = async (sourceUri, destinationPath) => {
       to: destinationPath,
     });
     console.log("Banco de dados substituído com sucesso.");
+
     return true;
   } catch (error) {
     showToast("Erro ao copiar banco de dados", "error");
@@ -199,29 +207,30 @@ export const importDb = async (arg) => {
           text: "Aceitar",
           onPress: async () => {
             console.log("Usuário aceitou substituir o banco de dados.");
-            const isCleared = await clearDatabase("ltagDatabase");
-            if (!isCleared) {
-              showToast("Erro ao limpar banco de dados", "error");
-              return false;
-            }
+            // const isCleared = await clearDatabase("ltagDatabase");
+            // if (!isCleared) {
+            //   showToast("Erro ao limpar banco de dados", "error");
+            //   return false;
+            // }
             const isUpdated = await updateDatabase(result.assets[0].uri, dbPath);
-            if (isUpdated) {
-              const db = reopenDatabase();
-              return !!db;
-            } else {
-              showToast("Erro ao importar banco de dados", "error");
-              return false;
-            }
+            showToast("Banco de dados importado com sucesso", "success");
+            // if (isUpdated) {
+            //   // const db = reopenDatabase();
+            //   return !!db;
+            // } else {
+            //   showToast("Erro ao importar banco de dados", "error");
+            //   return false;
+            // }
           },
         },
       ]);
     } else {
       console.log("Argumento 'new', sobrescrevendo banco.");
-      const isCleared = await clearDatabase("ltagDatabase");
-      if (!isCleared) {
-        showToast("Erro ao limpar banco de dados", "error");
-        return false;
-      }
+      // const isCleared = await clearDatabase("ltagDatabase");
+      // if (!isCleared) {
+      //   showToast("Erro ao limpar banco de dados", "error");
+      //   return false;
+      // }
       const isUpdated = await updateDatabase(result.assets[0].uri, dbPath);
       if (isUpdated) {
         const db = reopenDatabase();

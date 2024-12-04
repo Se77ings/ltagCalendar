@@ -7,10 +7,9 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
 import { ObterEstabelecimentoAsync } from "../../services/estabelecimentoService";
 
-const Header = ({ title, primeiraInicializacao }) => {
+const Header = ({ title, primeiraInicializacao, atualizarDB }) => {
   const { theme, toggleTheme } = useTheme();
   const [estabelecimento, setEstabelecimento] = useState(null);
-
 
   // Estilos baseados no tema atual
   const textColor = theme === "dark" ? "white" : "black";
@@ -23,38 +22,36 @@ const Header = ({ title, primeiraInicializacao }) => {
   // }, [theme]);
 
   const setTheme = () => {
-    if (cont == "2"){
+    if (cont == "2") {
       SetTemaAuto();
-    }else if(theme == "dark"){
-      console.log("entrei aqui")
+    } else if (theme == "dark") {
+      console.log("entrei aqui");
       SetTemaLight();
       setcont("1");
-    }else if(theme == "light"){
+    } else if (theme == "light") {
       SetTemaDark();
       setcont("2");
     }
     console.log(cont);
-
   };
-  const SetTemaAuto=() =>{
+  const SetTemaAuto = () => {
     let themeAuto = Appearance.getColorScheme();
-    if(theme == "dark" && themeAuto == "light"){
+    if (theme == "dark" && themeAuto == "light") {
       toggleTheme(themeAuto);
       setcont("4");
-    }else if(theme == "light" && themeAuto == "dark"){
+    } else if (theme == "light" && themeAuto == "dark") {
       toggleTheme(themeAuto);
       setcont("5");
-    }else{
+    } else {
       setcont("6");
     }
-  }
-  const SetTemaDark=() =>{
+  };
+  const SetTemaDark = () => {
     toggleTheme("dark");
-  }
-  const SetTemaLight=() =>{
+  };
+  const SetTemaLight = () => {
     toggleTheme("light");
-  }
-  
+  };
 
   useEffect(() => {
     ObterEstabelecimentoAsync().then((estabelecimento) => {
@@ -66,7 +63,7 @@ const Header = ({ title, primeiraInicializacao }) => {
         setEstabelecimento(estabelecimento.data);
       });
     });
-  }, [primeiraInicializacao]);
+  }, [primeiraInicializacao, atualizarDB]);
 
   const getLogoSource = () => {
     if (estabelecimento && estabelecimento.Logo) {
@@ -96,15 +93,18 @@ const Header = ({ title, primeiraInicializacao }) => {
               <Text style={styles.shopName_}>{title}</Text>
             </View>
             {/* <Text style={styles.shopName_}>SEJA BEM-VINDO!!</Text> */}
-            <View style={{ marginLeft: 25, backgroundColor:textColor2, justifyContent:'center', borderRadius:100, height:25}}>
-              {cont == "5" || cont == "4" || cont == "6"? 
-              (<Text onPress={setTheme} style={{paddingLeft:7, paddingRight:7, fontWeight:"bold"}}>AUTO</Text>)
-              : 
-              cont == "1"? (<Ionicons name="contrast-outline" size={25} color="black" onPress={setTheme} />) : 
-              ((<Ionicons name="contrast-outline" size={25} color="white" onPress={setTheme} />)) 
-               }
+            <View style={{ marginLeft: 25, backgroundColor: textColor2, justifyContent: "center", borderRadius: 100, height: 25 }}>
+              {cont == "5" || cont == "4" || cont == "6" ? (
+                <Text onPress={setTheme} style={{ paddingLeft: 7, paddingRight: 7, fontWeight: "bold" }}>
+                  AUTO
+                </Text>
+              ) : cont == "1" ? (
+                <Ionicons name="contrast-outline" size={25} color="black" onPress={setTheme} />
+              ) : (
+                <Ionicons name="contrast-outline" size={25} color="white" onPress={setTheme} />
+              )}
             </View>
-              {/* <Text style={{color:'white'}}>{theme}</Text> */}
+            {/* <Text style={{color:'white'}}>{theme}</Text> */}
           </View>
         </View>
       </LinearGradient>

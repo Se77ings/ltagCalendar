@@ -34,7 +34,7 @@ const ListaClientes = () => {
       const clientesFiltrados = await filtrarClientes(filtroSelecionado, dataInicio, dataFim);
       setClientes(clientesFiltrados);
     } catch (error) {
-      console.error("Erro ao carregar clientes:", error);
+      // console.error("Erro ao carregar clientes:", error);
     }
   };
 

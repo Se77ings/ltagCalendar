@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, TextInput, FlatList, Text, TouchableOpacity, Modal, KeyboardAvoidingView, Platform, Button } from "react-native";
 import { AtualizarMensagemAsync, ObterMensagemAsync, ObterMensagemFormatadaAsync } from "../../services/mensagemService";
 import { useTheme } from "../../ThemeContext";
+import Ionicons from "@expo/vector-icons/Ionicons";
 
 export default function DetalhesAtendimento() {
   const { theme, toggleTheme } = useTheme();
@@ -19,6 +20,7 @@ export default function DetalhesAtendimento() {
   ]);
   const [exibirSugestoes, setExibirSugestoes] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalHelp, setModalHelp] = useState(false);
 
   useEffect(() => {
     async function carregarMensagem() {
@@ -71,10 +73,17 @@ export default function DetalhesAtendimento() {
     setTexto(msgFormatado.data);
   }
 
+  const showHelp = () => {
+    setModalHelp(true);
+  };
+
   return (
     <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 15, color: textColor }}>Mensagem</Text>
-      <TextInput value={texto} onChangeText={handleInputChange} placeholder="Digite sua mensagem" multiline={true} numberOfLines={5} style={{  borderColor: "gray", borderWidth: 1, marginBottom: 10, paddingLeft: 8, color: textColor }} />
+      <View style={{ flexDirection: "row" }}>
+        <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 15, color: textColor, textAlign: "center" }}>Mensagem</Text>
+        <Ionicons name="help-circle-outline" size={30} color={textColor} style={{ marginLeft: 10 }} onPress={showHelp} />
+      </View>
+      <TextInput value={texto} onChangeText={handleInputChange} placeholder="Digite sua mensagem" multiline={true} numberOfLines={5} style={{ borderColor: "gray", borderWidth: 1, marginBottom: 10, paddingLeft: 8, color: textColor, verticalAlign: "top", padding: 5 }} />
 
       <View style={{ flexDirection: "row", gap: 10, marginTop: 20 }}>
         {/* <Button title="Salvar" onPress={atualizarMensagemBanco} style={{ paddingVertical: 10, backgroundColor: "#2F407A", flex: 1 }} labelStyle={{ fontSize: 16, fontWeight: "bold" }}/>
@@ -102,6 +111,14 @@ export default function DetalhesAtendimento() {
               keyExtractor={(item) => item.id}
               keyboardShouldPersistTaps="handled"
             />
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
+      <Modal transparent={true} visible={modalHelp} animationType="fade" onRequestClose={() => setModalHelp(false)}>
+        <TouchableOpacity style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: transparentBG }} activeOpacity={1} onPress={() => setModalHelp(false)}>
+          <TouchableOpacity style={{ width: "80%",  backgroundColor: textColor == "white" ? "#00002b" : "white", padding: 20, borderRadius: 10 }} activeOpacity={1}>
+            <Text style={{color:textColor, fontSize:15}}>Aqui voce pode personalizar sua mensagem.</Text>
+            <Text style={{color:textColor, fontSize:15}}>Digite um '@' no campo de texto abaixo, para ter acesso aos dados que deseja inserir na sua mensagem</Text>
           </TouchableOpacity>
         </TouchableOpacity>
       </Modal>

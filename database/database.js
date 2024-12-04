@@ -19,7 +19,7 @@ let db;
 
 function initialize(databaseName = "ltagDatabase") {
   console.log("\t\t Initialize database chamado!!!!");
-  db = SQLite.openDatabaseSync(databaseName);
+  db = SQLite.openDatabaseSync(databaseName, {useNewConnection: true});
   if (db) {
     console.log("Banco de dados inicializado com sucesso.");
   } else {
