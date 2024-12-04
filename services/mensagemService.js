@@ -64,12 +64,21 @@ async function buscarServicos(id) {
 }
 
 function substituirVariaveis(mensagem, atendimento) {
+  const dataFormatada = new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' }).format(new Date(atendimento.Data));
+  
+  const horaFormatada = new Intl.DateTimeFormat('pt-BR', {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  }).format(new Date(`1970-01-01T${atendimento.Hora}:00`)); 
+
   return mensagem
-  .replace(/{Nome}/g, atendimento.Nome)
-  .replace(/{Servico}/g, atendimento.Servico)
-  .replace(/{Data}/g, atendimento.Data)
-  .replace(/{Hora}/g, atendimento.Hora);
+    .replace(/{Nome}/g, atendimento.Nome)
+    .replace(/{Servico}/g, atendimento.Servico)
+    .replace(/{Data}/g, dataFormatada)
+    .replace(/{Hora}/g, horaFormatada);
 }
+
 
 function formatarServicos(servicos) {
   if (servicos.length === 1) {

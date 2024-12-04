@@ -50,11 +50,25 @@ const Servicos = () => {
 			AtualizarServicoAsync({ id, nome, descricao, favorito });
 			fetchServicos();
 			setEditingServicos(null);
-			Alert.alert("Sucesso", "Serviço Editado com sucesso!"); //trocar por um popup
+			Toast.show("Serviço Editado com sucesso!", {
+				duration: Toast.durations.SHORT,
+				position: Toast.positions.BOTTOM,
+				shadow: true,
+				animation: true,
+				hideOnPress: true,
+				delay: 0,
+			});
 		} else {
 			let NovoServico = { nome, descricao, favorito };
 			adicionarServico(NovoServico);
-			Alert.alert("Sucesso", "Serviço cadastrado com sucesso!"); //trocar por um popup
+			Toast.show("Serviço cadastrado com sucesso!", {
+				duration: Toast.durations.SHORT,
+				position: Toast.positions.BOTTOM,
+				shadow: true,
+				animation: true,
+				hideOnPress: true,
+				delay: 0,
+			  });
 		}
 		fetchServicos();
 		setNome("");

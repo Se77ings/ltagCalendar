@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, TextInput, FlatList, Text, TouchableOpacity, Modal, KeyboardAvoidingView, Platform, Button } from "react-native";
 import { AtualizarMensagemAsync, ObterMensagemAsync, ObterMensagemFormatadaAsync } from "../../services/mensagemService";
 import { useTheme } from "../../ThemeContext";
+import Toast from "react-native-root-toast";
 
 export default function DetalhesAtendimento() {
   const { theme, toggleTheme } = useTheme();
@@ -55,9 +56,23 @@ export default function DetalhesAtendimento() {
   async function atualizarMensagemBanco() {
     const resposta = await AtualizarMensagemAsync(texto);
     if (resposta.success) {
-      alert("Mensagem atualizada com sucesso!");
+      Toast.show("Mensagem atualizada com sucesso!", {
+        duration: Toast.durations.SHORT,
+        position: Toast.positions.BOTTOM,
+        shadow: true,
+        animation: true,
+        hideOnPress: true,
+        delay: 0,
+      });
     } else {
-      alert("Erro ao atualizar a mensagem: " + resposta.error);
+      Toast.show("Erro ao atualizar a mensagem: " + resposta.error, {
+        duration: Toast.durations.SHORT,
+        position: Toast.positions.BOTTOM,
+        shadow: true,
+        animation: true,
+        hideOnPress: true,
+        delay: 0,
+      });
     }
   }
 

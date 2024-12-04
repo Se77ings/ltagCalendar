@@ -5,7 +5,7 @@ import styles from "./assets/styles/styles";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { StatusBar } from "expo-status-bar";
 import { ThemeProvider, useTheme } from "./ThemeContext";
-import { NavigationContainer, useNavigation, DefaultTheme, DarkTheme } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import Main from "./view/Home/Home";
 import Config from "./view/Configuracoes/Config";
 import { TourGuideProvider, TourGuideZone } from "rn-tourguide";
@@ -28,6 +28,18 @@ function App() {
 		  text: 'rgb(229, 229, 231)',
 		  border: 'rgb(39, 39, 41)',
 		  notification: 'rgb(255, 69, 58)',
+		},
+	  };
+
+	  const DefaultTheme = {
+		dark: false,
+		colors: {
+		  primary: 'rgb(0, 122, 255)',
+		  background: 'rgb(242, 242, 242)',
+		  card: 'rgb(255, 255, 255)',
+		  text: 'rgb(28, 28, 30)',
+		  border: 'rgb(216, 216, 216)',
+		  notification: 'rgb(255, 59, 48)',
 		},
 	  };
 

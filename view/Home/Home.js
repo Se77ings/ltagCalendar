@@ -173,8 +173,15 @@ const Cards = ({ img, data, setAgendamentoSelecionado, setmodalCreate, obter, se
 
     Clipboard.setStringAsync(mensagem.data)
       .then(() => {
-        //TODO: ver com o Gabriel qual toast ta usando e alterar o alert
-        alert("Texto copiado para a área de transferência! (ALTERAR PARA TOAST APÓS CONVERSAR COM GABRIEL)");
+        Toast.show("Mensagem copiada com sucesso!", {
+                  duration: Toast.durations.SHORT,
+                  position: Toast.positions.BOTTOM,
+                  shadow: true,
+                  animation: true,
+                  hideOnPress: true,
+                  delay: 0,
+                });
+              
       })
       .catch((erro) => {
         console.error("Erro ao copiar para a área de transferência", erro);

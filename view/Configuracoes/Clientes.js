@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Alert } from "react-native";
+import { View, Text, FlatList, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext";
 import Filtros from "../../assets/components/Filtros";
@@ -10,6 +10,7 @@ const ListaClientes = () => {
   const [clientes, setClientes] = useState([]);
   const [filtroSelecionado, setFiltroSelecionado] = useState("todo");
   const [intervalo, setIntervalo] = useState({ dataInicio: null, dataFim: null });
+  const [nomeCliente, setNomeCliente] = useState("");
   const [showDataInicio, setShowDataInicio] = useState(false);
   const [showDataFim, setShowDataFim] = useState(false);
 
@@ -31,7 +32,7 @@ const ListaClientes = () => {
   const carregarClientes = async () => {
     try {
       const { dataInicio, dataFim } = intervalo;
-      const clientesFiltrados = await filtrarClientes(filtroSelecionado, dataInicio, dataFim);
+      const clientesFiltrados = await filtrarClientes(filtroSelecionado, dataInicio, dataFim, nomeCliente);
       setClientes(clientesFiltrados);
     } catch (error) {
       console.error("Erro ao carregar clientes:", error);
@@ -51,7 +52,7 @@ const ListaClientes = () => {
     } else {
       carregarClientes();
     }
-  }, [filtroSelecionado, intervalo]);
+  }, [filtroSelecionado, intervalo, nomeCliente]);
 
   const opcoes = [
     { id: "todo", label: "Todo o período" },
@@ -63,6 +64,8 @@ const ListaClientes = () => {
   ];
 
   const handleDataChange = (event, selectedDate, tipo) => {
+    setShowDataInicio(false);
+    setShowDataFim(false);
     const currentDate = selectedDate || intervalo[tipo];
     if (tipo === "dataInicio") {
       setIntervalo({ ...intervalo, dataInicio: currentDate });
@@ -74,11 +77,20 @@ const ListaClientes = () => {
     } else if (tipo === "dataFim") {
       setShowDataFim(false);
     }
+
   };
 
   return (
     <View style={[styles.container, theme === "dark" ? styles.containerDark : styles.containerLight]}>
       <Text style={[styles.title, { color: textColor }]}>Clientes com Agendamentos</Text>
+
+      <TextInput
+        style={[styles.input, { color: textColor, borderColor: textColor }]}
+        placeholder="Buscar pelo nome"
+        placeholderTextColor={theme === "dark" ? "#AAA" : "#666"}
+        value={nomeCliente}
+        onChangeText={(text) => setNomeCliente(text)}
+      />
 
       <Filtros
         filtroSelecionado={filtroSelecionado}
@@ -155,6 +167,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    marginBottom: 16,
+  },
+  input: {
+    height: 40,
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 8,
     marginBottom: 16,
   },
   noData: {
