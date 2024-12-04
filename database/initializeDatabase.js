@@ -78,7 +78,7 @@ export default async function initializaDatabase() {
     );
 
     INSERT INTO MensagemAgendamento (Mensagem)
-    SELECT 'Olá, {Nome}, você tem um atendimento às {Data} {Hora}!'
+    SELECT 'Olá, {Nome}, você tem um atendimento em {Data} às {Hora} horas!'
     WHERE NOT EXISTS (SELECT 1 FROM MensagemAgendamento LIMIT 1);
   `);
 }

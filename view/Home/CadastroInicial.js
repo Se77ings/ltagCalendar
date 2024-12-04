@@ -135,7 +135,7 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
       <Text style={{ textAlign: "center", color: textColor2 }}>Agora, você precisa informar alguns dados iniciais</Text>
       <FloatingLabelInput
         // labelStyles={[styles.labelStyle, {color:"red"}]}
-        labelStyles={{ color: "black", backgroundColor: "red", padding: 5, borderRadius: 25 }}
+        labelStyles={styles.labelStyle}
         containerStyles={[styles.input, { backgroundColor: fundoInput }]}
         label="Nome do Estabelecimento"
         inputStyles={theme == "dark" ? { color: "white" } : { color: "black" }}
