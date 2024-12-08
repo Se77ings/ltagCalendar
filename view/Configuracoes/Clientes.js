@@ -40,6 +40,10 @@ const ListaClientes = () => {
   };
 
   useEffect(() => {
+    carregarClientes();
+  }, []);
+  
+  useEffect(() => {
     if (filtroSelecionado === "personalizado" && !intervalo.dataInicio && !intervalo.dataFim) {
       const hoje = new Date();
       const umMesAntes = new Date(hoje);
@@ -64,21 +68,26 @@ const ListaClientes = () => {
   ];
 
   const handleDataChange = (event, selectedDate, tipo) => {
-    setShowDataInicio(false);
-    setShowDataFim(false);
     const currentDate = selectedDate || intervalo[tipo];
+  
     if (tipo === "dataInicio") {
+      if (intervalo.dataFim && currentDate > intervalo.dataFim) {
+        alert("A data inicial não pode ser maior que a data final.");
+        return;
+      }
       setIntervalo({ ...intervalo, dataInicio: currentDate });
     } else if (tipo === "dataFim") {
+      if (intervalo.dataInicio && currentDate < intervalo.dataInicio) {
+        alert("A data final não pode ser menor que a data inicial.");
+        return;
+      }
       setIntervalo({ ...intervalo, dataFim: currentDate });
     }
-    if (tipo === "dataInicio") {
-      setShowDataInicio(false);
-    } else if (tipo === "dataFim") {
-      setShowDataFim(false);
-    }
-
+  
+    setShowDataInicio(false);
+    setShowDataFim(false);
   };
+  
 
   return (
     <View style={[styles.container, theme === "dark" ? styles.containerDark : styles.containerLight]}>

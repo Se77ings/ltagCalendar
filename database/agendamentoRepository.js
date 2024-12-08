@@ -85,17 +85,10 @@ export async function obterClientes(
   filtro,
   dataInicio = null,
   dataFim = null,
-  nomeCliente = null,
-  incluirFinalizados = true
+  nomeCliente = null
 ) {
-  let query = "SELECT * FROM agendamento";
+  let query = "SELECT * FROM agendamento WHERE Finalizado = 1";
   const params = [];
-
-  if (!incluirFinalizados) {
-    query += " WHERE Finalizado = 0";
-  } else {
-    query += " WHERE 1 = 1"; 
-  }
 
   const hoje = new Date();
 
@@ -151,7 +144,7 @@ export async function obterClientes(
 
   if (nomeCliente) {
     query += " AND Nome LIKE ?";
-    params.push(`%${nomeCliente}%`);
+    params.push(`%${nomeCliente.trim()}%`);
   }
 
   return await db.getAllAsync(query, params);
