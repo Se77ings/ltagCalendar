@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, Text, FlatList, StyleSheet, TextInput, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../ThemeContext";
 import Filtros from "../../assets/components/Filtros";
 import { filtrarClientes } from "../../services/agendamentoService";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import { useFocusEffect } from "@react-navigation/native";
 
 const ListaClientes = () => {
   const [clientes, setClientes] = useState([]);
@@ -38,6 +39,12 @@ const ListaClientes = () => {
       // console.error("Erro ao carregar clientes:", error);
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      carregarClientes();
+    }, [filtroSelecionado, intervalo, nomeCliente])
+  );
 
   useEffect(() => {
     carregarClientes();
