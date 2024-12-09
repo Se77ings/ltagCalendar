@@ -1,0 +1,76 @@
+Principais:
+Bug ao agendar com mais de um serviço 
+Bug ao cadastrar um colaborador (cria vários) == OK, removi o left join ao consultar colaboradores
+
+- Incremento 2:
+    Requisito 1 - Serviços Comentários
+        Observações: Alguns problemas de interface com ios (navbar, datepicker); 
+            Alguns problemas de estouro de interface com dados grandes. Com o stacknavigator, no ios, mostra o nome da tela anterior ao invés de um texto significativo para o usuário;
+
+    Requisito 2 - Colaboradores
+        Destacar colaboradores com maior afinidade ao escolher serviço Não faz
+        Observações Alguns problemas de interface com ios (navbar, datepicker); 
+            Alguns problemas de estouro de interface com dados grandes. Com o stacknavigator, no ios, mostra o nome da tela anterior ao invés de um texto significativo para o usuário;
+
+    Requisito 3 - Atendimentos
+        Observações Alguns problemas de interface com ios (navbar, datepicker); 
+            Alguns problemas de estouro de interface com dados grandes. Com o stacknavigator, no ios, mostra o nome da tela anterior ao invés de um texto significativo para o usuário;
+
+    -Documentação
+        Casos de uso Fora do padrão UML. Links estão errados. Não tem a página com pré-condições e pós-condições dos casos de uso?
+        Requisito funcional "Envia o formulário" e "O sistema valida os dados" deveriam ser mais detalhados. Administrador não é um usuário válido (pelo menos de acordo com o diagrama de casos de uso).
+        Diagrama de sequência Admin não deveria existir de acordo com a documentação. Retornos com nomes para exibição, e não o nome das variáveis utilizadas.
+        Diagrama de classes e dicionário Ok
+        Diagrama relacional e dicionário Faltam restrições
+        Observações -
+        Descontos -
+
+
+- Incremento 3
+    Requisito 1 - Primeira utilização Comentários
+        OK
+
+    Requisito 2 - Ramo de atividade
+        Conflito de dados com importação Está duplicando serviços
+        Observações Não está ordenando serviços.
+
+    Requisito 3 - Tema
+        Escolha de temas (D, L, S) Faltou poder escolher "Sistema"
+        Persiste na reinicialização Ok
+        Observações Novo agendamento, escolha de serviço, alguns modals com fundo claro.
+
+
+    -Documentação
+        Casos de uso Não tem o caso de uso sobre a troca de tema, bem como o de primeira utilização. Os casos de uso devem começar sempre com um verbo (por exemplo, "Cadastrar agendamento").
+        Requisito funcional Não encontrei o requisito sobre troca de tema e sobre a primeira utilização. Os demais (RF06 e RF07), estão muito simples, não define as tabelas onde os dados serão salvos, não define os tipos de dados, poderia ser melhor explicado.
+        Diagrama de sequência Não tem o diagrama sobre troca de tema e sobre a primeira utilização. Os que foram feitos, as trocas de mensagens e retornos estão errados
+        Diagrama de classes e dicionário Não encontrei sobre o tema e a primeira utilização.
+        Diagrama relacional e dicionário Não encontrei onde o tema é armazenado, bem como os serviços vinculados a um ramo de atividade.
+        Observações -
+    Descontos Não funcionou no iOS
+
+- Incremento 4
+    Requisito 1 - Texto para cliente Comentários
+        OK
+
+    Requisito 2 - Listagem de clientes
+        Filtro pelo nome do cliente Ok mas podia ter usado o trim -- corrigido
+        Filtro por data Permite data final maior que data inicial -- corrigido
+
+    Requisito 3 - Backup
+        Recuperação do arquivo Permite restaurar arquivo inválido. Não recupera o tema.
+
+    Requisito 4 - Reinicialização
+        Reinicia base, logo, tema, etc.? Não recupera o tema correto
+        Volta para o tutorial? Não
+        Confirmação com PIN Não
+
+    -Documentação
+        Casos de uso Nome do caso de uso deve começar com um verbo (Compartilhar mensagem ao invés de Compartilhamento de mensagem, por exemplo). Nome do ator deve estar em português.
+        Requisito funcional "RF10 - O sistema permite apagar a mensagem personalizada? Como? Realmente é armazenado ID da mensagem? Não existe usuário administrador nos casos de uso. Origem está errada. A ação está errada e vaga.""Salva no banco de dados"". Onde? Em qual tabela? ""Após a validação"". Qual validação? Etc. Não existe autenticação de usuário neste aplicativo.
+        RF11 - Documentação está diferente da execução. Origem está errada. Não utiliza o campo e-mail. Ação está vaga, precisa ser mais detalhada.
+        RF12 - A funcionalidade de backup periódico não foi implementada. Entradas estão diferentes da implementação. Origem está errada. Destino está errado. Não existe usuário administrador. A ação é muito vaga, não diz quais dados são copiados, como eles são copiados, em qual formato, etc. Não tem informações sobre a recuperação do backup. Não solicita autenticação local. Se o arquivo for corrompido, não existe dano colateral?
+        RF13 - Entradas diferentes da implementação realizada. Origem errada. Destino errado. Ação muito simples, não explica como a restauração é feita. Não existe administrador do sistema."
+        Diagrama de sequência Diagramas sem troca de mensagens, classes erradas.
+        Diagrama de classes e dicionário Deveria descrever as classes.
+        Diagrama relacional e dicionário Fora do padrão, não informa tipo de dados, restrições, etc.

@@ -59,7 +59,6 @@ const Header = ({ title, primeiraInicializacao, atualizarDB }) => {
     });
 
     DeviceEventEmitter.addListener("atualizarEstabelecimento", () => {
-      console.log("eu sou header foi chamado")
       ObterEstabelecimentoAsync().then((estabelecimento) => {
         setEstabelecimento(estabelecimento.data);
       });

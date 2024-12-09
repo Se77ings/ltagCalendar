@@ -122,7 +122,7 @@ const DropdownSelector = ({ lista, label, icone, callbackSelecionados, selectedI
 
 	useEffect(() => {
 		if (callbackSelecionados) callbackSelecionados(itensSelecionados);
-		else console.log(itensSelecionados);
+		else console.log("DropdownSelector ",itensSelecionados);
 	}, [itensSelecionados]);
 
 	useEffect(() => {

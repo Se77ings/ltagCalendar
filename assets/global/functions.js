@@ -36,56 +36,16 @@ const showToast = (message, type = "success") => {
   });
 };
 
-// export const exportDB = async () => {
-//   if (Platform.OS === "android") {
-//     const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
-//     if (permissions.granted) {
-//       const base64 = await FileSystem.readAsStringAsync(FileSystem.documentDirectory + "SQLite/ltagDatabase", {
-//         encoding: FileSystem.EncodingType.Base64,
-//       });
-
-//       await FileSystem.StorageAccessFramework.createFileAsync(permissions.directoryUri, "ltagDatabase.db", "application/octet-stream")
-//         .then(async (uri) => {
-//           await FileSystem.writeAsStringAsync(uri, base64, { encoding: FileSystem.EncodingType.Base64 });
-
-//           showToast("Banco de dados exportado com sucesso", "success");
-//         })
-//         .catch((e) => {
-//           // console.log(e);
-//           Alert.alert("Erro ao exportar o banco de dados", "Por favor, escolha outra pasta para realizar esta ação.");
-//         });
-//     } else {
-//       showToast("Permissão negada", "error");
-//     }
-//   } else {
-//     try {
-//       await Sharing.shareAsync(FileSystem.documentDirectory + "SQLite/ltagDatabase");
-
-//       showToast("Banco de dados exportado com sucesso", "success");
-//     } catch (e) {
-//       // console.log(e);
-//       Alert.alert("Erro ao exportar o banco de dados", "Por favor, tente novamente em outro diretório.");
-//     }
-//   }
-// };
-
 export const exportDB = async (compartilhar = false) => {
   try {
     const dbPath = FileSystem.documentDirectory + "SQLite/ltagDatabase";
-	console.log("Ao exportar, peguei daqui:");
-	console.log(dbPath);
 
-
-    // Verifica se o banco de dados existe
     const fileExists = await FileSystem.getInfoAsync(dbPath);
     if (!fileExists.exists) {
       throw new Error("O arquivo do banco de dados não foi encontrado.");
     }
 
-	// LOG  file:///data/user/0/host.exp.exponent/files/SQLite/ltagDatabase.db
-	// LOG  file:///data/user/0/host.exp.exponent/files/SQLite/ltagDatabase
     if (compartilhar) {
-      // Compartilha o banco de dados
       if (await Sharing.isAvailableAsync()) {
         await Sharing.shareAsync(dbPath);
         showToast("Banco de dados compartilhado com sucesso!", "success");
@@ -94,7 +54,6 @@ export const exportDB = async (compartilhar = false) => {
       }
     } else {
       if (Platform.OS === "android") {
-        // Solicita permissão para escolher o diretório
         const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
         if (permissions.granted) {
           // Cria o arquivo no diretório escolhido
@@ -130,18 +89,10 @@ export const exportDB = async (compartilhar = false) => {
 const dbDirectory = FileSystem.documentDirectory + "SQLite/";
 const dbPath = dbDirectory + "ltagDatabase";
 
-export const clearDatabase = async (dbName) => {
+export const clearDatabase = async () => {
   try {
-    console.log("Limpando db... recebi o nome do banco:", dbName);
-	
-    // await SQLite.deleteDatabaseAsync(dbName);
-
-    
-    console.log("Banco de dados excluído com sucesso usando SQLite.deleteDatabaseAsync.");
-
     await limpaDatabase();
 
-    console.log("Cheguei aqui")
     return true;
   } catch (error) {
     showToast("Erro ao limpar banco de dados", "error");
@@ -152,14 +103,11 @@ export const clearDatabase = async (dbName) => {
 
 // Função para sobrescrever o banco de dados
 const updateDatabase = async (sourceUri, destinationPath) => {
-	console.log("updateDatabase ->  ", destinationPath);
   try {
-    console.log("Substituindo banco de dados...");
     await FileSystem.copyAsync({
       from: sourceUri,
       to: destinationPath,
     });
-    console.log("Banco de dados substituído com sucesso.");
 
     return true;
   } catch (error) {

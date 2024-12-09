@@ -33,7 +33,6 @@ export async function ObterColaboradores() {
         SELECT 
             *
         FROM colaborador c
-		LEFT JOIN ServicosPorColaborador sc ON c.id = sc.ColaboradorId
 		ORDER BY c.Nome;
     `,
 		[]

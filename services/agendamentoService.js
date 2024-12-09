@@ -6,8 +6,8 @@ export default async function adicionarAgendamento(agendamento) {
 		validarAgendamento(agendamento);
 
 		var agendamentoid = await CriarAgendamento(agendamento);
+		DesvincularAgendamentoServicos(agendamentoid);
 		agendamento.servico.forEach((servico) => {
-			DesvincularAgendamentoServicos(agendamentoid, servico.id);
 			VincularAgendamentoServicos(agendamentoid, servico.id);
 		});
 
@@ -229,9 +229,9 @@ export async function RemoverAgendamentoAsync(id) {
 
 export async function filtrarClientes(filtro, dataInicio = null, dataFim = null, nomeCliente = null) {
     try {
-		console.log(filtro);
+		// console.log(filtro);
       const clientes = await obterClientes(filtro, dataInicio, dataFim, nomeCliente);
-	  console.log(clientes);
+	//   console.log(clientes);
       return clientes.map(cliente => ({
         id: cliente.id,
         nome: cliente.Nome,
