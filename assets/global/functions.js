@@ -6,6 +6,7 @@ import * as FileSystem from "expo-file-system";
 import * as DocumentPicker from "expo-document-picker";
 import { getDatabaseInstance, initialize } from "../../database/database";
 import { limpaDatabase } from "../../database/initializeDatabase";
+import * as LocalAuthentication from "expo-local-authentication";
 
 const db = getDatabaseInstance();
 
@@ -142,7 +143,14 @@ export const importDb = async (arg) => {
       return false;
     }
 
-    console.log("Arquivo selecionado:", result.assets[0].uri);
+    const fileUri = result.assets[0].uri;
+    console.log("Arquivo selecionado:", fileUri);
+
+    // Validação do tipo de arquivo
+    if (!fileUri.endsWith(".db")) {
+      showToast("Tipo de arquivo inválido. Por favor, selecione um arquivo .db", "error");
+      return false;
+    }
 
     if (arg !== "new") {
       Alert.alert("Atenção", "Um banco de dados já existe. Deseja substituí-lo? Os dados atuais serão perdidos.", [
@@ -154,38 +162,78 @@ export const importDb = async (arg) => {
         {
           text: "Aceitar",
           onPress: async () => {
-            console.log("Usuário aceitou substituir o banco de dados.");
-            // const isCleared = await clearDatabase("ltagDatabase");
-            // if (!isCleared) {
-            //   showToast("Erro ao limpar banco de dados", "error");
-            //   return false;
-            // }
-            const isUpdated = await updateDatabase(result.assets[0].uri, dbPath);
-            showToast("Banco de dados importado com sucesso", "success");
-            // if (isUpdated) {
-            //   // const db = reopenDatabase();
-            //   return !!db;
-            // } else {
-            //   showToast("Erro ao importar banco de dados", "error");
-            //   return false;
-            // }
+            LocalAuthentication.getEnrolledLevelAsync().then((response) => {
+              if (response == 0) {
+                console.log("Não existe biometria cadastrada");
+                query();
+              } else {
+                LocalAuthentication.authenticateAsync().then(async (result) => {
+                  if (result.success) {
+                    console.log("Usuário aceitou substituir o banco de dados.");
+                    query();
+                  } else {
+                    Toast.show("Falha na senha, tente novamente", {
+                      duration: Toast.durations.SHORT,
+                      position: Toast.positions.BOTTOM,
+                      shadow: true,
+                      animation: true,
+                      hideOnPress: true,
+                      delay: 0,
+                    });
+                  }
+                });
+              }
+            });
           },
         },
       ]);
     } else {
       console.log("Argumento 'new', sobrescrevendo banco.");
-      // const isCleared = await clearDatabase("ltagDatabase");
-      // if (!isCleared) {
-      //   showToast("Erro ao limpar banco de dados", "error");
-      //   return false;
-      // }
-      const isUpdated = await updateDatabase(result.assets[0].uri, dbPath);
+
+      LocalAuthentication.getEnrolledLevelAsync().then(async (response) => {
+        if (response == 0) {
+          console.log("Não existe biometria cadastrada");
+          const isUpdated = await updateDatabase(fileUri, dbPath);
+          if (isUpdated) {
+            const db = reopenDatabase();
+            return !!db;
+          } else {
+            showToast("Erro ao importar banco de dados", "error");
+            return false;
+          }
+        } else {
+          LocalAuthentication.authenticateAsync().then(async (result) => {
+            if (result.success) {
+              console.log("Usuário aceitou substituir o banco de dados.");
+              const isUpdated = await updateDatabase(fileUri, dbPath);
+              if (isUpdated) {
+                const db = reopenDatabase();
+                return !!db;
+              } else {
+                showToast("Erro ao importar banco de dados", "error");
+                return false;
+              }
+            } else {
+              Toast.show("Falha na senha, tente novamente", {
+                duration: Toast.durations.SHORT,
+                position: Toast.positions.BOTTOM,
+                shadow: true,
+                animation: true,
+                hideOnPress: true,
+                delay: 0,
+              });
+            }
+          });
+        }
+      });
+    }
+
+    async function query() {
+      const isUpdated = await updateDatabase(fileUri, dbPath);
       if (isUpdated) {
-        const db = reopenDatabase();
-        return !!db;
+        showToast("Banco de dados importado com sucesso", "success");
       } else {
         showToast("Erro ao importar banco de dados", "error");
-        return false;
       }
     }
   } catch (error) {

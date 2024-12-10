@@ -1,15 +1,10 @@
 import CriarServico, { AtualizarServico, DesabilitarServico, ExisteAtendimentoComServico, ExisteServicoAtivo, ExisteServicoComColaborador, ObterServicosFavoritosAtivos, ObterServicosPorColaborador, ObterServicosPorFavorito, VincularServicoColaborador } from "../database/servicoRepository";
 
 export default async function adicionarServico(servico) {
-  console.log(servico);
   try {
-
-
-
     validarServico(servico);
 
     await CriarServico(servico);
-
 
     return {
       success: true,
@@ -188,7 +183,8 @@ export async function ExisteServicoComColaboradorAsync(servicoId) {
 export async function ExisteServicoAtivoAsync(nome) {
   try {
     var result = await ExisteServicoAtivo(nome);
-
+    // console.log(nome , result)
+//acho que tem que verificar aqui, e retornar true, ou false...
     return {
       success: true,
       data: result,

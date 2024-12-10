@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, TouchableOpacity, TextInput, Button, ScrollView, FlatList, StyleSheet, Alert, Animated, Pressable } from "react-native";
-import { Ionicons } from "@expo/vector-icons"; 
+import { Ionicons } from "@expo/vector-icons";
 import DropdownSelector from "../../assets/components/DropdownSelector";
-import { useTheme } from "../../ThemeContext"; 
+import { useTheme } from "../../ThemeContext";
 import { ObterServicosPorColaborador, ObterServicosPorFavorito, VincularServicoColaborador } from "../../database/servicoRepository";
 import adicionarColaborador, { AtualizarColaboradorAsync, ObterTodosColaboradoresComServicosAsync, RemoverColaboradorAsync } from "../../services/colaboradorService";
 
@@ -16,6 +16,9 @@ const Colaboradores = () => {
   const [editing, setEditing] = useState(false);
   const [formHeight, setFormHeight] = useState(0);
   const [animatedHeight] = useState(new Animated.Value(0));
+  // const [msgErro, setMsgErro] = useState({ nome: false, servicos: false });
+  const [msgErroNome, setMsgErroNome] = useState(false);
+  const [msgErroServicos, setMsgErroServicos] = useState(false);
 
   const handleSubmit = async () => {
     let id = colaboradorSelecionado ? colaboradorSelecionado.id : "";
@@ -54,7 +57,7 @@ const Colaboradores = () => {
   const renderColaborador = ({ item }) => {
     return (
       <Pressable
-      style={styles.ServicosCard}
+        style={styles.ServicosCard}
         onPress={() => {
           if (editing) {
             setEditing(false);
@@ -75,11 +78,11 @@ const Colaboradores = () => {
           }
         }}>
         <View>
-          <Text style={[styles.colaboradorNome, {color:textColor2}]}>{item.Nome}</Text>
+          <Text style={[styles.colaboradorNome, { color: textColor2 }]}>{item.Nome}</Text>
           <View style={{ marginVertical: 5 }}>
             {item.servicos && item.servicos.length > 0 ? (
               item.servicos.map((servico, index) => (
-                <Text key={index} style={[styles.colaboradorServico, {color:textColor2} ]}>
+                <Text key={index} style={[styles.colaboradorServico, { color: textColor2 }]}>
                   {servico.Nome}
                 </Text>
               ))
@@ -89,12 +92,12 @@ const Colaboradores = () => {
           </View>
         </View>
         <View style={{ alignItems: "center" }}>
-        <Text style={theme == "dark" ? { fontSize: 12, color: "#ffff66" } : { fontSize: 12, color: "black" }}>Clique para editar ou excluir</Text>
+          <Text style={theme == "dark" ? { fontSize: 12, color: "#ffff66" } : { fontSize: 12, color: "black" }}>Clique para editar ou excluir</Text>
         </View>
       </Pressable>
     );
   };
-  const toggleForm = (opt) => {
+  const toggleForm = async (opt) => {
     if (opt == "close") {
       setNome("");
       setServicosSelecionados([]);
@@ -102,13 +105,17 @@ const Colaboradores = () => {
       return setShowForm(false);
     }
     if (showForm) {
-      if (nome === "") {
-        Alert.alert("Atenção", "Nome do colaborador não pode ser vazio");
+      if (nome.length < 3 || nome.length > 100) {
+        await setMsgErroNome(true);
         return;
+      } else {
+        await setMsgErroNome(false);
       }
       if (servicosSelecionados.length === 0) {
-        Alert.alert("Atenção", "Selecione ao menos um serviço");
+        await setMsgErroServicos(true);
         return;
+      } else {
+        await setMsgErroServicos(false);
       }
 
       handleSubmit();
@@ -166,11 +173,11 @@ const Colaboradores = () => {
       { cancelable: false }
     );
   };
-	const { theme, toggleTheme } = useTheme();
-	const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
-	const textColor = theme === "dark" ? "white" : "white";
-	const textColor2 = theme === "dark" ? "white" : "black";
-	const FundoThema = theme === "dark" ? "#020C2A" : "red";
+  const { theme, toggleTheme } = useTheme();
+  const headerStyles = theme === "dark" ? styles.darkHeader : styles.lightHeader;
+  const textColor = theme === "dark" ? "white" : "white";
+  const textColor2 = theme === "dark" ? "white" : "black";
+  const FundoThema = theme === "dark" ? "#020C2A" : "red";
   return (
     <>
       <View>
@@ -178,27 +185,23 @@ const Colaboradores = () => {
           <View style={styles.scrollContainer}>
             <Animated.View style={{ width: "100%", height: animatedHeight, overflow: "hidden" }}>
               {showForm && (
-                <View onLayout={handleLayout} style={[{ minHeight: 220, borderRadius: 20, padding: 20, marginBottom: 15}, theme == 'dark'? { backgroundColor: "#001a66"}:{ backgroundColor: "#2F407A"}]}>
+                <View onLayout={handleLayout} style={[{ minHeight: 220, borderRadius: 20, padding: 20, marginBottom: 15 }, theme == "dark" ? { backgroundColor: "#001a66" } : { backgroundColor: "#2F407A" }]}>
                   <TouchableOpacity style={styles.closeButton} onPress={() => toggleForm("close")}>
                     <Ionicons name="close" size={24} color="#fff" />
                   </TouchableOpacity>
-                  <Text style={[styles.label, { textAlign: "center", color:textColor}]}>{editing ? "Editando" : "Cadastrar Novo"}</Text>
-                    <Text style={[styles.label, { color: textColor }]}>Nome do Serviço:</Text>
-                    <TextInput
-                      style={styles.input}
-                      value={nome} label="Nome do Colaborador"
-                      onChangeText={setNome}
-                      placeholder="Insira o nome do Colaborador"
-                    />
-                  <Text style={{color:textColor, paddingTop:10}}>Selecione os serviços do colaborador:</Text>
+                  <Text style={[styles.label, { textAlign: "center", color: textColor }]}>{editing ? "Editando" : "Cadastrar Novo"}</Text>
+                  <Text style={[styles.label, { color: textColor }]}>Nome do Serviço:</Text>
+                  <TextInput style={styles.input} value={nome} label="Nome do Colaborador" onChangeText={setNome} placeholder="Insira o nome do Colaborador" />
+                  {msgErroNome && <Text style={{ color: "red", fontSize: 14 }}>O nome deve ter entre 3 e 100 caracteres.</Text>}
+                  <Text style={{ color: textColor, paddingTop: 10 }}>Selecione os serviços do colaborador:</Text>
                   <DropdownSelector lista={todosServicos} label={"Serviço(s)"} icone={"briefcase-outline"} callbackSelecionados={setServicosSelecionados} selectedItems={servicosSelecionados} opt={"servico"} />
+                  {msgErroServicos && <Text style={{ color: "red", fontSize: 14 }}>Selecione ao menos um serviço para cadastrar</Text>}
                   {editing && (
-                    <View style={{ alignItems: 'flex-end', marginTop: 10 }}>
-                    <TouchableOpacity onPress={() => handleDelete(colaboradorSelecionado.id)}>
-                      <Ionicons name="trash-outline" size={24} color={textColor}
- />
-                    </TouchableOpacity>
-                  </View>
+                    <View style={{ alignItems: "flex-end", marginTop: 10 }}>
+                      <TouchableOpacity onPress={() => handleDelete(colaboradorSelecionado.id)}>
+                        <Ionicons name="trash-outline" size={24} color={textColor} />
+                      </TouchableOpacity>
+                    </View>
                   )}
                 </View>
               )}
@@ -218,13 +221,13 @@ const Colaboradores = () => {
               </TouchableOpacity>
             </View>
 
-            <Text style={[styles.gridTitle, {color:textColor2}]}>Colaboradores Cadastrados:</Text>
+            <Text style={[styles.gridTitle, { color: textColor2 }]}>Colaboradores Cadastrados:</Text>
             {colaboradores && colaboradores.length > 0 ? (
-              <FlatList scrollEnabled={true} data={colaboradores} renderItem={renderColaborador} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", backgroundColor: {FundoThema}, borderRadius: 12 }} />
+              <FlatList scrollEnabled={true} data={colaboradores} renderItem={renderColaborador} keyExtractor={(item) => item.id.toString()} contentContainerStyle={styles.gridContainer} style={{ width: "100%", backgroundColor: { FundoThema }, borderRadius: 12 }} />
             ) : (
               <View style={{ width: "90%", borderRadius: 15, flexGrow: 1, justifyContent: "center" }}>
-                <Text style={{ textAlign: "center", color:textColor2}}>Nenhum colaborador cadastrado</Text>
-                {!showForm && <Text style={{ textAlign: "center", color:textColor2}}>Clique no botão abaixo para Cadastrar</Text>}
+                <Text style={{ textAlign: "center", color: textColor2 }}>Nenhum colaborador cadastrado</Text>
+                {!showForm && <Text style={{ textAlign: "center", color: textColor2 }}>Clique no botão abaixo para Cadastrar</Text>}
               </View>
             )}
           </View>

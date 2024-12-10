@@ -25,31 +25,9 @@ const AppConfig = () => {
 
   const handleImport = async () => {
     setIsLoading(true);
-    LocalAuthentication.getEnrolledLevelAsync().then((response) => {
-      if (response == 0) {
-        console.log("Não existe biometria cadastrada");
-        query();
-      } else {
-        LocalAuthentication.authenticateAsync().then((result) => {
-          console.log("Existe success em response? ", result);
-          if (result.success) {
-            console.log("result.success é true");
-            query();
-          } else {
-            Toast.show("Falha na senha, tente novamente", {
-              duration: Toast.durations.SHORT,
-              position: Toast.positions.BOTTOM,
-              shadow: true,
-              animation: true,
-              hideOnPress: true,
-              delay: 0,
-            });
-            setIsLoading(false);
-          }
-        });
-      }
-    });
-
+    query();
+ 
+    
     async function query() {
       await importDb().then((response) => {
         if (response && response.success) {
@@ -90,14 +68,40 @@ const AppConfig = () => {
         text: "Sim",
 
         onPress: async () => {
-          setIsLoading(true);
-          await clearDatabase("ltagDatabase");
-          setIsLoading(false);
-          //aqui tem que reiniciar o aplicativo
-          navigation.navigate("Home", { screen: "Home" });
+          let response = await LocalAuthentication.getEnrolledLevelAsync();
+          if (response == 0) {
+            console.log("Não existe biometria cadastrada");
+            foo();
+          } else {
+            LocalAuthentication.authenticateAsync().then(async (result) => {
+              if (result.success) {
+                foo();
+              } else {
+                Toast.show("Falha na senha, tente novamente", {
+                  duration: Toast.durations.SHORT,
+                  position: Toast.positions.BOTTOM,
+                  shadow: true,
+                  animation: true,
+                  hideOnPress: true,
+                  delay: 0,
+                });
+                setIsLoading(false);
+              }
+            });
+          }
         },
       },
     ]);
+
+    async function foo() {
+      setIsLoading(true);
+      const retorno = await clearDatabase("ltagDatabase");
+      setIsLoading(false);
+      if (retorno) {
+        //aqui tem que reiniciar o aplicativo
+        navigation.navigate("Home", { screen: "Home" });
+      }
+    }
   };
 
   const handleLocalImport = async () => {
@@ -131,7 +135,7 @@ const AppConfig = () => {
             </TouchableOpacity>
           </View> */}
           <View style={styles.childContainer}>
-            <Text style={{ color: textColor, fontSize: 22, fontWeight: "bold", marginBottom: 15, color: textColor, textAlign:"left", width:"100%"  }}>Banco de Dados</Text>
+            <Text style={{ color: textColor, fontSize: 22, fontWeight: "bold", marginBottom: 15, color: textColor, textAlign: "left", width: "100%" }}>Banco de Dados</Text>
             <TouchableOpacity style={[styles.button, { backgroundColor: "#2F407A" }]} onPress={handleImport}>
               <Text style={{ color: "white" }}>Importar Banco de Dados</Text>
               <Ionicons name="cloud-upload-outline" size={30} color={"white"} />
@@ -142,9 +146,9 @@ const AppConfig = () => {
             </TouchableOpacity>
           </View>
           <View style={styles.childContainer}>
-            <Text style={{ color: textColor, fontSize: 20, fontWeight: "bold", marginBottom: 15, color: textColor, textAlign:"left", width:"100%" }}>Reiniciar configurações de Fábrica</Text>
+            <Text style={{ color: textColor, fontSize: 20, fontWeight: "bold", marginBottom: 15, color: textColor, textAlign: "left", width: "100%" }}>Reiniciar configurações de Fábrica</Text>
             <TouchableOpacity style={[styles.button, { backgroundColor: "#2F407A" }]} onPress={handleClearDB}>
-              <Text style={{ color: "white", width: "100%",textAlign:'center' }}>Limpar Banco de Dados</Text>
+              <Text style={{ color: "white", width: "100%", textAlign: "center" }}>Limpar Banco de Dados</Text>
             </TouchableOpacity>
           </View>
           <View>
@@ -174,11 +178,7 @@ const AppConfig = () => {
             <Text style={{ color: "white", fontSize: 15 }}>Salvar localmente</Text>
             <Ionicons name="download-outline" size={30} color={"white"} />
           </Pressable>
-          <Pressable
-            style={styles.itemModal}
-            onPress={
-              handleShare
-            }>
+          <Pressable style={styles.itemModal} onPress={handleShare}>
             <Text style={{ color: "white", fontSize: 15 }}>Compartilhar</Text>
             <Ionicons name="share-social-outline" size={30} color={"white"} />
           </Pressable>

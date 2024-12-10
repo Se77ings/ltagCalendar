@@ -1,20 +1,21 @@
 Principais:
 Bug ao agendar com mais de um serviço 
 Bug ao cadastrar um colaborador (cria vários) == OK, removi o left join ao consultar colaboradores
+Bug ao não exibir mais de um serviço, alterei a ordem de DesvincularAgendamentoServicos == resolvido
 
-- Incremento 2:
-    Requisito 1 - Serviços Comentários
-        Observações: Alguns problemas de interface com ios (navbar, datepicker); 
-            Alguns problemas de estouro de interface com dados grandes. Com o stacknavigator, no ios, mostra o nome da tela anterior ao invés de um texto significativo para o usuário;
+- ~~Incremento 2:
+    ~~Requisito 1 - Serviços Comentários
+        ~~Observações: Alguns problemas de interface com ios (navbar, datepicker); 
+            ~~Alguns problemas de estouro de interface com dados grandes. Com o stacknavigator, no ios, mostra o nome da tela anterior ao invés de um texto significativo para o usuário;
 
-    Requisito 2 - Colaboradores
-        Destacar colaboradores com maior afinidade ao escolher serviço Não faz
-        Observações Alguns problemas de interface com ios (navbar, datepicker); 
-            Alguns problemas de estouro de interface com dados grandes. Com o stacknavigator, no ios, mostra o nome da tela anterior ao invés de um texto significativo para o usuário;
+    ~~Requisito 2 - Colaboradores
+        ~~Destacar colaboradores com maior afinidade ao escolher serviço Não faz
+        ~~Observações Alguns problemas de interface com ios (navbar, datepicker); 
+            ~~Alguns problemas de estouro de interface com dados grandes. Com o stacknavigator, no ios, mostra o nome da tela anterior ao invés de um texto significativo para o usuário;
 
     Requisito 3 - Atendimentos
-        Observações Alguns problemas de interface com ios (navbar, datepicker); 
-            Alguns problemas de estouro de interface com dados grandes. Com o stacknavigator, no ios, mostra o nome da tela anterior ao invés de um texto significativo para o usuário;
+        ~~Observações Alguns problemas de interface com ios (navbar, datepicker); 
+            ~~Alguns problemas de estouro de interface com dados grandes. Com o stacknavigator, no ios, mostra o nome da tela anterior ao invés de um texto significativo para o usuário;
 
     -Documentação
         Casos de uso Fora do padrão UML. Links estão errados. Não tem a página com pré-condições e pós-condições dos casos de uso?
@@ -26,18 +27,18 @@ Bug ao cadastrar um colaborador (cria vários) == OK, removi o left join ao cons
         Descontos -
 
 
-- Incremento 3
+- ~~Incremento 3
     Requisito 1 - Primeira utilização Comentários
         OK
 
     Requisito 2 - Ramo de atividade
-        Conflito de dados com importação Está duplicando serviços
-        Observações Não está ordenando serviços.
+        ~~ Conflito de dados com importação Está duplicando serviços
+        ~~Observações Não está ordenando serviços.~~
 
     Requisito 3 - Tema
-        Escolha de temas (D, L, S) Faltou poder escolher "Sistema"
-        Persiste na reinicialização Ok
-        Observações Novo agendamento, escolha de serviço, alguns modals com fundo claro.
+        ~~Escolha de temas (D, L, S) Faltou poder escolher "Sistema"
+        ~~Persiste na reinicialização Ok
+        ~~Observações Novo agendamento, escolha de serviço, alguns modals com fundo claro.
 
 
     -Documentação
@@ -49,21 +50,22 @@ Bug ao cadastrar um colaborador (cria vários) == OK, removi o left join ao cons
         Observações -
     Descontos Não funcionou no iOS
 
-- Incremento 4
-    Requisito 1 - Texto para cliente Comentários
-        OK
+- +- Incremento 4
+    Requisito 1 - Texto para cliente Comentários OK
 
-    Requisito 2 - Listagem de clientes
-        Filtro pelo nome do cliente Ok mas podia ter usado o trim -- corrigido
-        Filtro por data Permite data final maior que data inicial -- corrigido
+    ~~ Requisito 2 - Listagem de clientes
+        ~~ Filtro pelo nome do cliente Ok mas podia ter usado o trim -- corrigido
+        ~~ Filtro por data Permite data final maior que data inicial -- corrigido
 
     Requisito 3 - Backup
-        Recuperação do arquivo Permite restaurar arquivo inválido. Não recupera o tema.
+        ~~ Recuperação do arquivo Permite restaurar arquivo inválido. 
+        Não recupera o tema.
 
     Requisito 4 - Reinicialização
-        Reinicia base, logo, tema, etc.? Não recupera o tema correto
-        Volta para o tutorial? Não
-        Confirmação com PIN Não
+        ~~ Reinicia base, logo, tema, etc. ?
+        Não recupera o tema correto
+        ~~ Volta para o tutorial? Não
+        ~~ Confirmação com PIN Não
 
     -Documentação
         Casos de uso Nome do caso de uso deve começar com um verbo (Compartilhar mensagem ao invés de Compartilhamento de mensagem, por exemplo). Nome do ator deve estar em português.

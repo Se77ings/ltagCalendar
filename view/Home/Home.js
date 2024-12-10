@@ -174,14 +174,13 @@ const Cards = ({ img, data, setAgendamentoSelecionado, setmodalCreate, obter, se
     Clipboard.setStringAsync(mensagem.data)
       .then(() => {
         Toast.show("Mensagem copiada com sucesso!", {
-                  duration: Toast.durations.SHORT,
-                  position: Toast.positions.BOTTOM,
-                  shadow: true,
-                  animation: true,
-                  hideOnPress: true,
-                  delay: 0,
-                });
-              
+          duration: Toast.durations.SHORT,
+          position: Toast.positions.BOTTOM,
+          shadow: true,
+          animation: true,
+          hideOnPress: true,
+          delay: 0,
+        });
       })
       .catch((erro) => {
         console.error("Erro ao copiar para a área de transferência", erro);
@@ -265,7 +264,7 @@ const Cards = ({ img, data, setAgendamentoSelecionado, setmodalCreate, obter, se
       </View>
       <View style={styles.info}>
         <Text style={styles.nome}>{item.Nome}</Text>
-        <Text style={[styles.horario, item.Finalizado ? styles.agendamentoFinalizado : isPast(formatarData(item.Data), item.Hora) && {  fontWeight: "bold" }]}>Horário:{item.Hora}</Text>
+        <Text style={[styles.horario, item.Finalizado ? styles.agendamentoFinalizado : isPast(formatarData(item.Data), item.Hora) && { fontWeight: "bold" }]}>Horário:{item.Hora}</Text>
       </View>
       <View style={styles.botoes}>
         <TouchableOpacity style={[styles.botao, {}]} onPress={() => editarAgendamento(item)}>
@@ -324,8 +323,21 @@ const Home = ({ navigation }) => {
       //Home focada, obter novamente..
       obter();
       setAtualizarDB(!true);
+      verificaPrimeiroAcesso();
     }, [])
   );
+
+  const verificaPrimeiroAcesso = async () => {
+    ObterEstabelecimentoAsync().then((result) => {
+      if (result.success) {
+        if (result.data == null) {
+          start();
+        }
+      } else {
+        return;
+      }
+    });
+  };
 
   useEffect(() => {
     initialize();
@@ -406,15 +418,7 @@ const Home = ({ navigation }) => {
   useEffect(() => {
     if (canStart) {
       eventEmitter.on("stepChange", handleOnStepChange);
-      ObterEstabelecimentoAsync().then((result) => {
-        if (result.success) {
-          if (result.data == null) {
-            start();
-          }
-        } else {
-          return;
-        }
-      });
+      verificaPrimeiroAcesso();
       eventEmitter.on("stop", () => {
         //Tour finalizado
         setPrimeiraInicializacao(true);
@@ -534,8 +538,8 @@ const Home = ({ navigation }) => {
             Keyboard.dismiss();
           }}
           style={{ backgroundColor: "rgba(0,0,0,0.5)", height: "100%", flex: 1, justifyContent: "center", padding: 8 }}>
-          <Pressable style={{ padding: 20, backgroundColor: "#00002b",position: "absolute", width: "100%", top: 10, alignSelf: "center", flex: 1, flexDirection: "row", justifyContent: "space-between" }} onPress={handleImport}>
-            <Text style={{ alignSelf: "center", color:"white" }}>Importar Banco de Dados</Text>
+          <Pressable style={{ padding: 20, backgroundColor: "#00002b", position: "absolute", width: "100%", top: 10, alignSelf: "center", flex: 1, flexDirection: "row", justifyContent: "space-between" }} onPress={handleImport}>
+            <Text style={{ alignSelf: "center", color: "white" }}>Importar Banco de Dados</Text>
             <Ionicons name="cloud-upload-outline" size={30} color={"white"} />
           </Pressable>
           <Pressable style={{ padding: 5, borderRadius: 6 }}>

@@ -240,7 +240,7 @@ export async function filtrarClientes(filtro, dataInicio = null, dataFim = null,
         hora: cliente.Hora,
       }));
     } catch (error) {
-      console.error("Erro ao filtrar clientes:", error);
+    //   console.error("Erro ao filtrar clientes:", error);
       throw error;
     }
 };

@@ -79,6 +79,8 @@ const Servicos = () => {
 	const fetchServicos = async () => {
 		try {
 			let response = await ObterTodosServicosAtivosAsync();
+			console.log("Response recebeu: \n")
+			console.log(response);
 			if (response.success) {
 				setServicos(response.data);
 			} else {
@@ -362,7 +364,7 @@ const Servicos = () => {
 							<Text style={{ color: "white" }}>{editingServicos ? "Editar" : "Criar Serviço"}</Text>
 						</TouchableOpacity>
 					</View>
-					<Text style={[styles.gridTitle, {color:textColor2}]}>Servicos Cadastrados:</Text>
+					<Text style={[styles.gridTitle, {color:textColor2}]}>Serviços Cadastrados:</Text>
 					{servicos && servicos.length > 0 ? (
 						<FlatList
 							scrollEnabled={true}
@@ -413,18 +415,21 @@ const Servicos = () => {
 									title="Confirmar Importação"
 									onPress={() => {
 										formData.servicos.forEach(async (servico) => {
-											if (await ExisteServicoAtivoAsync(servico.nome)) adicionarServico(servico);
+											if (!(await ExisteServicoAtivoAsync(servico.nome)).data) {
+												adicionarServico(servico)
+												fetchServicos();
+												Toast.show("Serviços importados com sucesso!", {
+													duration: Toast.durations.LONG,
+													position: Toast.positions.BOTTOM,
+													shadow: true,
+													animation: true,
+													hideOnPress: false,
+												});
+											};
 										});
 										setModalImport(false);
-										fetchServicos();
+										toggleForm();
 
-										Toast.show("Serviços importados com sucesso!", {
-											duration: Toast.durations.LONG,
-											position: Toast.positions.BOTTOM,
-											shadow: true,
-											animation: true,
-											hideOnPress: false,
-										});
 									}}
 									style={{ backgroundColor: "red" }}
 								/>
