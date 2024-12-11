@@ -190,7 +190,7 @@ const Colaboradores = () => {
                     <Ionicons name="close" size={24} color="#fff" />
                   </TouchableOpacity>
                   <Text style={[styles.label, { textAlign: "center", color: textColor }]}>{editing ? "Editando" : "Cadastrar Novo"}</Text>
-                  <Text style={[styles.label, { color: textColor }]}>Nome do Serviço:</Text>
+                  <Text style={[styles.label, { color: textColor }]}>Nome do Colaborador:</Text>
                   <TextInput style={styles.input} value={nome} label="Nome do Colaborador" onChangeText={setNome} placeholder="Insira o nome do Colaborador" />
                   {msgErroNome && <Text style={{ color: "red", fontSize: 14 }}>O nome deve ter entre 3 e 100 caracteres.</Text>}
                   <Text style={{ color: textColor, paddingTop: 10 }}>Selecione os serviços do colaborador:</Text>

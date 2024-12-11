@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, Button, StyleSheet, Alert, DeviceEventEmi
 import { FloatingLabelInput } from "react-native-floating-label-input";
 import DropdownSelector from "../../assets/components/DropdownSelector";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { TextInput } from "react-native-paper";
 import * as ImagePicker from "expo-image-picker";
 import { ramosDeAtividade } from "../../services/ramoService";
 import adicionarEstabelecimentoAsync from "../../services/estabelecimentoService";
