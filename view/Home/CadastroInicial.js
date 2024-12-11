@@ -13,11 +13,13 @@ import Toast from "react-native-root-toast";
 import { useTheme } from "../../ThemeContext"; // Usando o hook useTheme para acessar o estado do tema
 
 const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
+  let tema = useTheme();
   const [formData, setFormData] = useState({
     nome: "",
     telefone: "",
     endereco: "",
     logo: "",
+    theme: tema.theme,
   });
   const [erro, setErro] = useState({
     nome: false,
@@ -83,6 +85,7 @@ const CadastroInicial = ({ navigation, setPrimeiraInicializacao }) => {
       telefone: formData.telefone.replace(/\D/g, ""),
       endereco: formData.endereco,
       logo: formData.logo,
+      theme: tema.theme
     };
 
     formData.servicos.forEach((servico) => {

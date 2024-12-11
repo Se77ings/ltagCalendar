@@ -69,7 +69,8 @@ export default async function initializaDatabase() {
       Nome TEXT NOT NULL,
       Telefone TEXT NOT NULL,
       Endereco TEXT,
-      Logo BLOB    
+      Logo BLOB,
+      Theme TEXT    
     );
 
     CREATE TABLE IF NOT EXISTS MensagemAgendamento (
@@ -151,7 +152,8 @@ export async function limpaDatabase() {
       Nome TEXT NOT NULL,
       Telefone TEXT NOT NULL,
       Endereco TEXT,
-      Logo BLOB    
+      Logo BLOB,
+      Theme TEXT    
     );
 
     CREATE TABLE IF NOT EXISTS MensagemAgendamento (
