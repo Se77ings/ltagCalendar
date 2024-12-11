@@ -12,13 +12,12 @@ import { TourGuideProvider, TourGuideZone } from "rn-tourguide";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { RootSiblingParent } from 'react-native-root-siblings';
 import ListaClientes from "./view/Configuracoes/Clientes";
+import { ObterThemeAsync } from "./services/estabelecimentoService";
 
 function App() {
 	const { theme, toggleTheme } = useTheme(); // Consumindo o contexto
 	const Tab = createBottomTabNavigator();
-	const { themeAuto, togglethemeAuto } = useTheme();
-
-
+	
 	const DarkTheme = {
 		dark: true,
 		colors: {
@@ -59,11 +58,7 @@ function App() {
 						finish: "Finalizar",
 					},
 				}}>
-				<NavigationContainer theme={theme === "dark"
-					? DarkTheme
-					: theme === "ligth"
-					? DefaultTheme
-					: themeAuto}>
+				<NavigationContainer theme={theme === "dark" ? DarkTheme : DefaultTheme}>
 					<Tab.Navigator
 						initialRouteName="Main"
 						screenOptions={{ tabBarStyle: { backgroundColor: "#001a66", padding: 2, height: 60}, lazy: false }}>

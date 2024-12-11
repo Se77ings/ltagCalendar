@@ -1,4 +1,4 @@
-import { AtualizarEstabelecimento, CriarEstabelecimento, ObterEstabelecimento } from "../database/estabelecimentoRepository";
+import { AtualizarEstabelecimento, AtualizarTheme, CriarEstabelecimento, ObterEstabelecimento, ObterTheme } from "../database/estabelecimentoRepository";
 
 
 export default async function adicionarEstabelecimentoAsync(estabelecimento) {
@@ -19,6 +19,15 @@ export default async function adicionarEstabelecimentoAsync(estabelecimento) {
         error: "Erro ao criar Estabelecimento: " + error,
       };
     }
+  }
+
+  export async function ObterThemeAsync(){
+	const result = await ObterTheme();
+	return result;
+  }
+
+  export async function AtualizarThemeAsync(theme){
+	await AtualizarTheme(theme);
   }
 
   function validarEstabelecimento(estabelecimento) {
