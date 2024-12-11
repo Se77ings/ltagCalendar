@@ -1,5 +1,4 @@
 import { StyleSheet } from "react-native";
-import { shadow } from "react-native-paper";
 
 const styles = StyleSheet.create({
 	iconDiv: {
