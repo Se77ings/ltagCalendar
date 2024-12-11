@@ -9,10 +9,10 @@ import { AtualizarThemeAsync, ObterEstabelecimentoAsync, ObterThemeAsync } from 
 
 const Header = ({ title, primeiraInicializacao, atualizarDB }) => {
   const { theme, toggleTheme } = useTheme();
-  const [ themaEscolhido, setTemaEscolhido ] = useState();
+  const [themaEscolhido, setTemaEscolhido] = useState("auto");
   const [estabelecimento, setEstabelecimento] = useState(null);
 
-  const [themeSistema, setThemeSistema] = useState(useColorScheme()); // Definindo o tema inicial  
+  const [themeSistema, setThemeSistema] = useState(useColorScheme()); // Definindo o tema inicial
 
   // Estilos baseados no tema atual
   const textColor = theme === "dark" ? "white" : "black";
@@ -24,12 +24,12 @@ const Header = ({ title, primeiraInicializacao, atualizarDB }) => {
     toggleTheme(tema);
   };
 
-  const themaEscolhido2 = async() => {
+  const themaEscolhido2 = async () => {
     let themaDobanco = await ObterThemeAsync();
     setTemaEscolhido(themaDobanco);
     toggleTheme(themaDobanco);
     return themaDobanco;
-  }
+  };
 
   useEffect(() => {
     themaEscolhido2();
@@ -74,9 +74,13 @@ const Header = ({ title, primeiraInicializacao, atualizarDB }) => {
               </Text>
               <Text style={styles.shopName_}>{title}</Text>
             </View>
-            {themaEscolhido == "auto" && (<Text onPress={() => setTema("dark")} style={{ paddingLeft: 7, paddingRight: 7, fontWeight: "bold", borderRadius:100, color:"white"}}>AUTO</Text>)}
-            {themaEscolhido == "light" && (<Ionicons onPress={() => setTema("auto")} name="sunny-outline" size={25} color={"white"} />)}
-            {themaEscolhido == "dark" && (<Ionicons onPress={() => setTema("light")} name="moon-outline" size={25} color={"white"} />)}
+            {themaEscolhido == "auto" && (
+              <Text onPress={() => setTema("dark")} style={{ paddingLeft: 7, paddingRight: 7, fontWeight: "bold", borderRadius: 100, color: "white" }}>
+                AUTO
+              </Text>
+            )}
+            {themaEscolhido == "light" && <Ionicons onPress={() => setTema("auto")} name="sunny-outline" size={25} color={"white"} />}
+            {themaEscolhido == "dark" && <Ionicons onPress={() => setTema("light")} name="moon-outline" size={25} color={"white"} />}
           </View>
         </View>
       </LinearGradient>
